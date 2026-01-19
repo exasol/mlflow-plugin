@@ -10,6 +10,8 @@ readme = "README.rst"
 license = "MIT"
 keywords = ['exasol', 'mlflow_plugin']
 dynamic = ["dependencies"]
+dependencies = [
+]
 
 [tool.poetry]
 requires-poetry = ">=2.1.0"
@@ -17,14 +19,13 @@ packages = [
     { include = "exasol" },
 ]
 
+[tool.poetry.group.dev.dependencies]
+exasol-toolbox = ">=4.0.1, <5"
+
+
 [poetry.urls]
 repository = "https://github.com/exasol/mlflow-plugin"
 homepage = "https://github.com/exasol/mlflow-plugin"
-
-[tool.poetry.dependencies]
-
-[tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=4.0.1, <5"
 
 [build-system]
 requires = ["poetry-core>=2.0.0"]
