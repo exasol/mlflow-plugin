@@ -39,7 +39,7 @@ source = [
 ]
 
 [tool.coverage.report]
-fail_under = 15
+fail_under = 0 # set to 15 as soon as there are some sources incl. tests
 
 [tool.black]
 line-length = 88
