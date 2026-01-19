@@ -76,6 +76,6 @@ ignore_errors = true
 
 [tool.sonar]
 projectKey = "com.exasol:mlflow-plugin"
-host.url = "https://sonarcloud.io"
+host.url = "https://sonar.exasol.com"
 organization = "exasol"
 exclusions = "exasol/mlflow_plugin/version.py"
