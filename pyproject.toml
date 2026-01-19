@@ -1,0 +1,81 @@
+[project]
+name = "exasol-mlflow-plugin"
+version = "0.1.0"
+requires-python = ">=3.10,<4.0"
+description = "Plugin for MLflow supporting artifact repository Exasol BucketFS"
+authors = [
+    {name = "Exasol AG", email = "christoph.kuhnke@exasol.com"},
+]
+readme = "README.rst"
+license = "MIT"
+keywords = ['exasol', 'mlflow_plugin']
+dynamic = ["dependencies"]
+dependencies = [
+]
+
+[tool.poetry]
+requires-poetry = ">=2.1.0"
+packages = [
+    { include = "exasol" },
+]
+
+[tool.poetry.group.dev.dependencies]
+exasol-toolbox = ">=4.0.1, <5"
+
+
+[poetry.urls]
+repository = "https://github.com/exasol/mlflow-plugin"
+homepage = "https://github.com/exasol/mlflow-plugin"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# Tooling - marking what to show in the documentation
+[tool.coverage.run]
+relative_files = true
+source = [
+    "exasol",
+]
+
+[tool.coverage.report]
+fail_under = 0 # set to 15 as soon as there are some sources incl. tests
+
+[tool.black]
+line-length = 88
+verbose = false
+include = "\\.pyi?$"
+
+[tool.isort]
+profile = "black"
+force_grid_wrap = 2
+
+[tool.pylint.master]
+fail-under = 5.0
+ignore = []
+
+[tool.pylint.format]
+max-line-length = 88
+max-module-lines = 800
+
+[tool.ruff.lint]
+extend-ignore = [
+    "E",      # Syntax errors
+    "F",      # Pyflakes rules (excluding F401)
+    "UP",     # pyupgrade rules
+    "D",      # Docstring rules
+]
+extend-select = ["F401"]
+unfixable = []
+
+[[tool.mypy.overrides]]
+module = [
+    "test.*",
+]
+ignore_errors = true
+
+[tool.sonar]
+projectKey = "com.exasol:mlflow-plugin"
+host.url = "https://sonar.exasol.com"
+organization = "exasol"
+exclusions = "exasol/mlflow_plugin/version.py"
