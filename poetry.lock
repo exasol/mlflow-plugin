@@ -939,14 +939,14 @@ dates = ["pytz (>=2019.1)"]
 
 [[package]]
 name = "exasol-toolbox"
-version = "1.13.0"
+version = "4.0.1"
 description = "Your one-stop solution for managing all standard tasks and core workflows of your Python project."
 optional = false
-python-versions = "<4.0,>=3.9.2"
+python-versions = "<4.0,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "exasol_toolbox-1.13.0-py3-none-any.whl", hash = "sha256:bcc228149695a439948956645c0e1eb8894847f7ee303072ae4533e9db6220dd"},
-    {file = "exasol_toolbox-1.13.0.tar.gz", hash = "sha256:3ddec24123a9e8a00d3f90df3e6d14c5a1919f5d741b100f730106359bb27b1d"},
+    {file = "exasol_toolbox-4.0.1-py3-none-any.whl", hash = "sha256:5b4179ba6936bf8d4e63570846ecede381f9db79539752438ea120a7b0fa3df0"},
+    {file = "exasol_toolbox-4.0.1.tar.gz", hash = "sha256:0e180289f23e0f562aefa890ffb6cd35099f99aedda2d2735faf762263dd50f6"},
 ]
 
 [package.dependencies]
@@ -956,7 +956,7 @@ coverage = ">=6.4.4,<8.0.0"
 furo = ">=2022.9.15"
 import-linter = ">=2.0,<3.0"
 importlib-resources = ">=5.12.0"
-isort = ">=6.0.1,<7.0.0"
+isort = ">=7.0.0,<8.0.0"
 jinja2 = ">=3.1.6,<4.0.0"
 mypy = ">=0.971"
 myst-parser = ">=2.0.0,<4"
@@ -968,8 +968,9 @@ pre-commit = ">=4,<5"
 pydantic = ">=2.11.5,<3.0.0"
 pylint = ">=2.15.4"
 pysonar = ">=1.0.1.1548,<2.0.0.0"
-pytest = ">=7.2.2,<9"
+pytest = ">=7.2.2,<10"
 pyupgrade = ">=2.38.2,<4.0.0"
+ruff = ">=0.14.5,<0.15.0"
 shibuya = ">=2024.5.14"
 sphinx = ">=5.3,<8"
 sphinx-copybutton = ">=0.5.0,<0.6.0"
@@ -1324,14 +1325,14 @@ files = [
 
 [[package]]
 name = "isort"
-version = "6.1.0"
+version = "7.0.0"
 description = "A Python utility / library to sort Python imports."
 optional = false
-python-versions = ">=3.9.0"
+python-versions = ">=3.10.0"
 groups = ["dev"]
 files = [
-    {file = "isort-6.1.0-py3-none-any.whl", hash = "sha256:58d8927ecce74e5087aef019f778d4081a3b6c98f15a80ba35782ca8a2097784"},
-    {file = "isort-6.1.0.tar.gz", hash = "sha256:9b8f96a14cfee0677e78e941ff62f03769a06d412aabb9e2a90487b3b7e8d481"},
+    {file = "isort-7.0.0-py3-none-any.whl", hash = "sha256:1bcabac8bc3c36c7fb7b98a76c8abb18e0f841a3ba81decac7691008592499c1"},
+    {file = "isort-7.0.0.tar.gz", hash = "sha256:5513527951aadb3ac4292a41a16cbc50dd1642432f5e8c20057d414bdafb4187"},
 ]
 
 [package.extras]
@@ -2946,6 +2947,35 @@ files = [
 ]
 
 [[package]]
+name = "ruff"
+version = "0.14.13"
+description = "An extremely fast Python linter and code formatter, written in Rust."
+optional = false
+python-versions = ">=3.7"
+groups = ["dev"]
+files = [
+    {file = "ruff-0.14.13-py3-none-linux_armv6l.whl", hash = "sha256:76f62c62cd37c276cb03a275b198c7c15bd1d60c989f944db08a8c1c2dbec18b"},
+    {file = "ruff-0.14.13-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:914a8023ece0528d5cc33f5a684f5f38199bbb566a04815c2c211d8f40b5d0ed"},
+    {file = "ruff-0.14.13-py3-none-macosx_11_0_arm64.whl", hash = "sha256:d24899478c35ebfa730597a4a775d430ad0d5631b8647a3ab368c29b7e7bd063"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9aaf3870f14d925bbaf18b8a2347ee0ae7d95a2e490e4d4aea6813ed15ebc80e"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:ac5b7f63dd3b27cc811850f5ffd8fff845b00ad70e60b043aabf8d6ecc304e09"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:78d2b1097750d90ba82ce4ba676e85230a0ed694178ca5e61aa9b459970b3eb9"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:7d0bf87705acbbcb8d4c24b2d77fbb73d40210a95c3903b443cd9e30824a5032"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:a3eb5da8e2c9e9f13431032fdcbe7681de9ceda5835efee3269417c13f1fed5c"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:642442b42957093811cd8d2140dfadd19c7417030a7a68cf8d51fcdd5f217427"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4acdf009f32b46f6e8864af19cbf6841eaaed8638e65c8dac845aea0d703c841"},
+    {file = "ruff-0.14.13-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:591a7f68860ea4e003917d19b5c4f5ac39ff558f162dc753a2c5de897fd5502c"},
+    {file = "ruff-0.14.13-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:774c77e841cc6e046fc3e91623ce0903d1cd07e3a36b1a9fe79b81dab3de506b"},
+    {file = "ruff-0.14.13-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:61f4e40077a1248436772bb6512db5fc4457fe4c49e7a94ea7c5088655dd21ae"},
+    {file = "ruff-0.14.13-py3-none-musllinux_1_2_i686.whl", hash = "sha256:6d02f1428357fae9e98ac7aa94b7e966fd24151088510d32cf6f902d6c09235e"},
+    {file = "ruff-0.14.13-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:e399341472ce15237be0c0ae5fbceca4b04cd9bebab1a2b2c979e015455d8f0c"},
+    {file = "ruff-0.14.13-py3-none-win32.whl", hash = "sha256:ef720f529aec113968b45dfdb838ac8934e519711da53a0456038a0efecbd680"},
+    {file = "ruff-0.14.13-py3-none-win_amd64.whl", hash = "sha256:6070bd026e409734b9257e03e3ef18c6e1a216f0435c6751d7a8ec69cb59abef"},
+    {file = "ruff-0.14.13-py3-none-win_arm64.whl", hash = "sha256:7ab819e14f1ad9fe39f246cfcc435880ef7a9390d81a2b6ac7e01039083dd247"},
+    {file = "ruff-0.14.13.tar.gz", hash = "sha256:83cd6c0763190784b99650a20fec7633c59f6ebe41c5cc9d45ee42749563ad47"},
+]
+
+[[package]]
 name = "secretstorage"
 version = "3.5.0"
 description = "Python bindings to FreeDesktop.org Secret Service API"
@@ -3668,4 +3698,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "2eb0747f0022eb76fd776b7654bf2269522cc32e5e8850d6c9441f579dd043bc"
+content-hash = "fadbaf0bb49dff368d85cb10dd60f2dd8876c6f86c09c044f4b5a26b00a4870d"
