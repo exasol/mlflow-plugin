@@ -5,8 +5,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
     """Custom artifact repository for scheme 'bfs://'"""
 
     def __init__(self, artifact_uri, **kwargs):
-        super().__init__(artifact_uri)
         # Initialize your artifact storage backend
+        super().__init__(artifact_uri)
+        print(f'BucketFsArtifactRepo.__init__(artifact_uri={artifact_uri})')
 
     def log_artifact(self, local_file, artifact_path=None):
         # Upload file to your storage system
