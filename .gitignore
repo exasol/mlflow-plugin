@@ -151,3 +151,6 @@ itde/
 /.lint.txt
 /.security.json
 /.sonar
+
+# MLFlow database
+/mlflow.db
