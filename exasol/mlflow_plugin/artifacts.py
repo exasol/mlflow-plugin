@@ -4,7 +4,12 @@ from mlflow.store.artifact.artifact_repo import ArtifactRepository
 class BucketFsArtifactRepo(ArtifactRepository):
     """Custom artifact repository for scheme 'bfs://'"""
 
-    def __init__(self, artifact_uri, **kwargs):
+    def __init__(
+        self,
+        artifact_uri: str,
+        tracking_uri: str | None = None,
+        registry_uri: str | None = None,
+    ) -> None:
         # Initialize your artifact storage backend
         super().__init__(artifact_uri)
         print(f'BucketFsArtifactRepo.__init__(artifact_uri={artifact_uri})')
