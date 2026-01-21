@@ -25,7 +25,8 @@ packages = [
 # "mlflow.artifact_repository": "my-scheme=my_plugin.artifacts:MyArtifactRepo",
 # See https://python-poetry.org/docs/pyproject/#plugins
 [tool.poetry.plugins."mlflow.artifact_repository"]
-bfs = "exasol.mlflow_plugin.artifacts:BucketFsArtifactRepo"
+# bfs = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
+"exa+bfs" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
 
 
 [tool.poetry.group.dev.dependencies]
