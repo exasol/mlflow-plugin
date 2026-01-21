@@ -25,15 +25,26 @@ def store_model():
     lr.fit(td.X_train, td.y_train)
 
 
-def upload_to_bucketfs():
+def upload_to_bucketfs(file: str):
     params = bucketfs_parameters("bfs://localhost:2580/bfsdefault/default")
     bfsloc = bucketfs_location(params)
     print(f'{params}')
 
+    dest = bfsloc / "file.txt"
+    # dest.write(b"123")
+    with open(file, "rb") as fd:
+        dest.write(fd)
+    for f in bfsloc.iterdir():
+        print(f'{f}')
+
 
 def main():
-    # store_model()
-    upload_to_bucketfs()
+    store_model()
+    return
+    import sys
+    file = sys.argv[1]
+    print(f'{file}')
+    upload_to_bucketfs(file)
 
 
 if __name__ == "__main__":
