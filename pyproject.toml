@@ -11,7 +11,8 @@ license = "MIT"
 keywords = ['exasol', 'mlflow_plugin']
 dynamic = ["dependencies"]
 dependencies = [
-    "exasol-bucketfs (>=2.1.0,<3)"
+    "exasol-bucketfs (>=2.1.0,<3.0.0)",
+    "mlflow (>=3.8.1, <4)",
 ]
 
 [tool.poetry]
@@ -19,6 +20,13 @@ requires-poetry = ">=2.1.0"
 packages = [
     { include = "exasol" },
 ]
+
+# Syntax from https://mlflow.org/docs/latest/ml/plugins/#storage-plugins:
+# "mlflow.artifact_repository": "my-scheme=my_plugin.artifacts:MyArtifactRepo",
+# See https://python-poetry.org/docs/pyproject/#plugins
+[tool.poetry.plugins."mlflow.artifact_repository"]
+bfs = "exasol.mlflow_plugin.artifacts:BucketFsArtifactRepo"
+
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=4.0.1, <5"
