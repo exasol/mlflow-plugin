@@ -24,7 +24,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
         # Initialize your artifact storage backend
         # artifact_uri=bfs://localhost:2580/bfsdefault/default/my_path/0/models/m-e2506c0fa86d43aa8352749b9980c4ec/artifacts
         super().__init__(artifact_uri)
-        self._bfs = bfs_location(artifact_uri)
+        # self._bfs = bfs_location(artifact_uri)
         print(f"BucketFsArtifactRepo.__init__(artifact_uri={artifact_uri})")
 
     def log_artifact(self, local_file, artifact_path=None):
@@ -33,10 +33,10 @@ class BucketFsArtifactRepo(ArtifactRepository):
             "BucketFsArtifactRepo.log_artifact("
             f"local_file={local_file}, artifact_path={artifact_path})"
         )
-        parent = self._bfs / artifact_path if artifact_path else self._bfs
-        dest = parent / os.path.basename(local_file)
-        with open(local_file, "rb") as fd:
-            dest.write(fd)
+        # parent = self._bfs / artifact_path if artifact_path else self._bfs
+        # dest = parent / os.path.basename(local_file)
+        # with open(local_file, "rb") as fd:
+        #     dest.write(fd)
 
     def log_artifacts(self, local_dir, artifact_path=None):
         print(

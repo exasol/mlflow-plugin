@@ -1,11 +1,14 @@
 """
 Parse BucketFS parameters from artifact root string.
 
-Sample bfs://localhost:2580/bfsdefault/default/my_path
+Sample exa+bfs://localhost:2580/bfsdefault/default/my_path
 
-Prefixes:
-* bfs: use HTTP
-* bfss: Use HTTPS
+The following URL schemes are planned for accessing the BucketFS
+provided by various database instances and access protocols:
+
+* exa+bfs: onprem HTTP
+* exa+bfss: onprem HTTPS
+* exa+saas: SaaS instance
 """
 
 import os
@@ -19,7 +22,7 @@ from exasol.mlflow_plugin.env_vars import (
     str_to_bool,
 )
 
-URL_SCHEMES = ["bfs", "bfss"]
+URL_SCHEMES = ["exa+bfs", "exa+bfss"]
 
 
 class BfsSpecError(Exception):
@@ -29,9 +32,9 @@ class BfsSpecError(Exception):
     """
 
 
-def parse_url(artifact_root: str) -> tuple[str, str, str, str]:
+def parse_onprem_url(artifact_root: str) -> tuple[str, str, str, str]:
     url = urlparse(artifact_root)
-    if url.scheme not in ["bfs", "bfss"]:
+    if url.scheme not in URL_SCHEMES:
         raise BfsSpecError(f'Artifact_root "{artifact_root}" is not in {URL_SCHEMES}.')
     parts = Path(url.path).parts
     if len(parts) < 3:
@@ -45,12 +48,12 @@ def parse_url(artifact_root: str) -> tuple[str, str, str, str]:
     bucket = parts[2]
     rest = parts[3:]
     path = "/".join(rest) if rest else ""
-    protocol = "https" if url.scheme == "bfss" else "http"
+    protocol = "https" if url.scheme == "exa+bfss" else "http"
     return (f"{protocol}://{url.netloc}", service, bucket, path)
 
 
 def bucketfs_parameters(artifact_root: str) -> dict[str, str | bool]:
-    url, service, bucket, path = parse_url(artifact_root)
+    url, service, bucket, path = parse_onprem_url(artifact_root)
     bfs_write_user = os.getenv(ENV_BUCKETFS_USER, "w")
     password = os.getenv(ENV_BUCKETFS_PASSWORD)
     if not password:
