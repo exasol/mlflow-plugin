@@ -25,8 +25,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
             "BucketFsArtifactRepo.log_artifacts("
             f"local_dir={local_dir}, artifact_path={artifact_path})"
         )
-        import subprocess # nosec: B404
-        subprocess.run(["ls", "-l", local_dir]) # nosec: B603, B607
+        import subprocess  # nosec: B404
+
+        subprocess.run(["ls", "-l", local_dir])  # nosec: B603, B607
         # Upload directory to your storage system
 
     def list_artifacts(self, path=None):
