@@ -151,3 +151,7 @@ itde/
 /.lint.txt
 /.security.json
 /.sonar
+
+# MLFlow Model Registry
+/mlflow.db
+/mlartifacts
