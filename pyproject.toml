@@ -25,7 +25,7 @@ packages = [
 # "mlflow.artifact_repository": "my-scheme=my_plugin.artifacts:MyArtifactRepo",
 # See https://python-poetry.org/docs/pyproject/#plugins
 [tool.poetry.plugins."mlflow.artifact_repository"]
-bfs = "exasol.mlflow_plugin.artifacts:BucketFsArtifactRepo"
+bfs = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -87,3 +87,7 @@ ignore_errors = true
 projectKey = "mlflow-plugin"
 host.url = "https://sonar.exasol.com"
 exclusions = "exasol/mlflow_plugin/version.py"
+
+
+[tool.poetry.plugins."console_scripts"]
+experiment = 'exasol.mlflow_plugin.experiment.main:main'
