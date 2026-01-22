@@ -21,11 +21,9 @@ packages = [
     { include = "exasol" },
 ]
 
-# Syntax from https://mlflow.org/docs/latest/ml/plugins/#storage-plugins:
-# "mlflow.artifact_repository": "my-scheme=my_plugin.artifacts:MyArtifactRepo",
-# See https://python-poetry.org/docs/pyproject/#plugins
 [tool.poetry.plugins."mlflow.artifact_repository"]
 "exa+bfs" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
+"exa+bfss" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
 
 
 [tool.poetry.group.dev.dependencies]
