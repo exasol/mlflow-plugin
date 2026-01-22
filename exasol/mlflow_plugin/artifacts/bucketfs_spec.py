@@ -35,7 +35,12 @@ class BfsSpecError(Exception):
 def parse_onprem_url(artifact_root: str) -> tuple[str, str, str, str]:
     url = urlparse(artifact_root)
     if url.scheme not in URL_SCHEMES:
-        raise BfsSpecError(f'Artifact_root "{artifact_root}" is not in {URL_SCHEMES}.')
+        raise BfsSpecError(
+            f'Artifact_root "{artifact_root}" is not in {URL_SCHEMES}.'
+            " As this indicates an internal error,"
+            " please open an issue at"
+            " https://github.com/exasol/mlflow-plugin/issues/new"
+        )
     parts = Path(url.path).parts
     if len(parts) < 3:
         raise BfsSpecError(
