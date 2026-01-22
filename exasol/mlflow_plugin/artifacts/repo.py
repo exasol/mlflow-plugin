@@ -17,7 +17,8 @@ class BucketFsArtifactRepo(ArtifactRepository):
     def log_artifact(self, local_file, artifact_path=None):
         # Upload file to your storage system
         print(
-            f"BucketFsArtifactRepo.log_artifact(local_file={local_file}, artifact_path={artifact_path})"
+            "BucketFsArtifactRepo.log_artifact("
+            f"local_file={local_file}, artifact_path={artifact_path})"
         )
 
     def log_artifacts(self, local_dir, artifact_path=None):
@@ -37,5 +38,6 @@ class BucketFsArtifactRepo(ArtifactRepository):
     def download_artifacts(self, artifact_path, dst_path=None):
         # Download artifacts from your storage system
         print(
-            f"BucketFsArtifactRepo.download_artifacts(artifact_path={artifact_path}, dst_path={dst_path})"
+            "BucketFsArtifactRepo.download_artifacts("
+            f"artifact_path={artifact_path}, dst_path={dst_path})"
         )
