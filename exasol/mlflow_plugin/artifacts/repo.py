@@ -7,6 +7,7 @@ from typing import (
 
 import exasol.bucketfs as bfs
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
+from mlflow.utils.file_utils import relative_path_to_artifact_path
 
 from exasol.mlflow_plugin import connections
 from exasol.mlflow_plugin.artifacts.bucketfs_spec import bucketfs_parameters
@@ -38,7 +39,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         self._log("__init__", artifact_uri=artifact_uri)
 
     def _log(self, file_name: str, **kwargs) -> None:
-        args = [f'{k}: "{v}"' for k, v in kwargs.items()]
+        def quote(value) -> str:
+            return f'"{value}"' if isinstance(value, str) else str(value)
+        args = [f'{k}: {quote(v)}' for k, v in kwargs.items()]
         arg_str = ", ".join(args)
         LOG.info("%s.%s(%s)", type(self).__name__, file_name, arg_str)
 
@@ -50,8 +53,27 @@ class BucketFsArtifactRepo(ArtifactRepository):
         # with open(local_file, "rb") as fd:
         #     dest.write(fd)
 
+    def _child_path(self, root: str, local_dir: str, artifact_path: str | None) -> str:
+        """
+        Computes the artifact_path for files in local_dir wrt. to
+        specified root directory and the artifact_path optionally specified
+        for the parent directory.
+        """
+
+        local_abs = os.path.abspath(local_dir)
+        if root == local_abs:
+            return artifact_path
+        rel_path = os.path.relpath(root, local_abs)
+        rel = relative_path_to_artifact_path(rel_path)
+        return posixpath.join(artifact_path, rel) if artifact_path else rel
+
     def log_artifacts(self, local_dir, artifact_path=None):
         self._log("log_artifacts", local_dir=local_dir, artifact_path=artifact_path)
+        for root, _, files in os.walk(local_dir):
+            for f in files:
+                path = self._child_path(root, local_dir, artifact_path)
+                self.log_artifact(os.path.join(root, f), path)
+
         # import subprocess  # nosec: B404
         # subprocess.run(["ls", "-l", local_dir])  # nosec: B603, B607
         # Upload directory to your storage system
