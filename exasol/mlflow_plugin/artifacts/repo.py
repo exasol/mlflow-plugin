@@ -1,6 +1,13 @@
+from __future__ import annotations
+
 import logging
 import os
 import posixpath
+from dataclasses import dataclass
+from typing import (
+    Any,
+    List,
+)
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -8,12 +15,11 @@ from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
 
 from exasol.mlflow_plugin import connections
-from exasol.mlflow_plugin.artifacts.bucketfs_spec import bucketfs_parameters
+from exasol.mlflow_plugin.artifacts.bucketfs_spec import Connector
 
 
 def bfs_location(artifact_uri: str) -> bfs.path.PathLike:
-    params = bucketfs_parameters(artifact_uri)
-    return connections.bucketfs_location(params)
+    return Connector.from_env(artifact_uri).bucketfs_location
 
 
 LOG = logging.getLogger(__name__)
@@ -21,7 +27,9 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
 
 class BucketFsArtifactRepo(ArtifactRepository):
-    """Custom artifact repository for scheme 'exa+bfs://'"""
+    """
+    Custom artifact repository for schemes 'exa+bfs://' and 'exa+bfss://'
+    """
 
     def __init__(
         self,
@@ -29,7 +37,11 @@ class BucketFsArtifactRepo(ArtifactRepository):
         tracking_uri: str | None = None,
         registry_uri: str | None = None,
     ) -> None:
-        # artifact_uri=bfs://localhost:2580/bfsdefault/default/my_path/0/models/m-e2506c0fa86d43aa8352749b9980c4ec/artifacts
+        """
+        Sample args:
+        * artifact_uri: "bfs://localhost:2580/bfsdefault/default/my_path/"
+                        "0/models/m-e2506c0fa86d43aa8352749b9980c4ec/artifacts"
+        """
         super().__init__(artifact_uri)
         self._bfs = bfs_location(artifact_uri)
         self._log("__init__", artifact_uri=artifact_uri)
@@ -61,7 +73,6 @@ class BucketFsArtifactRepo(ArtifactRepository):
         specified root directory and the artifact_path optionally specified
         for the parent directory.
         """
-
         local_abs = os.path.abspath(local_dir)
         if root == local_abs:
             return artifact_path
@@ -77,7 +88,6 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * local_dir: "/tmp/tmptr2u6e0y/model"
         * artifact_path: None
         """
-
         self._log("log_artifacts", local_dir=local_dir, artifact_path=artifact_path)
         for root, _, files in os.walk(local_dir):
             for f in files:

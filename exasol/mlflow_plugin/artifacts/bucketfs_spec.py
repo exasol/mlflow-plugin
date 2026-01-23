@@ -11,9 +11,15 @@ provided by various database instances and access protocols:
 * exa+saas: SaaS instance
 """
 
+from __future__ import annotations
+
 import os
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
+
+import exasol.bucketfs as bfs
 
 from exasol.mlflow_plugin.env_vars import (
     ENV_BUCKETFS_PASSWORD,
@@ -57,23 +63,49 @@ def parse_onprem_url(artifact_root: str) -> tuple[str, str, str, str]:
     return (f"{protocol}://{url.netloc}", service, bucket, path)
 
 
-def bucketfs_parameters(artifact_root: str) -> dict[str, str | bool]:
-    url, service, bucket, path = parse_onprem_url(artifact_root)
-    bfs_write_user = os.getenv(ENV_BUCKETFS_USER, "w")
-    password = os.getenv(ENV_BUCKETFS_PASSWORD)
-    if not password:
-        raise BfsSpecError(
-            f"Environment variable {ENV_BUCKETFS_PASSWORD} must be"
-            " set to the write password for uploading files to the BucketFS."
+@dataclass(frozen=True)
+class Connector:
+    """
+    Provides parameters for accessing Exasol BucketFS via MLflow artifact
+    store or directly.
+    """
+
+    uri: str
+    username: str
+    password: str
+    ssl_cert_validation: bool
+
+    @property
+    def bucketfs_parameters(self) -> dict[str, Any]:
+        url, service, bucket, path = parse_onprem_url(self.uri)
+        return {
+            "backend": "onprem",
+            "url": url,
+            "username": self.username,
+            "password": self.password,
+            "service_name": service,
+            "bucket_name": bucket,
+            "verify": self.ssl_cert_validation,
+            "path": path,
+        }
+
+    @property
+    def bucketfs_location(self) -> bfs.path.PathLike:
+        return bfs.path.build_path(**self.bucketfs_parameters)
+
+    @classmethod
+    def from_env(cls, artifact_uri: str) -> Connector:
+        password = os.getenv(ENV_BUCKETFS_PASSWORD)
+        if not password:
+            raise BfsSpecError(
+                f"Environment variable {ENV_BUCKETFS_PASSWORD} must be"
+                " set to the write password for uploading files to the BucketFS."
+            )
+        bfs_write_user = os.getenv(ENV_BUCKETFS_USER, "w")
+        ssl_cert_validation = os.getenv(ENV_SSL_CERT_VALIDATION, "true")
+        return cls(
+            artifact_uri,
+            bfs_write_user,
+            password,
+            str_to_bool(ssl_cert_validation),
         )
-    verify = os.getenv(ENV_SSL_CERT_VALIDATION, "true")
-    return {
-        "backend": "onprem",
-        "url": url,
-        "username": bfs_write_user,
-        "password": password,
-        "service_name": service,
-        "bucket_name": bucket,
-        "verify": str_to_bool(verify),
-        "path": path,
-    }
