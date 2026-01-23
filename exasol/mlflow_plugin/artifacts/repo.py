@@ -3,18 +3,12 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
-from dataclasses import dataclass
-from typing import (
-    Any,
-    List,
-)
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
 
-from exasol.mlflow_plugin import connections
 from exasol.mlflow_plugin.artifacts.bucketfs_spec import Connector
 
 
@@ -49,7 +43,8 @@ class BucketFsArtifactRepo(ArtifactRepository):
     def _log(self, file_name: str, **kwargs) -> None:
         def quote(value) -> str:
             return f'"{value}"' if isinstance(value, str) else str(value)
-        args = [f'{k}: {quote(v)}' for k, v in kwargs.items()]
+
+        args = [f"{k}: {quote(v)}" for k, v in kwargs.items()]
         arg_str = ", ".join(args)
         LOG.info("%s.%s(%s)", type(self).__name__, file_name, arg_str)
 
@@ -108,7 +103,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
             # mlflow.utils.uri.validated_path here to prevent path traversal
             # attacks with ".." etc.
             fpath = posixpath.join(path, name) if path else name
-            LOG.info(f'- %s', fpath)
+            LOG.info(f"- %s", fpath)
             return FileInfo(path=fpath, is_dir=is_dir, file_size=None)
 
         def dir_info(root: bfs.path.PathLike, name: str):
