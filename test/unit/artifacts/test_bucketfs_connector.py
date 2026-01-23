@@ -5,9 +5,9 @@ from typing import Any
 import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
-    ParseError,
-    EnvError,
     Connector,
+    EnvError,
+    ParseError,
 )
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
