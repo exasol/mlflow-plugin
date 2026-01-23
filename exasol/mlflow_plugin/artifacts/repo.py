@@ -9,7 +9,7 @@ from mlflow.entities import FileInfo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
 
-from exasol.mlflow_plugin.artifacts.bucketfs_spec import Connector
+from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 
 def bfs_location(artifact_uri: str) -> bfs.path.PathLike:

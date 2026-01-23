@@ -33,15 +33,32 @@ URL_SCHEMES = ["exa+bfs", "exa+bfss"]
 
 class BfsSpecError(Exception):
     """
+    Insufficient or invalid connection parameters for Exasol
+    BucketFS.
+
+    Subclases:
+    * ParseError: Required parameters cannot be parsed from the artifact_root
+    * EnvError: A required environment variable is not set.
+    """
+
+
+class ParseError(BfsSpecError):
+    """
     Failed to parse a fully specified BucketFS location from an
     artifact_root string.
+    """
+
+
+class EnvError(BfsSpecError):
+    """
+    Required environment variable was not set.
     """
 
 
 def parse_onprem_url(artifact_root: str) -> tuple[str, str, str, str]:
     url = urlparse(artifact_root)
     if url.scheme not in URL_SCHEMES:
-        raise BfsSpecError(
+        raise ParseError(
             f'Artifact_root "{artifact_root}" is not in {URL_SCHEMES}.'
             " As this indicates an internal error,"
             " please open an issue at"
@@ -49,7 +66,7 @@ def parse_onprem_url(artifact_root: str) -> tuple[str, str, str, str]:
         )
     parts = Path(url.path).parts
     if len(parts) < 3:
-        raise BfsSpecError(
+        raise ParseError(
             f'Artifact_root "{artifact_root}" must contain'
             " BucketFS service name and bucket name."
         )
@@ -108,7 +125,7 @@ class Connector:
     def from_env(cls, artifact_uri: str) -> Connector:
         password = os.getenv(ENV_BUCKETFS_PASSWORD)
         if not password:
-            raise BfsSpecError(
+            raise EnvError(
                 f"Environment variable {ENV_BUCKETFS_PASSWORD} must be"
                 " set to the write password for uploading files to the BucketFS."
             )

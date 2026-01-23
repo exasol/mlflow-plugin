@@ -1,7 +1,7 @@
 [project]
 name = "exasol-mlflow-plugin"
 version = "0.1.0"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.10,<3.14"
 description = "Plugin for MLflow supporting artifact repository Exasol BucketFS"
 authors = [
     {name = "Exasol AG", email = "christoph.kuhnke@exasol.com"},
@@ -13,6 +13,7 @@ dynamic = ["dependencies"]
 dependencies = [
     "exasol-bucketfs (>=2.1.0,<3.0.0)",
     "mlflow (>=3.8.1, <4)",
+    "pytest-exasol-backend (>=1.2.4,<2.0.0)",
 ]
 
 [tool.poetry]

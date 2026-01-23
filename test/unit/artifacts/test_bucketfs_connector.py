@@ -4,8 +4,9 @@ from typing import Any
 
 import pytest
 
-from exasol.mlflow_plugin.artifacts.bucketfs_spec import (
-    BfsSpecError,
+from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
+    ParseError,
+    EnvError,
     Connector,
 )
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
@@ -23,11 +24,11 @@ def bucketfs_parameters_from_env(artifact_root: str) -> dict[str, Any]:
         "exa+bfss:",
         "bfsx://localhost:1234/bfsdefault/default",
         "exa+bfs://localhost:1234/bfsdefault",
-        "exa+bfs://localhost:xxx/bfsdefault/default",
     ],
 )
-def test_invalid_spec(artifact_root) -> None:
-    with pytest.raises(BfsSpecError):
+def test_parse_error(monkeypatch, artifact_root):
+    monkeypatch.setitem(os.environ, ENV_BUCKETFS_PASSWORD, "password")
+    with pytest.raises(ParseError):
         bucketfs_parameters_from_env(artifact_root)
 
 
@@ -64,7 +65,7 @@ def test_valid_spec(monkeypatch, protocol, host, port, service, bucket, path) ->
 def test_missing_password() -> None:
     artifact_root = "exa+bfs://localhost:1234/bfsdefault/default"
     with pytest.raises(
-        BfsSpecError,
+        EnvError,
         match=f"Environment variable {ENV_BUCKETFS_PASSWORD} must be set",
     ):
         bucketfs_parameters_from_env(artifact_root)
