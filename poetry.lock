@@ -4683,6 +4683,21 @@ tomli = {version = ">=1", markers = "python_version < \"3.11\""}
 dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "pytest-dependency"
+version = "0.6.0"
+description = "Manage dependencies of tests"
+optional = false
+python-versions = ">=3.4"
+groups = ["main"]
+files = [
+    {file = "pytest-dependency-0.6.0.tar.gz", hash = "sha256:934b0e6a39d95995062c193f7eaeed8a8ffa06ff1bcef4b62b0dc74a708bacc1"},
+]
+
+[package.dependencies]
+pytest = ">=3.7.0"
+setuptools = "*"
+
+[[package]]
 name = "pytest-exasol-backend"
 version = "1.2.4"
 description = ""
@@ -5526,7 +5541,6 @@ description = "Easily download, build, install, upgrade, and uninstall Python pa
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version < \"3.12\" and sys_platform == \"nt\""
 files = [
     {file = "setuptools-80.10.1-py3-none-any.whl", hash = "sha256:fc30c51cbcb8199a219c12cc9c281b5925a4978d212f84229c909636d9f6984e"},
     {file = "setuptools-80.10.1.tar.gz", hash = "sha256:bf2e513eb8144c3298a3bd28ab1a5edb739131ec5c22e045ff93cd7f5319703a"},
@@ -6770,4 +6784,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "9af1880769b5258dbae8984fa42330575db375766c045b03d888792b83948e77"
+content-hash = "3baf8c3b8e6097bf00963d71541521ede66677cf4cb0301d94ff4d29971475e2"

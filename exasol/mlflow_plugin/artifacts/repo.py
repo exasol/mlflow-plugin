@@ -102,9 +102,13 @@ class BucketFsArtifactRepo(ArtifactRepository):
             # mlflow's default http_artifact_repo.py uses
             # mlflow.utils.uri.validated_path here to prevent path traversal
             # attacks with ".." etc.
-            fpath = posixpath.join(path, name) if path else name
-            LOG.info(f"- %s", fpath)
-            return FileInfo(path=fpath, is_dir=is_dir, file_size=None)
+            full = ""
+            for c in [str(root), path, name]:
+                if not c or  c == ".":
+                    continue
+                full = posixpath.join(full, c) if full else c
+            LOG.info("- %s", full)
+            return FileInfo(path=full, is_dir=is_dir, file_size=None)
 
         def dir_info(root: bfs.path.PathLike, name: str):
             return info(root, name, is_dir=True)
@@ -115,7 +119,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
         bfsloc = self._bfs / path if path else self._bfs
         result = []
         for root, dirs, files in bfsloc.walk():
-            result += [dir_info(root, x) for x in dirs]
+            # result += [dir_info(root, x) for x in dirs]
             result += [file_info(root, x) for x in files]
 
         return result
