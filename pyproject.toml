@@ -78,7 +78,7 @@ unfixable = []
 
 [[tool.mypy.overrides]]
 module = [
-    "test.*",
+    # "test.*",
 ]
 ignore_errors = true
 

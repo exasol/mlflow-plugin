@@ -5,6 +5,7 @@ import signal
 import subprocess
 import sys
 import threading
+from typing import IO
 import time
 from datetime import (
     datetime,
@@ -15,7 +16,7 @@ from subprocess import PIPE
 import exasol.bucketfs as bfs
 import mlflow
 import pytest
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression # type: ignore
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 from exasol.mlflow_plugin.experiment import training_data as td
@@ -52,22 +53,26 @@ def connector(backend_aware_bucketfs_params) -> Connector:
     p = DotAccess(backend_aware_bucketfs_params)
     if p.backend == "saas":
         scheme = "exa+saas"
-        return None
+        raise NotImplementedError(f"Backend {p.backend}")
 
     prefix = re.sub(r"^http(s?)://", "exa+bfs\\1://", p.url)
     uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
     return Connector(uri, p.username, p.password, p.verify)
 
 
-class Monitor:
+class MlflowServer:
     def __init__(self, command: list[str]):
         self.command = command
-        self._proc = None
+        self._proc: subprocess.Popen | None = None
         self._started = False
-        self._thread = None
+        self._thread: threading.Thread | None = None
 
     def listen(self, text: str) -> None:
+        if not self._proc:
+            return
         pipe = self._proc.stderr
+        if not isinstance(pipe, IO):
+            return
         with pipe:
             for data in iter(pipe.readline, b""):
                 line = data.decode()
@@ -92,12 +97,15 @@ class Monitor:
             time.sleep(0.3)
 
     def stop(self) -> None:
+        if not self._proc:
+            return
         p = self._proc
         LOG.info(f"Termination MLflow server process {p.pid}")
         os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         p.wait()
-        self._thread.join()
-        self._thread = None
+        if self._thread:
+            self._thread.join()
+            self._thread = None
 
 
 @pytest.fixture
@@ -117,18 +125,18 @@ def mlflow_server(tmp_path, connector, monkeypatch):
     ]
 
     # While tests are running, stderr needs to be consumed continously.
-    monitor = Monitor(command)
+    monitor = MlflowServer(command)
     monitor.wait_for_message("Application startup complete.")
     yield
     monitor.stop()
 
 
 def log_sample_model() -> mlflow.models.model.ModelInfo:
-    lr = LogisticRegression(**td.params)
+    lr = LogisticRegression()
     return mlflow.sklearn.log_model(lr, name="my_first_logistic_regression")
 
 
-def filenames(bfsloc: bfs.path.PathLike) -> list[str]:
+def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
     return {f.name for f in bfsloc.iterdir()}
 
 
