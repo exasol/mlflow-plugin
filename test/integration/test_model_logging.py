@@ -81,6 +81,11 @@ class MlflowServer:
                     self._started = True
 
     def wait_for_message(self, text: str) -> None:
+        """
+        See the developer guide for an explanation of kwarg
+        ``preexec_fn=os.setsid`` and calling ``os.killpg()``.
+        """
+
         LOG.info("Starting MLflow server with\n  %s", " ".join(self.command))
         self._proc = subprocess.Popen(
             self.command,
