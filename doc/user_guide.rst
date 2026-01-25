@@ -4,7 +4,9 @@
 ============================
 
 This MLflow Plugin allows using the **Exasol Bucket File System** (BucketFS)
-as *MLflow Artifact Store*. `BucketFS
+as *MLflow Artifact Store*.
+
+`BucketFS
 <https://docs.exasol.com/db/latest/database_concepts/bucketfs/bucketfs.htm>`_
 is a powerful feature for exchanging non-relational data with the database
 nodes in an Exasol cluster.
@@ -14,7 +16,9 @@ nodes in an Exasol cluster.
 
 * Applications and `User Defined Scripts
   <https://docs.exasol.com/db/latest/database_concepts/udf_scripts.htm>`_
-  (UDFs) can retrieve models from Exasol BucketFS.
+  (UDFs) can retrieve models from Exasol BucketFS very fast.  Loading a 600 MB
+  Huggingface model from BucketFS can take less than 2% of the time compared
+  to MLflows regular HTTP interface.
 
 
 Installing
