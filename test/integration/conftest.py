@@ -30,7 +30,7 @@ class DotAccess:
         return self._data[key]
 
 
-@pytest.fixture # (scope="session")
+@pytest.fixture  # (scope="session")
 def connector(monkeypatch, backend_aware_bucketfs_params) -> Connector:
     p = DotAccess(backend_aware_bucketfs_params)
     if p.backend == "saas":

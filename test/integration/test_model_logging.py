@@ -17,11 +17,8 @@ import mlflow
 import pytest
 from sklearn.linear_model import LogisticRegression  # type: ignore
 
-from exasol.mlflow_plugin.experiment import training_data as td
-
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
-
 
 
 class MlflowServer:
