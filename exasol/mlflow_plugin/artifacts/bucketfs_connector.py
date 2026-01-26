@@ -93,17 +93,6 @@ class Connector:
     ssl_cert_validation: bool
 
     @property
-    def env(self) -> dict[str, str]:
-        return {
-            ENV_BUCKETFS_USER: self.username,
-            ENV_BUCKETFS_PASSWORD: self.password,
-            ENV_SSL_CERT_VALIDATION: str(self.ssl_cert_validation),
-        }
-
-    def for_uri(self, uri: str) -> Connector:
-        return Connector(uri, self.username, self.password, self.ssl_cert_validation)
-
-    @property
     def bucketfs_parameters(self) -> dict[str, Any]:
         url, service, bucket, path = parse_onprem_url(self.uri)
         return {

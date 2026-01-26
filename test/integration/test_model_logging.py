@@ -73,11 +73,19 @@ class MlflowServer:
             self._thread.join()
             self._thread = None
 
+@pytest.fixture
+def env_from_connector(connector, monkeypatch):
+    env = {
+        ENV_BUCKETFS_USER: connector.username,
+        ENV_BUCKETFS_PASSWORD: connector.password,
+        ENV_SSL_CERT_VALIDATION: str(connector.ssl_cert_validation),
+    }
+    for k, v in env.items():
+        monkeypatch.setitem(os.environ, k, v)
+
 
 @pytest.fixture
-def mlflow_server(tmp_path, connector, monkeypatch):
-    for k, v in connector.env.items():
-        monkeypatch.setitem(os.environ, k, v)
+def mlflow_server(tmp_path, env_from_connector, connector):
     path = tmp_path / "mlflow.db"
     command = [
         "mlflow",
@@ -106,9 +114,18 @@ def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
     return {f.name for f in bfsloc.iterdir()}
 
 
+def switch_uri(other: Connector, uri: str) -> Connector:
+    return Connector(
+        uri,
+        other.username,
+        other.password,
+        other.ssl_cert_validation,
+    )
+
+
 def test_log_model(mlflow_server, connector):
     info = log_sample_model()
-    connector = connector.for_uri(info.artifact_path)
+    connector = switch_uri(connector, info.artifact_path)
     expected = {
         "conda.yaml",
         "python_env.yaml",
