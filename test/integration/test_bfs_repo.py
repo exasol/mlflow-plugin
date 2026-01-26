@@ -40,7 +40,7 @@ def create_sample_file(root: Path, entry: str) -> Path:
     return path
 
 
-def artifact_path(entry: str) -> str | None:
+def normalize_artifact_path(entry: str) -> str | None:
     """Name of parent path or None."""
     parent = str(Path(entry).parent)
     return None if parent == "." else parent
@@ -71,19 +71,47 @@ def testee(connector) -> BucketFsArtifactRepo:
     return BucketFsArtifactRepo(connector.uri)
 
 
-@pytest.mark.dependency(name="log-single")
+# @pytest.mark.dependency(name="log-single")
 @pytest.mark.parametrize("file", [SIMPLE_FILE, FILE_IN_DIR])
-def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
+def test_log_single_artifact(connector, tmp_path, file) -> None:
+    testee = BucketFsArtifactRepo(connector.uri)
     local = create_sample_file(tmp_path, file)
-    testee.log_artifact(local, artifact_path(file))
+    testee.log_artifact(local, normalize_artifact_path(file))
     expected = connector.bucketfs_location / file
     assert expected.exists()
     expected.rm()
 
 
-@pytest.mark.dependency(name="log-multiple", depends=["log-single"])
+@pytest.fixture(scope="session")
+def logged_files_1(tmp_path_factory):
+    testee = BucketFsArtifactRepo(connector.uri)
+    path = tmp_path_factory.mktemp("logged_files_1")
+    for f in SAMPLE_FILES:
+        create_sample_file(path, f)
+    testee.log_artifacts(path)
+
+
+@pytest.fixture(scope="session")
+def artifact_path():
+    return "aaa"
+
+
+@pytest.fixture(scope="session")
+def logged_files_2(tmp_path_factory, testee, artifact_path):
+    path = tmp_path_factory.mktemp("logged_files_2")
+    for f in SAMPLE_FILES:
+        create_sample_file(path, f)
+    testee.log_artifacts(path, artifact_path)
+
+
+@pytest.fixture(scope="session")
+def logged_files(logged_files_1, logged_files_2):
+    pass
+
+
+# @pytest.mark.dependency(name="log-multiple", depends=["log-single"])
 @pytest.mark.parametrize("artifact_path", [None, "aaa"])
-def test_log_multiple_artifacts(testee, connector, tmp_path, artifact_path) -> None:
+def x1_test_log_multiple_artifacts(testee, connector, tmp_path, artifact_path) -> None:
     """
     This test is marked as dependency to other tests for listing and
     downloading artifacts.
@@ -98,9 +126,37 @@ def test_log_multiple_artifacts(testee, connector, tmp_path, artifact_path) -> N
     assert actual == expected
 
 
-@pytest.mark.dependency(depends=["log-multiple"])
+def test_log_multiple_artifacts_root(logged_files_1, connector) -> None:
+    """
+    This test is marked as dependency to other tests for listing and
+    downloading artifacts.
+    """
+
+    bfsloc = connector.bucketfs_location
+    actual = filenames(bfsloc)
+    expected = expected_filenames(SAMPLE_FILES)
+    assert actual == expected
+
+
+def test_log_multiple_artifacts_with_artifact_path(
+    logged_files,
+    artifact_path,
+    connector,
+) -> None:
+    """
+    This test is marked as dependency to other tests for listing and
+    downloading artifacts.
+    """
+
+    bfsloc = connector.bucketfs_location / artifact_path
+    actual = filenames(bfsloc)
+    expected = expected_filenames(SAMPLE_FILES, artifact_path)
+    assert actual == expected
+
+
+# @pytest.mark.dependency(depends=["log-multiple"])
 @pytest.mark.parametrize("path, expected_dirs", [(None, ["", "aaa"]), ("aaa", ["aaa"])])
-def test_list(testee, path, expected_dirs) -> None:
+def test_list(logged_files, testee, path, expected_dirs) -> None:
     """
     When listing the root directory, then expect the files from the
     subdirectory to be included.
@@ -112,7 +168,7 @@ def test_list(testee, path, expected_dirs) -> None:
     assert {f.path for f in actual} == expected
 
 
-@pytest.mark.dependency(depends=["log-multiple"])
+# @pytest.mark.dependency(depends=["log-multiple"])
 @pytest.mark.parametrize(
     "artifact_path, expected_dirs",
     [
@@ -120,7 +176,7 @@ def test_list(testee, path, expected_dirs) -> None:
         ("aaa", ["aaa"]),
     ],
 )
-def test_download(testee, tmp_path, artifact_path, expected_dirs) -> None:
+def test_download(logged_files, testee, tmp_path, artifact_path, expected_dirs) -> None:
     """
     When downloading the root directory, then expect the files from the
     subdirectory to be included.
