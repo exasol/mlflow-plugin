@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import logging
+import os
+import posixpath
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
+from mlflow.utils.file_utils import relative_path_to_artifact_path
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
@@ -54,6 +57,25 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * artifact_path: None
         """
         self._log("log_artifact", local_file=local_file, artifact_path=artifact_path)
+        parent = self._bfs / artifact_path if artifact_path else self._bfs
+        dest = parent / os.path.basename(local_file)
+        with open(local_file, "rb") as fd:
+            dest.write(fd)
+
+    def _child_path(
+        self, root: str, local_dir: str, artifact_path: str | None
+    ) -> str | None:
+        """
+        Computes the artifact_path for files in local_dir wrt. to
+        specified root directory and the artifact_path optionally specified
+        for the parent directory.
+        """
+        local_abs = os.path.abspath(local_dir)
+        if root == local_abs:
+            return artifact_path
+        rel_path = os.path.relpath(root, local_abs)
+        rel = relative_path_to_artifact_path(rel_path)
+        return posixpath.join(artifact_path, rel) if artifact_path else rel
 
     def log_artifacts(self, local_dir, artifact_path=None):
         """
@@ -64,6 +86,10 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * artifact_path: None
         """
         self._log("log_artifacts", local_dir=local_dir, artifact_path=artifact_path)
+        for root, _, files in os.walk(local_dir):
+            for f in files:
+                path = self._child_path(root, local_dir, artifact_path)
+                self.log_artifact(os.path.join(root, f), path)
 
     def list_artifacts(self, path=None) -> list[FileInfo]:
         """
@@ -73,7 +99,21 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * path: "python_env.yaml"
         """
         self._log("list_artifacts", path=path)
-        return []
+
+        def info(root: bfs.path.PathLike, name: str):
+            # mlflow's default http_artifact_repo.py uses
+            # mlflow.utils.uri.validated_path here to prevent path traversal
+            # attacks with ".." etc.
+            path = name if str(root) == "." else str(root / name)
+            LOG.info("- %s", path)
+            return FileInfo(path=path, is_dir=False, file_size=None)
+
+        bfsloc = self._bfs / path if path else self._bfs
+        result = []
+        for root, _, files in bfsloc.walk():
+            result += [info(root, x) for x in files]
+
+        return result
 
     # download_artifacts() is already implemented by class ArtifactRepository,
     # but BucketFsArtifactRepo needs to implement the abstractmethod
@@ -92,3 +132,5 @@ class BucketFsArtifactRepo(ArtifactRepository):
             remote_file_path=remote_file_path,
             local_path=local_path,
         )
+        bfsloc = self._bfs / remote_file_path
+        bfs.as_file(bfsloc.read(), local_path)
