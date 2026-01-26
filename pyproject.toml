@@ -77,12 +77,6 @@ extend-ignore = [
 extend-select = ["F401"]
 unfixable = []
 
-[[tool.mypy.overrides]]
-module = [
-    # "test.*",
-]
-ignore_errors = true
-
 [tool.sonar]
 projectKey = "mlflow-plugin"
 host.url = "https://sonar.exasol.com"
