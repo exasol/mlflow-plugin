@@ -27,7 +27,7 @@ class DotAccess:
         self._data = content
 
     def __getattr__(self, key):
-        return self._data[key]
+        return self._data[key] or ""
 
 
 @pytest.fixture
