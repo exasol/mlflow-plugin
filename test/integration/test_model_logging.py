@@ -21,7 +21,7 @@ from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 
 @pytest.fixture(scope="session")
-def x_backend_aware_bucketfs_params():
+def backend_aware_bucketfs_params():
     password = os.getenv("BUCKETFS_PASSWORD")
     return {
         "backend": "onprem",
@@ -65,7 +65,8 @@ class MlflowServer:
         ``preexec_fn=os.setsid`` and calling ``os.killpg()``.
         """
 
-        LOG.info("Starting MLflow server with\n  %s", "\n  ".join(self.command))
+        pretty = " ".join(self.command).replace(" --", "\n    --")
+        LOG.info("Starting MLflow server with\n  %s", pretty)
         self._proc = subprocess.Popen(
             self.command,
             stderr=PIPE,
@@ -79,6 +80,7 @@ class MlflowServer:
             if self._started:
                 return
             time.sleep(0.3)
+        return self
 
     def stop(self) -> None:
         if not self._proc:
@@ -95,22 +97,22 @@ class MlflowServer:
 @pytest.fixture
 def mlflow_server(tmp_path, connector):
     path = tmp_path / "mlflow.db"
+    port = 5000
     command = [
         "mlflow",
         "server",
         "--backend-store-uri",
         f"sqlite:///{path}",
         "--port",
-        "5000",
+        str(port),
         "--default-artifact-root",
         connector.uri,
     ]
-
     # While tests are running, stderr needs to be consumed continously.
-    monitor = MlflowServer(command)
-    monitor.wait_for_message("Application startup complete.")
+    server = MlflowServer(command).wait_for_message("Application startup complete.")
+    mlflow.set_tracking_uri(f"http://localhost:{port}")
     yield
-    monitor.stop()
+    server.stop()
 
 
 def log_sample_model() -> mlflow.models.model.ModelInfo:
