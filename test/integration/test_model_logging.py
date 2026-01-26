@@ -19,6 +19,22 @@ from sklearn.linear_model import LogisticRegression  # type: ignore
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
+
+@pytest.fixture(scope="session")
+def x_backend_aware_bucketfs_params():
+    password = os.getenv("BUCKETFS_PASSWORD")
+    return {
+        "backend": "onprem",
+        "url": "http://localhost:2580",
+        "username": "w",
+        "password": password,
+        "service_name": "bfsdefault",
+        "bucket_name": "default",
+        "verify": False,
+        "path": "",
+    }
+
+
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
@@ -49,7 +65,7 @@ class MlflowServer:
         ``preexec_fn=os.setsid`` and calling ``os.killpg()``.
         """
 
-        LOG.info("Starting MLflow server with\n  %s", " ".join(self.command))
+        LOG.info("Starting MLflow server with\n  %s", "\n  ".join(self.command))
         self._proc = subprocess.Popen(
             self.command,
             stderr=PIPE,
@@ -117,7 +133,8 @@ def switch_uri(other: Connector, uri: str) -> Connector:
 
 def test_log_model(mlflow_server, connector):
     info = log_sample_model()
-    connector = switch_uri(connector, info.artifact_path)
+    LOG.info(f"Switching to {info.artifact_path}")
+    c2 = switch_uri(connector, info.artifact_path)
     expected = {
         "conda.yaml",
         "python_env.yaml",
@@ -125,5 +142,5 @@ def test_log_model(mlflow_server, connector):
         "MLmodel",
         "requirements.txt",
     }
-    actual = filenames(connector.bucketfs_location)
+    actual = filenames(c2.bucketfs_location)
     assert actual == expected
