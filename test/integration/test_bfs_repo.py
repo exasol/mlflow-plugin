@@ -113,10 +113,13 @@ def test_list(testee, path, expected_dirs) -> None:
 
 
 @pytest.mark.dependency(depends=["log-multiple"])
-@pytest.mark.parametrize("artifact_path, expected_dirs", [
-    ("", ["", "aaa"]),
-    ("aaa", ["aaa"]),
-])
+@pytest.mark.parametrize(
+    "artifact_path, expected_dirs",
+    [
+        ("", ["", "aaa"]),
+        ("aaa", ["aaa"]),
+    ],
+)
 def test_download(testee, tmp_path, artifact_path, expected_dirs) -> None:
     """
     When downloading the root directory, then expect the files from the

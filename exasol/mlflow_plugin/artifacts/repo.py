@@ -62,7 +62,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         with open(local_file, "rb") as fd:
             dest.write(fd)
 
-    def _child_path(self, root: str, local_dir: str, artifact_path: str | None) -> str:
+    def _child_path(
+        self, root: str, local_dir: str, artifact_path: str | None
+    ) -> str | None:
         """
         Computes the artifact_path for files in local_dir wrt. to
         specified root directory and the artifact_path optionally specified
@@ -98,24 +100,18 @@ class BucketFsArtifactRepo(ArtifactRepository):
         """
         self._log("list_artifacts", path=path)
 
-        def info(root: bfs.path.PathLike, name: str, is_dir: bool):
+        def info(root: bfs.path.PathLike, name: str):
             # mlflow's default http_artifact_repo.py uses
             # mlflow.utils.uri.validated_path here to prevent path traversal
             # attacks with ".." etc.
             path = name if str(root) == "." else str(root / name)
             LOG.info("- %s", path)
-            return FileInfo(path=path, is_dir=is_dir, file_size=None)
-
-        def dir_info(root: bfs.path.PathLike, name: str):
-            return info(root, name, is_dir=True)
-
-        def file_info(root: bfs.path.PathLike, name: str):
-            return info(root, name, is_dir=False)
+            return FileInfo(path=path, is_dir=False, file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
         result = []
         for root, _, files in bfsloc.walk():
-            result += [file_info(root, x) for x in files]
+            result += [info(root, x) for x in files]
 
         return result
 
