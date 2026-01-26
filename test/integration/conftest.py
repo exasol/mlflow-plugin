@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Any
 
 import pytest
 
@@ -23,11 +24,11 @@ def xbackend_aware_bucketfs_params():
 
 
 class DotAccess:
-    def __init__(self, content):
+    def __init__(self, content: dict[str, Any]):
         self._data = content
 
-    def __getattr__(self, key):
-        return self._data[key] or ""
+    def __getattr__(self, key: str):
+        return self._data.get(key, "")
 
 
 @pytest.fixture
