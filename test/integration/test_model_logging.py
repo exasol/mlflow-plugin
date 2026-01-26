@@ -59,7 +59,7 @@ class MlflowServer:
                 if text in line:
                     self._started = True
 
-    def wait_for_message(self, text: str) -> None:
+    def wait_for_message(self, text: str) -> MlflowServer:
         """
         See the developer guide for an explanation of kwarg
         ``preexec_fn=os.setsid`` and calling ``os.killpg()``.
@@ -78,7 +78,7 @@ class MlflowServer:
         timeout = datetime.now() + timedelta(seconds=10)
         while datetime.now() < timeout:
             if self._started:
-                return
+                break
             time.sleep(0.3)
         return self
 
