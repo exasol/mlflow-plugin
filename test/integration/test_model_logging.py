@@ -21,7 +21,7 @@ from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 
 @pytest.fixture(scope="session")
-def backend_aware_bucketfs_params():
+def x1_backend_aware_bucketfs_params():
     password = os.getenv("BUCKETFS_PASSWORD")
     return {
         "backend": "onprem",
