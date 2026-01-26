@@ -5,7 +5,11 @@ from typing import Any
 import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+from exasol.mlflow_plugin.env_vars import (
+    ENV_BUCKETFS_PASSWORD,
+    ENV_BUCKETFS_USER,
+    ENV_SSL_CERT_VALIDATION,
+)
 
 
 class DotAccess:
