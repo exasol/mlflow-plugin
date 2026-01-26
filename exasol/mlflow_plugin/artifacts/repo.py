@@ -62,7 +62,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         with open(local_file, "rb") as fd:
             dest.write(fd)
 
-    def _child_path(self, root: str, local_dir: str, artifact_path: str | None) -> str:
+    def _child_path(
+        self, root: str, local_dir: str, artifact_path: str | None
+    ) -> str | None:
         """
         Computes the artifact_path for files in local_dir wrt. to
         specified root directory and the artifact_path optionally specified
