@@ -8,21 +8,6 @@ from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
 
-@pytest.fixture(scope="session")
-def xbackend_aware_bucketfs_params():
-    password = os.getenv("BUCKETFS_PASSWORD")
-    return {
-        "backend": "onprem",
-        "url": "http://localhost:2580",
-        "username": "w",
-        "password": password,
-        "service_name": "bfsdefault",
-        "bucket_name": "default",
-        "verify": False,
-        "path": "",
-    }
-
-
 class DotAccess:
     def __init__(self, content: dict[str, Any]):
         self._data = content
