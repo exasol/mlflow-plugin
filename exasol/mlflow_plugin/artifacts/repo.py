@@ -8,9 +8,9 @@ import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
+from mlflow.utils.uri import validate_path_is_safe
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-from mlflow.utils.uri import validate_path_is_safe
 
 
 def bfs_location(artifact_uri: str) -> bfs.path.PathLike:
@@ -62,7 +62,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * artifact_path: None
         """
         self._log("log_artifact", local_file=local_file, artifact_path=artifact_path)
-        artifact_path = validate_path_is_safe(artifact_path)
+        artifact_path = artifact_path and validate_path_is_safe(artifact_path)
         parent = self._bfs / artifact_path if artifact_path else self._bfs
         dest = parent / os.path.basename(local_file)
         with open(local_file, "rb") as fd:
@@ -105,12 +105,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * path: "python_env.yaml"
         """
         self._log("list_artifacts", path=path)
-        path = validate_path_is_safe(path)
+        path = path and validate_path_is_safe(path)
 
         def info(root: bfs.path.PathLike, name: str):
-            # mlflow's default http_artifact_repo.py uses
-            # mlflow.utils.uri.validated_path here to prevent path traversal
-            # attacks with ".." etc.
             path = name if str(root) == "." else str(root / name)
             LOG.info("- %s", path)
             return FileInfo(path=path, is_dir=False, file_size=None)

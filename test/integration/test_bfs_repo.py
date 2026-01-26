@@ -4,9 +4,6 @@ starting an MLflow server process.
 
 Please note: After deleting a file from BucketFS, you can create the same file
 only after some grace period.
-
-The tests in this file therefore rely on sequential execution and are marked
-to "depend" on each other, see https://pypi.org/project/pytest-dependency/.
 """
 
 from pathlib import Path
@@ -22,8 +19,8 @@ from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
 
 SIMPLE_FILE = "simple-file.txt"
 FILE_IN_DIR = "dir/file-in-dir.txt"
-
 SAMPLE_FILES = {"f1.txt", "dir/f1.txt", "dir/f2.txt"}
+ARTIFACT_PATH = "aaa"
 
 
 def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
@@ -66,15 +63,13 @@ def expected_filenames(
     return {entry(p, f) for f in files for p in prefixes}
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def testee(connector) -> BucketFsArtifactRepo:
     return BucketFsArtifactRepo(connector.uri)
 
 
-# @pytest.mark.dependency(name="log-single")
 @pytest.mark.parametrize("file", [SIMPLE_FILE, FILE_IN_DIR])
-def test_log_single_artifact(connector, tmp_path, file) -> None:
-    testee = BucketFsArtifactRepo(connector.uri)
+def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
     local = create_sample_file(tmp_path, file)
     testee.log_artifact(local, normalize_artifact_path(file))
     expected = connector.bucketfs_location / file
@@ -83,8 +78,7 @@ def test_log_single_artifact(connector, tmp_path, file) -> None:
 
 
 @pytest.fixture(scope="session")
-def logged_files_1(tmp_path_factory):
-    testee = BucketFsArtifactRepo(connector.uri)
+def logged_files_1(tmp_path_factory, testee):
     path = tmp_path_factory.mktemp("logged_files_1")
     for f in SAMPLE_FILES:
         create_sample_file(path, f)
@@ -92,16 +86,11 @@ def logged_files_1(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def artifact_path():
-    return "aaa"
-
-
-@pytest.fixture(scope="session")
-def logged_files_2(tmp_path_factory, testee, artifact_path):
+def logged_files_2(tmp_path_factory, testee):
     path = tmp_path_factory.mktemp("logged_files_2")
     for f in SAMPLE_FILES:
         create_sample_file(path, f)
-    testee.log_artifacts(path, artifact_path)
+    testee.log_artifacts(path, ARTIFACT_PATH)
 
 
 @pytest.fixture(scope="session")
@@ -109,52 +98,17 @@ def logged_files(logged_files_1, logged_files_2):
     pass
 
 
-# @pytest.mark.dependency(name="log-multiple", depends=["log-single"])
-@pytest.mark.parametrize("artifact_path", [None, "aaa"])
-def x1_test_log_multiple_artifacts(testee, connector, tmp_path, artifact_path) -> None:
-    """
-    This test is marked as dependency to other tests for listing and
-    downloading artifacts.
-    """
-
-    for f in SAMPLE_FILES:
-        create_sample_file(tmp_path, f)
-    testee.log_artifacts(tmp_path, artifact_path)
-    bfsloc = connector.bucketfs_location / (artifact_path or ".")
-    actual = filenames(bfsloc)
-    expected = expected_filenames(SAMPLE_FILES, artifact_path)
-    assert actual == expected
-
-
 def test_log_multiple_artifacts_root(logged_files_1, connector) -> None:
-    """
-    This test is marked as dependency to other tests for listing and
-    downloading artifacts.
-    """
+    actual = filenames(connector.bucketfs_location)
+    assert actual == expected_filenames(SAMPLE_FILES)
 
-    bfsloc = connector.bucketfs_location
-    actual = filenames(bfsloc)
-    expected = expected_filenames(SAMPLE_FILES)
+
+def test_log_multiple_artifacts_with_artifact_path(logged_files, connector) -> None:
+    actual = filenames(connector.bucketfs_location / ARTIFACT_PATH)
+    expected = expected_filenames(SAMPLE_FILES, ARTIFACT_PATH)
     assert actual == expected
 
 
-def test_log_multiple_artifacts_with_artifact_path(
-    logged_files,
-    artifact_path,
-    connector,
-) -> None:
-    """
-    This test is marked as dependency to other tests for listing and
-    downloading artifacts.
-    """
-
-    bfsloc = connector.bucketfs_location / artifact_path
-    actual = filenames(bfsloc)
-    expected = expected_filenames(SAMPLE_FILES, artifact_path)
-    assert actual == expected
-
-
-# @pytest.mark.dependency(depends=["log-multiple"])
 @pytest.mark.parametrize("path, expected_dirs", [(None, ["", "aaa"]), ("aaa", ["aaa"])])
 def test_list(logged_files, testee, path, expected_dirs) -> None:
     """
@@ -168,7 +122,6 @@ def test_list(logged_files, testee, path, expected_dirs) -> None:
     assert {f.path for f in actual} == expected
 
 
-# @pytest.mark.dependency(depends=["log-multiple"])
 @pytest.mark.parametrize(
     "artifact_path, expected_dirs",
     [
