@@ -13,7 +13,7 @@ from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
 
 @pytest.fixture(scope="session")
-def backend_aware_bucketfs_params():
+def x_backend_aware_bucketfs_params():
     password = os.getenv("BUCKETFS_PASSWORD")
     return {
         "backend": "onprem",
@@ -42,7 +42,7 @@ def replace_scheme(url: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def connector(backend_aware_bucketfs_params) -> Connector:
+def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]:
     p = DotAccess(backend_aware_bucketfs_params)
     if p.backend == "saas":
         scheme = "exa+saas"
