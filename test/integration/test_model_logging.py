@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 import signal
@@ -41,13 +43,14 @@ class MlflowServer:
                 if text in line:
                     self._started = True
 
-    def wait_for_message(self, text: str) -> None:
+    def wait_for_message(self, text: str) -> MlflowServer:
         """
         See the developer guide for an explanation of kwarg
         ``preexec_fn=os.setsid`` and calling ``os.killpg()``.
         """
 
-        LOG.info("Starting MLflow server with\n  %s", " ".join(self.command))
+        pretty = " ".join(self.command).replace(" --", "\n    --")
+        LOG.info("Starting MLflow server with\n  %s", pretty)
         self._proc = subprocess.Popen(
             self.command,
             stderr=PIPE,
@@ -59,8 +62,9 @@ class MlflowServer:
         timeout = datetime.now() + timedelta(seconds=10)
         while datetime.now() < timeout:
             if self._started:
-                return
+                break
             time.sleep(0.3)
+        return self
 
     def stop(self) -> None:
         if not self._proc:
@@ -73,36 +77,26 @@ class MlflowServer:
             self._thread.join()
             self._thread = None
 
-@pytest.fixture
-def env_from_connector(connector, monkeypatch):
-    env = {
-        ENV_BUCKETFS_USER: connector.username,
-        ENV_BUCKETFS_PASSWORD: connector.password,
-        ENV_SSL_CERT_VALIDATION: str(connector.ssl_cert_validation),
-    }
-    for k, v in env.items():
-        monkeypatch.setitem(os.environ, k, v)
-
 
 @pytest.fixture
-def mlflow_server(tmp_path, env_from_connector, connector):
+def mlflow_server(tmp_path, connector):
     path = tmp_path / "mlflow.db"
+    port = 5000
     command = [
         "mlflow",
         "server",
         "--backend-store-uri",
         f"sqlite:///{path}",
         "--port",
-        "5000",
+        str(port),
         "--default-artifact-root",
         connector.uri,
     ]
-
     # While tests are running, stderr needs to be consumed continously.
-    monitor = MlflowServer(command)
-    monitor.wait_for_message("Application startup complete.")
+    server = MlflowServer(command).wait_for_message("Application startup complete.")
+    mlflow.set_tracking_uri(f"http://localhost:{port}")
     yield
-    monitor.stop()
+    server.stop()
 
 
 def log_sample_model() -> mlflow.models.model.ModelInfo:
@@ -125,7 +119,8 @@ def switch_uri(other: Connector, uri: str) -> Connector:
 
 def test_log_model(mlflow_server, connector):
     info = log_sample_model()
-    connector = switch_uri(connector, info.artifact_path)
+    LOG.info(f"Switching to {info.artifact_path}")
+    c2 = switch_uri(connector, info.artifact_path)
     expected = {
         "conda.yaml",
         "python_env.yaml",
@@ -133,5 +128,5 @@ def test_log_model(mlflow_server, connector):
         "MLmodel",
         "requirements.txt",
     }
-    actual = filenames(connector.bucketfs_location)
+    actual = filenames(c2.bucketfs_location)
     assert actual == expected

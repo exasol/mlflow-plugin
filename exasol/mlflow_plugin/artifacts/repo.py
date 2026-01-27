@@ -8,6 +8,7 @@ import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
+from mlflow.utils.uri import validate_path_is_safe
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
@@ -23,6 +24,10 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 class BucketFsArtifactRepo(ArtifactRepository):
     """
     Custom artifact repository for schemes 'exa+bfs://' and 'exa+bfss://'
+
+    The class deliberately uses package 'os' instead of pathlib, for maximum
+    compatibility as the plugin is designed for mlflow which also uses package
+    'os'.
     """
 
     def __init__(
@@ -57,6 +62,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * artifact_path: None
         """
         self._log("log_artifact", local_file=local_file, artifact_path=artifact_path)
+        artifact_path = artifact_path and validate_path_is_safe(artifact_path)
         parent = self._bfs / artifact_path if artifact_path else self._bfs
         dest = parent / os.path.basename(local_file)
         with open(local_file, "rb") as fd:
@@ -99,11 +105,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         * path: "python_env.yaml"
         """
         self._log("list_artifacts", path=path)
+        path = path and validate_path_is_safe(path)
 
         def info(root: bfs.path.PathLike, name: str):
-            # mlflow's default http_artifact_repo.py uses
-            # mlflow.utils.uri.validated_path here to prevent path traversal
-            # attacks with ".." etc.
             path = name if str(root) == "." else str(root / name)
             LOG.info("- %s", path)
             return FileInfo(path=path, is_dir=False, file_size=None)
@@ -132,5 +136,6 @@ class BucketFsArtifactRepo(ArtifactRepository):
             remote_file_path=remote_file_path,
             local_path=local_path,
         )
+        remote_file_path = validate_path_is_safe(remote_file_path)
         bfsloc = self._bfs / remote_file_path
         bfs.as_file(bfsloc.read(), local_path)

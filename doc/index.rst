@@ -16,7 +16,7 @@ Documentation of  Exasol MLflow Plugin
         :link: developer_guide
         :link-type: ref
 
-        Instructions and best practices to help developers contribute to the project and set up their development environment.
+        Instructions and best practices to help developers contributing to the project and setting up their development environment.
 
     .. grid-item-card:: :octicon:`question` FAQ
         :link: faq

@@ -1,6 +1,11 @@
 import os
-import re
+from collections.abc import Generator
 from typing import Any
+from unittest import mock
+from urllib.parse import (
+    urlparse,
+    urlunparse,
+)
 
 import pytest
 
@@ -31,14 +36,21 @@ class DotAccess:
         return self._data.get(key, "")
 
 
-@pytest.fixture
-def connector(monkeypatch, backend_aware_bucketfs_params) -> Connector:
+def replace_scheme(url: str) -> str:
+    parsed = urlparse(url)
+    scheme = "exa+bfs" if parsed[0] == "http" else "exa+bfss"
+    return urlunparse((scheme,) + parsed[1:])
+
+
+@pytest.fixture(scope="session")
+def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]:
     p = DotAccess(backend_aware_bucketfs_params)
     if p.backend == "saas":
         scheme = "exa+saas"
         raise NotImplementedError(f"Backend {p.backend}")
 
-    monkeypatch.setitem(os.environ, ENV_BUCKETFS_PASSWORD, p.password)
-    prefix = re.sub(r"^http(s?)://", "exa+bfs\\1://", p.url)
-    uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
-    return Connector(uri, p.username, p.password, p.verify)
+    env = {ENV_BUCKETFS_PASSWORD: p.password}
+    with mock.patch.dict(os.environ, env):
+        prefix = replace_scheme(p.url)
+        uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
+        yield Connector(uri, p.username, p.password, p.verify)
