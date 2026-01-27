@@ -108,7 +108,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
         path = path and validate_path_is_safe(path)
 
         def info(root: bfs.path.PathLike, name: str):
-            path = name if str(root) == "." else str(root / name)
+            path = name # if str(root) == "." else str(root / name)
             LOG.info("- %s", path)
             return FileInfo(path=path, is_dir=False, file_size=None)
 
