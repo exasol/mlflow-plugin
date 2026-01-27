@@ -50,10 +50,10 @@ def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
     return set(result)
 
 
-def create_sample_file(root: Path, entry: str) -> Path:
+def create_sample_file(root: Path, entry: str, content: str = "") -> Path:
     path = root / entry
     path.parent.mkdir(exist_ok=True)
-    path.write_text(entry)
+    path.write_text(content or entry)
     return path
 
 
@@ -95,6 +95,23 @@ def test_log_single_artifact(testee, connector, tmp_path, file):
     expected = connector.bucketfs_location / file
     assert expected.exists()
     expected.rm()
+
+
+def test_overwrite(testee, connector, tmp_path):
+    file = create_sample_file(tmp_path, "dynamic-file.txt", "initial content")
+    bfsloc = connector.bucketfs_location / file.name
+
+    def read_from_bfs(file: Path) -> str:
+        return bfs.as_string(bfsloc.read())
+
+    testee.log_artifact(file)
+    assert read_from_bfs(file) == "initial content"
+
+    file.write_text("updated")
+    testee.log_artifact(file)
+    assert read_from_bfs(file) == "updated"
+
+    bfsloc.rm()
 
 
 @pytest.fixture(scope="module")
