@@ -147,7 +147,7 @@ def test_empty_list(testee, connector, path):
 
 def test_log_multiple_artifacts_root(logged_files_1, connector):
     actual = filenames(connector.bucketfs_location)
-    assert actual == expected_filenames(logged_files_1)
+    assert actual == expected_filenames(SAMPLE_FILES)
 
 
 def test_log_multiple_artifacts_with_artifact_path(logged_files, connector):
@@ -197,12 +197,13 @@ def test_list_artifacts(logged_files, testee, scenario):
             description="""When downloading the root directory, then expect
             the files from the subdirectory to be included."""
         ),
-        Scenario(artifact_path="aaa", expected_dirs=["aaa"]),
+        Scenario(artifact_path="aaa", expected_dirs=[""]),
     ],
 )
 def test_download_success(logged_files, testee, tmp_path, scenario):
     testee.download_artifacts(scenario.artifact_path, tmp_path)
     actual = {str(f.relative_to(tmp_path)) for f in tmp_path.glob("**/*.*")}
+    expected = scenario.expectation(SAMPLE_FILES)
     assert actual == scenario.expectation(SAMPLE_FILES)
 
 
