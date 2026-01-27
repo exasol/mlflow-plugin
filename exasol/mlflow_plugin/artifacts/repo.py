@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
+from pathlib import Path
+from typing import List
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -110,10 +112,11 @@ class BucketFsArtifactRepo(ArtifactRepository):
         self._log("list_artifacts", path=path)
         path = path and validate_path_is_safe(path)
 
-        def info(root: bfs.path.PathLike, name: str):
-            path = name if str(root) == "." else str(root / name)
-            LOG.info("- %s", path)
-            return FileInfo(path=path, is_dir=False, file_size=None)
+        def info(entry: bfs.path.PathLike):
+            full = Path(str(entry))
+            relative = str(full.relative_to(path or "."))
+            LOG.info("- %s", relative)
+            return FileInfo(path=relative, is_dir=False, file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
         if not bfsloc.is_dir():
@@ -121,8 +124,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
         result = []
         for root, _, files in bfsloc.walk():
-            result += [info(root, x) for x in files]
-
+            result += [info(root / x) for x in files]
         return result
 
     # download_artifacts() is already implemented by class ArtifactRepository,

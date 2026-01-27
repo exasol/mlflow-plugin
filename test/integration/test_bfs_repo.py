@@ -157,7 +157,7 @@ class Scenario:
         # When listing the root directory, then expect the files from the
         # subdirectory to be included.
         Scenario(artifact_path=None, expected_dirs=["", "aaa"]),
-        Scenario(artifact_path="aaa", expected_dirs=["aaa"]),
+        Scenario(artifact_path="aaa", expected_dirs=[""]),
     ],
 )
 def test_list(logged_files, testee, scenario):
