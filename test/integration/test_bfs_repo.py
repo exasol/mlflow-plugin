@@ -120,6 +120,13 @@ def logged_files(logged_files_1, tmp_path_factory, cleaner, testee):
         cleaner.rm({f"{ARTIFACT_PATH}/{f}" for f in SAMPLE_FILES})
 
 
+@pytest.mark.parametrize("path", [
+    None, "non-existing-dir",
+])
+def test_empty_list(testee, connector, path):
+    assert [] == testee.list_artifacts(path)
+
+
 def test_log_multiple_artifacts_root(logged_files_1, connector):
     actual = filenames(connector.bucketfs_location)
     assert actual == expected_filenames(logged_files_1)

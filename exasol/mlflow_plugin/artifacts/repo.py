@@ -116,6 +116,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
             return FileInfo(path=path, is_dir=False, file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
+        if not bfsloc.is_dir():
+            return []
+
         result = []
         for root, _, files in bfsloc.walk():
             result += [info(root, x) for x in files]
