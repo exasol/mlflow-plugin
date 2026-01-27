@@ -160,6 +160,7 @@ def test_log_multiple_artifacts_with_artifact_path(logged_files, connector):
 class Scenario:
     artifact_path: str | None
     expected_dirs: list[str]
+    description: str = ""
 
     def expectation(self, files: set[str]) -> set[str]:
         """
@@ -172,13 +173,16 @@ class Scenario:
 @pytest.mark.parametrize(
     "scenario",
     [
-        # When listing the root directory, then expect the files from the
-        # subdirectory to be included.
-        Scenario(artifact_path=None, expected_dirs=["", "aaa"]),
+        Scenario(
+            artifact_path=None,
+            expected_dirs=["", "aaa"],
+            description="""When listing the root directory, then expect the
+            files from the subdirectory to be included.""",
+        ),
         Scenario(artifact_path="aaa", expected_dirs=[""]),
     ],
 )
-def test_list(logged_files, testee, scenario):
+def test_list_artifacts(logged_files, testee, scenario):
     actual = testee.list_artifacts(scenario.artifact_path)
     assert all(isinstance(f, FileInfo) for f in actual)
     assert {f.path for f in actual} == scenario.expectation(SAMPLE_FILES)
@@ -187,9 +191,12 @@ def test_list(logged_files, testee, scenario):
 @pytest.mark.parametrize(
     "scenario",
     [
-        # When downloading the root directory, then expect the files from the
-        # subdirectory to be included.
-        Scenario(artifact_path="", expected_dirs=["", "aaa"]),
+        Scenario(
+            artifact_path="",
+            expected_dirs=["", "aaa"],
+            description="""When downloading the root directory, then expect
+            the files from the subdirectory to be included."""
+        ),
         Scenario(artifact_path="aaa", expected_dirs=["aaa"]),
     ],
 )
