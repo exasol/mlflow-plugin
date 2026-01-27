@@ -63,7 +63,7 @@ def expected_filenames(
     return {entry(p, f) for f in files for p in prefixes}
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def testee(connector) -> BucketFsArtifactRepo:
     return BucketFsArtifactRepo(connector.uri)
 
@@ -77,7 +77,7 @@ def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
     expected.rm()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def logged_files_1(tmp_path_factory, testee):
     path = tmp_path_factory.mktemp("logged_files_1")
     for f in SAMPLE_FILES:
@@ -85,7 +85,7 @@ def logged_files_1(tmp_path_factory, testee):
     testee.log_artifacts(path)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def logged_files_2(tmp_path_factory, testee):
     path = tmp_path_factory.mktemp("logged_files_2")
     for f in SAMPLE_FILES:
@@ -93,7 +93,7 @@ def logged_files_2(tmp_path_factory, testee):
     testee.log_artifacts(path, ARTIFACT_PATH)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def logged_files(logged_files_1, logged_files_2):
     pass
 
