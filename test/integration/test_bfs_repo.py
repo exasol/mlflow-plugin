@@ -12,6 +12,7 @@ from pathlib import Path
 import exasol.bucketfs as bfs
 import pytest
 from mlflow.entities import FileInfo
+from mlflow.exceptions import MlflowException
 
 # Required to avoid warnings about circular import of BucketFsArtifactRepo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository as _  # noqa
@@ -175,7 +176,12 @@ def test_list(logged_files, testee, scenario):
         Scenario(artifact_path="aaa", expected_dirs=["aaa"]),
     ],
 )
-def test_download(logged_files, testee, tmp_path, scenario):
+def test_download_success(logged_files, testee, tmp_path, scenario):
     testee.download_artifacts(scenario.artifact_path, tmp_path)
     actual = {str(f.relative_to(tmp_path)) for f in tmp_path.glob("**/*.*")}
     assert actual == scenario.expectation(SAMPLE_FILES)
+
+
+def test_download_non_existing(testee, tmp_path):
+    with pytest.raises(MlflowException):
+        testee.download_artifacts("non-existing-file.txt", tmp_path)
