@@ -17,6 +17,22 @@ from mlflow.store.artifact.artifact_repo import ArtifactRepository as _  # noqa
 
 from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
 
+
+@pytest.fixture(scope="session")
+def backend_aware_bucketfs_params():
+    import os
+    password = os.getenv("BUCKETFS_PASSWORD")
+    return {
+        "backend": "onprem",
+        "url": "http://localhost:2580",
+        "username": "w",
+        "password": password,
+        "service_name": "bfsdefault",
+        "bucket_name": "default",
+        "verify": False,
+        "path": "",
+    }
+
 SIMPLE_FILE = "simple-file.txt"
 FILE_IN_DIR = "dir/file-in-dir.txt"
 SAMPLE_FILES = {"f1.txt", "dir/f1.txt", "dir/f2.txt"}
@@ -78,29 +94,32 @@ def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
 
 
 @pytest.fixture(scope="module")
-def logged_files_1(tmp_path_factory, testee):
+def logged_files_1(tmp_path_factory, testee, cleaner):
     path = tmp_path_factory.mktemp("logged_files_1")
     for f in SAMPLE_FILES:
         create_sample_file(path, f)
     testee.log_artifacts(path)
+    try:
+        yield
+    finally:
+        cleaner.rm(SAMPLE_FILES)
 
 
 @pytest.fixture(scope="module")
-def logged_files_2(tmp_path_factory, testee):
+def logged_files(logged_files_1, tmp_path_factory, cleaner, testee):
     path = tmp_path_factory.mktemp("logged_files_2")
     for f in SAMPLE_FILES:
         create_sample_file(path, f)
     testee.log_artifacts(path, ARTIFACT_PATH)
+    try:
+        yield
+    finally:
+        cleaner.rm({f"{ARTIFACT_PATH}/{f}" for f in SAMPLE_FILES})
 
 
-@pytest.fixture(scope="module")
-def logged_files(logged_files_1, logged_files_2):
-    pass
-
-
-def test_log_multiple_artifacts_root(logged_files_1, connector) -> None:
+def test_log_multiple_artifacts_root(logged_files_1, connector):
     actual = filenames(connector.bucketfs_location)
-    assert actual == expected_filenames(SAMPLE_FILES)
+    assert actual == expected_filenames(logged_files_1)
 
 
 def test_log_multiple_artifacts_with_artifact_path(logged_files, connector) -> None:

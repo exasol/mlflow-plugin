@@ -39,3 +39,18 @@ def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]
         prefix = replace_scheme(p.url)
         uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
         yield Connector(uri, p.username, p.password, p.verify)
+
+
+class BucketFsCleaner():
+    def __init__(self, connector: Connector):
+        self._connector = connector
+
+    def rm(self, files: set[str]):
+        bfsloc = self._connector.bucketfs_location
+        for f in files:
+            (bfsloc / f).rm()
+
+
+@pytest.fixture(scope="module")
+def cleaner(connector) -> BucketFsCleaner:
+    return BucketFsCleaner(connector)
