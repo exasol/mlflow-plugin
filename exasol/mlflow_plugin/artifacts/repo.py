@@ -55,7 +55,10 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def log_artifact(self, local_file, artifact_path=None):
         """
-        Upload file to BucketFS
+        Upload a single file to BucketFS.
+
+        Calling the method a second time for the same artifact will silently
+        overwrite the artifact.
 
         Sample args:
         * local_file: "/tmp/tmptr2u6e0y/model/requirements.txt"
@@ -72,9 +75,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         self, root: str, local_dir: str, artifact_path: str | None
     ) -> str | None:
         """
-        Computes the artifact_path for files in local_dir wrt. to
-        specified root directory and the artifact_path optionally specified
-        for the parent directory.
+        Compute the artifact_path for files in local_dir wrt. to specified
+        root directory and the artifact_path optionally specified for the
+        parent directory.
         """
         local_abs = os.path.abspath(local_dir)
         if root == local_abs:
@@ -85,7 +88,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def log_artifacts(self, local_dir, artifact_path=None):
         """
-        Upload all files in the specified directory to BucketFS
+        Upload all files in the specified local directory to BucketFS.
 
         Sample args:
         * local_dir: "/tmp/tmptr2u6e0y/model"
@@ -99,7 +102,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def list_artifacts(self, path=None) -> list[FileInfo]:
         """
-        List artifacts in BucketFS
+        List artifacts in BucketFS.
 
         Sample args:
         * path: "python_env.yaml"
