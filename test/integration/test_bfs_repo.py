@@ -138,9 +138,13 @@ def logged_files(logged_files_1, tmp_path_factory, cleaner, testee):
         cleaner.rm({f"{ARTIFACT_PATH}/{f}" for f in SAMPLE_FILES})
 
 
-@pytest.mark.parametrize("path", [
-    None, "non-existing-dir",
-])
+@pytest.mark.parametrize(
+    "path",
+    [
+        None,
+        "non-existing-dir",
+    ],
+)
 def test_empty_list(testee, connector, path):
     assert [] == testee.list_artifacts(path)
 
@@ -195,7 +199,7 @@ def test_list_artifacts(logged_files, testee, scenario):
             artifact_path="",
             expected_dirs=["", "aaa"],
             description="""When downloading the root directory, then expect
-            the files from the subdirectory to be included."""
+            the files from the subdirectory to be included.""",
         ),
         Scenario(artifact_path="aaa", expected_dirs=[""]),
     ],

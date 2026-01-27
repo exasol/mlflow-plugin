@@ -4,7 +4,6 @@ import logging
 import os
 import posixpath
 from pathlib import Path
-from typing import List
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
