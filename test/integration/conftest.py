@@ -1,15 +1,31 @@
 import os
-import re
+from collections.abc import Generator
 from typing import Any
+from unittest import mock
+from urllib.parse import (
+    urlparse,
+    urlunparse,
+)
 
 import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-from exasol.mlflow_plugin.env_vars import (
-    ENV_BUCKETFS_PASSWORD,
-    ENV_BUCKETFS_USER,
-    ENV_SSL_CERT_VALIDATION,
-)
+from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+
+
+@pytest.fixture(scope="session")
+def x_backend_aware_bucketfs_params():
+    password = os.getenv("BUCKETFS_PASSWORD")
+    return {
+        "backend": "onprem",
+        "url": "http://localhost:2580",
+        "username": "w",
+        "password": password,
+        "service_name": "bfsdefault",
+        "bucket_name": "default",
+        "verify": False,
+        "path": "",
+    }
 
 
 class DotAccess:
@@ -20,21 +36,21 @@ class DotAccess:
         return self._data.get(key, "")
 
 
-@pytest.fixture
-def connector(monkeypatch, backend_aware_bucketfs_params) -> Connector:
+def replace_scheme(url: str) -> str:
+    parsed = urlparse(url)
+    scheme = "exa+bfs" if parsed[0] == "http" else "exa+bfss"
+    return urlunparse((scheme,) + parsed[1:])
+
+
+@pytest.fixture(scope="session")
+def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]:
     p = DotAccess(backend_aware_bucketfs_params)
     if p.backend == "saas":
         scheme = "exa+saas"
         raise NotImplementedError(f"Backend {p.backend}")
 
-    env = {
-        ENV_BUCKETFS_USER: p.username,
-        ENV_BUCKETFS_PASSWORD: p.password,
-        ENV_SSL_CERT_VALIDATION: str(p.verify),
-    }
-    for k, v in env.items():
-        monkeypatch.setitem(os.environ, k, v)
-
-    prefix = re.sub(r"^http(s?)://", "exa+bfs\\1://", p.url)
-    uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
-    return Connector(uri, p.username, p.password, p.verify)
+    env = {ENV_BUCKETFS_PASSWORD: p.password}
+    with mock.patch.dict(os.environ, env):
+        prefix = replace_scheme(p.url)
+        uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
+        yield Connector(uri, p.username, p.password, p.verify)
