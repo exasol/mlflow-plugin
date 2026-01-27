@@ -22,7 +22,7 @@ Documentation of  Exasol MLflow Plugin
         :link: faq
         :link-type: ref
 
-        Frequently asked questsions.
+        Frequently asked questions.
 
 .. toctree::
    :maxdepth: 1
