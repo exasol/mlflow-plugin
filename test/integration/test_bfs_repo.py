@@ -6,6 +6,7 @@ Please note: After deleting a file from BucketFS, you can create the same file
 only after some grace period.
 """
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import exasol.bucketfs as bfs
@@ -21,6 +22,7 @@ from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
 @pytest.fixture(scope="session")
 def backend_aware_bucketfs_params():
     import os
+
     password = os.getenv("BUCKETFS_PASSWORD")
     return {
         "backend": "onprem",
@@ -33,7 +35,8 @@ def backend_aware_bucketfs_params():
         "path": "",
     }
 
-SIMPLE_FILE = "simple-file.txt"
+
+ROOT_FILE = "root-file.txt"
 FILE_IN_DIR = "dir/file-in-dir.txt"
 SAMPLE_FILES = {"f1.txt", "dir/f1.txt", "dir/f2.txt"}
 ARTIFACT_PATH = "aaa"
@@ -84,8 +87,8 @@ def testee(connector) -> BucketFsArtifactRepo:
     return BucketFsArtifactRepo(connector.uri)
 
 
-@pytest.mark.parametrize("file", [SIMPLE_FILE, FILE_IN_DIR])
-def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
+@pytest.mark.parametrize("file", [ROOT_FILE, FILE_IN_DIR])
+def test_log_single_artifact(testee, connector, tmp_path, file):
     local = create_sample_file(tmp_path, file)
     testee.log_artifact(local, normalize_artifact_path(file))
     expected = connector.bucketfs_location / file
@@ -122,39 +125,50 @@ def test_log_multiple_artifacts_root(logged_files_1, connector):
     assert actual == expected_filenames(logged_files_1)
 
 
-def test_log_multiple_artifacts_with_artifact_path(logged_files, connector) -> None:
+def test_log_multiple_artifacts_with_artifact_path(logged_files, connector):
     actual = filenames(connector.bucketfs_location / ARTIFACT_PATH)
     expected = expected_filenames(SAMPLE_FILES, ARTIFACT_PATH)
     assert actual == expected
 
 
-@pytest.mark.parametrize("path, expected_dirs", [(None, ["", "aaa"]), ("aaa", ["aaa"])])
-def test_list(logged_files, testee, path, expected_dirs) -> None:
-    """
-    When listing the root directory, then expect the files from the
-    subdirectory to be included.
-    """
+@dataclass(frozen=True)
+class Scenario:
+    artifact_path: str | None
+    expected_dirs: list[str]
 
-    actual = testee.list_artifacts(path)
-    assert all(isinstance(f, FileInfo) for f in actual)
-    expected = expected_filenames(SAMPLE_FILES, prefixes=expected_dirs)
-    assert {f.path for f in actual} == expected
+    def expectation(self, files: set[str]) -> set[str]:
+        """
+        Return the set of expected files, based on the initial set of
+        files within the expected directories.
+        """
+        return expected_filenames(files, self.expected_dirs)
 
 
 @pytest.mark.parametrize(
-    "artifact_path, expected_dirs",
+    "scenario",
     [
-        ("", ["", "aaa"]),
-        ("aaa", ["aaa"]),
+        # When listing the root directory, then expect the files from the
+        # subdirectory to be included.
+        Scenario(artifact_path=None, expected_dirs=["", "aaa"]),
+        Scenario(artifact_path="aaa", expected_dirs=["aaa"]),
     ],
 )
-def test_download(logged_files, testee, tmp_path, artifact_path, expected_dirs) -> None:
-    """
-    When downloading the root directory, then expect the files from the
-    subdirectory to be included.
-    """
+def test_list(logged_files, testee, scenario):
+    actual = testee.list_artifacts(scenario.artifact_path)
+    assert all(isinstance(f, FileInfo) for f in actual)
+    assert {f.path for f in actual} == scenario.expectation(SAMPLE_FILES)
 
-    testee.download_artifacts(artifact_path, tmp_path)
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        # When downloading the root directory, then expect the files from the
+        # subdirectory to be included.
+        Scenario(artifact_path="", expected_dirs=["", "aaa"]),
+        Scenario(artifact_path="aaa", expected_dirs=["aaa"]),
+    ],
+)
+def test_download(logged_files, testee, tmp_path, scenario):
+    testee.download_artifacts(scenario.artifact_path, tmp_path)
     actual = {str(f.relative_to(tmp_path)) for f in tmp_path.glob("**/*.*")}
-    expected = expected_filenames(SAMPLE_FILES, expected_dirs)
-    assert actual == expected
+    assert actual == scenario.expectation(SAMPLE_FILES)

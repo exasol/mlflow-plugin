@@ -41,7 +41,7 @@ def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]
         yield Connector(uri, p.username, p.password, p.verify)
 
 
-class BucketFsCleaner():
+class BucketFsCleaner:
     def __init__(self, connector: Connector):
         self._connector = connector
 
