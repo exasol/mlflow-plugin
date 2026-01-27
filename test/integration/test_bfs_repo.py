@@ -21,7 +21,7 @@ from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
 
 
 @pytest.fixture(scope="session")
-def backend_aware_bucketfs_params():
+def _backend_aware_bucketfs_params():
     import os
 
     password = os.getenv("BUCKETFS_PASSWORD")
