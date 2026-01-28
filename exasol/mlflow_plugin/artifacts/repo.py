@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
+from typing import cast
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -125,6 +126,12 @@ class BucketFsArtifactRepo(ArtifactRepository):
         path = path and validate_path_is_safe(path)
 
         def info(entry: bfs.path.PathLike):
+            if not isinstance(entry, bfs._path.BucketPath):
+                raise TypeError(
+                    "BucketFsArtifactRepo.list_artifacts() does"
+                    f" not support instances of {type(entry)}."
+                )
+            entry = cast(bfs._path.BucketPath, entry)
             relative = entry.path.relative_to(path or "")
             LOG.info("- %s", relative)
             return FileInfo(path=str(relative), is_dir=False, file_size=None)
