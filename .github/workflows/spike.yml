@@ -22,15 +22,15 @@ jobs:
           false
         continue-on-error: true
 
-      - name: Follow-up Step
-        run: echo "This is a follow-up step after the failing one..."
-
       - uses: mainmatter/continue-on-error-comment@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          outcome: ${{ steps.build.outcome }}
+          outcome: ${{ steps.failing-step.outcome }}
           test-id: Error code failing step
-        
+
+      - name: Follow-up Step
+        run: echo "This is a follow-up step after the failing one..."
+
 #       - name: Setup Python & Poetry Environment
 #         uses: exasol/python-toolbox/.github/actions/python-environment@v4
 #
