@@ -5,15 +5,8 @@ on:
 
 jobs:
 
-  spike:
-    name: Spike
-    uses: ./.github/workflows/spike.yml
-    permissions:
-      contents: read
-
   fast-checks:
     name: Fast
-    needs: spike
     uses: ./.github/workflows/checks.yml
     permissions:
       contents: read
