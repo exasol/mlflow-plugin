@@ -6,18 +6,38 @@ Please note: After deleting a file from BucketFS, you can create the same file
 only after some grace period.
 """
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import exasol.bucketfs as bfs
 import pytest
 from mlflow.entities import FileInfo
+from mlflow.exceptions import MlflowException
 
 # Required to avoid warnings about circular import of BucketFsArtifactRepo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository as _  # noqa
 
 from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
 
-SIMPLE_FILE = "simple-file.txt"
+
+@pytest.fixture(scope="session")
+def _backend_aware_bucketfs_params():
+    import os
+
+    password = os.getenv("BUCKETFS_PASSWORD")
+    return {
+        "backend": "onprem",
+        "url": "http://localhost:2580",
+        "username": "w",
+        "password": password,
+        "service_name": "bfsdefault",
+        "bucket_name": "default",
+        "verify": False,
+        "path": "",
+    }
+
+
+ROOT_FILE = "root-file.txt"
 FILE_IN_DIR = "dir/file-in-dir.txt"
 SAMPLE_FILES = {"f1.txt", "dir/f1.txt", "dir/f2.txt"}
 ARTIFACT_PATH = "aaa"
@@ -30,10 +50,10 @@ def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
     return set(result)
 
 
-def create_sample_file(root: Path, entry: str) -> Path:
+def create_sample_file(root: Path, entry: str, content: str = "") -> Path:
     path = root / entry
     path.parent.mkdir(exist_ok=True)
-    path.write_text(entry)
+    path.write_text(content or entry)
     return path
 
 
@@ -63,13 +83,13 @@ def expected_filenames(
     return {entry(p, f) for f in files for p in prefixes}
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def testee(connector) -> BucketFsArtifactRepo:
     return BucketFsArtifactRepo(connector.uri)
 
 
-@pytest.mark.parametrize("file", [SIMPLE_FILE, FILE_IN_DIR])
-def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
+@pytest.mark.parametrize("file", [ROOT_FILE, FILE_IN_DIR])
+def test_log_single_artifact(testee, connector, tmp_path, file):
     local = create_sample_file(tmp_path, file)
     testee.log_artifact(local, normalize_artifact_path(file))
     expected = connector.bucketfs_location / file
@@ -77,65 +97,120 @@ def test_log_single_artifact(testee, connector, tmp_path, file) -> None:
     expected.rm()
 
 
-@pytest.fixture(scope="session")
-def logged_files_1(tmp_path_factory, testee):
+def test_overwrite(testee, connector, tmp_path):
+    file = create_sample_file(tmp_path, "dynamic-file.txt", "initial content")
+    bfsloc = connector.bucketfs_location / file.name
+
+    def read_from_bfs(file: Path) -> str:
+        return bfs.as_string(bfsloc.read())
+
+    testee.log_artifact(file)
+    assert read_from_bfs(file) == "initial content"
+
+    file.write_text("updated")
+    testee.log_artifact(file)
+    assert read_from_bfs(file) == "updated"
+
+    bfsloc.rm()
+
+
+@pytest.fixture(scope="module")
+def logged_files_1(tmp_path_factory, testee, cleaner):
     path = tmp_path_factory.mktemp("logged_files_1")
     for f in SAMPLE_FILES:
         create_sample_file(path, f)
     testee.log_artifacts(path)
+    try:
+        yield
+    finally:
+        cleaner.rm(SAMPLE_FILES)
 
 
-@pytest.fixture(scope="session")
-def logged_files_2(tmp_path_factory, testee):
+@pytest.fixture(scope="module")
+def logged_files(logged_files_1, tmp_path_factory, cleaner, testee):
     path = tmp_path_factory.mktemp("logged_files_2")
     for f in SAMPLE_FILES:
         create_sample_file(path, f)
     testee.log_artifacts(path, ARTIFACT_PATH)
+    try:
+        yield
+    finally:
+        cleaner.rm({f"{ARTIFACT_PATH}/{f}" for f in SAMPLE_FILES})
 
 
-@pytest.fixture(scope="session")
-def logged_files(logged_files_1, logged_files_2):
-    pass
+@pytest.mark.parametrize(
+    "path",
+    [
+        None,
+        "non-existing-dir",
+    ],
+)
+def test_empty_list(testee, connector, path):
+    assert [] == testee.list_artifacts(path)
 
 
-def test_log_multiple_artifacts_root(logged_files_1, connector) -> None:
+def test_log_multiple_artifacts_root(logged_files_1, connector):
     actual = filenames(connector.bucketfs_location)
     assert actual == expected_filenames(SAMPLE_FILES)
 
 
-def test_log_multiple_artifacts_with_artifact_path(logged_files, connector) -> None:
+def test_log_multiple_artifacts_with_artifact_path(logged_files, connector):
     actual = filenames(connector.bucketfs_location / ARTIFACT_PATH)
     expected = expected_filenames(SAMPLE_FILES, ARTIFACT_PATH)
     assert actual == expected
 
 
-@pytest.mark.parametrize("path, expected_dirs", [(None, ["", "aaa"]), ("aaa", ["aaa"])])
-def test_list(logged_files, testee, path, expected_dirs) -> None:
-    """
-    When listing the root directory, then expect the files from the
-    subdirectory to be included.
-    """
+@dataclass(frozen=True)
+class Scenario:
+    artifact_path: str | None
+    expected_dirs: list[str]
+    description: str = ""
 
-    actual = testee.list_artifacts(path)
-    assert all(isinstance(f, FileInfo) for f in actual)
-    expected = expected_filenames(SAMPLE_FILES, prefixes=expected_dirs)
-    assert {f.path for f in actual} == expected
+    def expectation(self, files: set[str]) -> set[str]:
+        """
+        Return the set of expected files, based on the initial set of
+        files within the expected directories.
+        """
+        return expected_filenames(files, self.expected_dirs)
 
 
 @pytest.mark.parametrize(
-    "artifact_path, expected_dirs",
+    "scenario",
     [
-        ("", ["", "aaa"]),
-        ("aaa", ["aaa"]),
+        Scenario(
+            artifact_path=None,
+            expected_dirs=["", "aaa"],
+            description="""When listing the root directory, then expect the
+            files from the subdirectory to be included.""",
+        ),
+        Scenario(artifact_path="aaa", expected_dirs=[""]),
     ],
 )
-def test_download(logged_files, testee, tmp_path, artifact_path, expected_dirs) -> None:
-    """
-    When downloading the root directory, then expect the files from the
-    subdirectory to be included.
-    """
+def test_list_artifacts(logged_files, testee, scenario):
+    actual = testee.list_artifacts(scenario.artifact_path)
+    assert all(isinstance(f, FileInfo) for f in actual)
+    assert {f.path for f in actual} == scenario.expectation(SAMPLE_FILES)
 
-    testee.download_artifacts(artifact_path, tmp_path)
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        Scenario(
+            artifact_path="",
+            expected_dirs=["", "aaa"],
+            description="""When downloading the root directory, then expect
+            the files from the subdirectory to be included.""",
+        ),
+        Scenario(artifact_path="aaa", expected_dirs=[""]),
+    ],
+)
+def test_download_success(logged_files, testee, tmp_path, scenario):
+    testee.download_artifacts(scenario.artifact_path, tmp_path)
     actual = {str(f.relative_to(tmp_path)) for f in tmp_path.glob("**/*.*")}
-    expected = expected_filenames(SAMPLE_FILES, expected_dirs)
-    assert actual == expected
+    expected = scenario.expectation(SAMPLE_FILES)
+    assert actual == scenario.expectation(SAMPLE_FILES)
+
+
+def test_download_non_existing(testee, tmp_path):
+    with pytest.raises(MlflowException):
+        testee.download_artifacts("non-existing-file.txt", tmp_path)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
+from pathlib import Path
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -55,7 +56,10 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def log_artifact(self, local_file, artifact_path=None):
         """
-        Upload file to BucketFS
+        Upload a single file to BucketFS.
+
+        Calling the method a second time for the same artifact will silently
+        overwrite the artifact.
 
         Sample args:
         * local_file: "/tmp/tmptr2u6e0y/model/requirements.txt"
@@ -72,9 +76,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         self, root: str, local_dir: str, artifact_path: str | None
     ) -> str | None:
         """
-        Computes the artifact_path for files in local_dir wrt. to
-        specified root directory and the artifact_path optionally specified
-        for the parent directory.
+        Compute the artifact_path for files in local_dir wrt. to specified
+        root directory and the artifact_path optionally specified for the
+        parent directory.
         """
         local_abs = os.path.abspath(local_dir)
         if root == local_abs:
@@ -85,7 +89,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def log_artifacts(self, local_dir, artifact_path=None):
         """
-        Upload all files in the specified directory to BucketFS
+        Upload all files in the specified local directory to BucketFS.
 
         Sample args:
         * local_dir: "/tmp/tmptr2u6e0y/model"
@@ -99,7 +103,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def list_artifacts(self, path=None) -> list[FileInfo]:
         """
-        List artifacts in BucketFS
+        List artifacts in BucketFS.
 
         Sample args:
         * path: "python_env.yaml"
@@ -107,16 +111,19 @@ class BucketFsArtifactRepo(ArtifactRepository):
         self._log("list_artifacts", path=path)
         path = path and validate_path_is_safe(path)
 
-        def info(root: bfs.path.PathLike, name: str):
-            path = name if str(root) == "." else str(root / name)
-            LOG.info("- %s", path)
-            return FileInfo(path=path, is_dir=False, file_size=None)
+        def info(entry: bfs.path.PathLike):
+            full = Path(str(entry))
+            relative = str(full.relative_to(path or "."))
+            LOG.info("- %s", relative)
+            return FileInfo(path=relative, is_dir=False, file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
+        if not bfsloc.is_dir():
+            return []
+
         result = []
         for root, _, files in bfsloc.walk():
-            result += [info(root, x) for x in files]
-
+            result += [info(root / x) for x in files]
         return result
 
     # download_artifacts() is already implemented by class ArtifactRepository,
