@@ -13,6 +13,7 @@ jobs:
 
   fast-checks:
     name: Fast
+    needs: spike
     uses: ./.github/workflows/checks.yml
     permissions:
       contents: read
@@ -20,6 +21,7 @@ jobs:
   run-slow-tests:
     name: Run Slow Tests
     runs-on: ubuntu-24.04
+    needs: spike
     permissions:
       contents: read
 

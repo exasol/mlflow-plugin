@@ -61,12 +61,6 @@ class MlflowServer:
                 if text in line:
                     self._started = True
 
-    def wrong_type_hint(self) -> int:
-        return "String"
-
-    def wrong_formatting(self):
-        return "String" + "String" + "String" + "String" + "String" + "String" + "String" + "String" + "String" + "String"
-
     def wait_for_message(self, text: str) -> MlflowServer:
         """
         See the developer guide for an explanation of kwarg
