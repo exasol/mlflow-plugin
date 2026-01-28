@@ -7,9 +7,10 @@ jobs:
   Spike:
     name: Spike
     runs-on: ubuntu-24.04
+    continue-on-error: true
     permissions:
       contents: read
-      pull-requests: write
+
     steps:
       - name: SCM Checkout
         uses: actions/checkout@v5
@@ -21,13 +22,6 @@ jobs:
         run: |
           echo "This is a step intentionally failing..."
           false
-        continue-on-error: true
-
-      - uses: mainmatter/continue-on-error-comment@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          outcome: ${{ steps.failing-step.outcome }}
-          test-id: Error code failing step
 
       - name: Follow-up Step
         run: echo "This is a follow-up step after the failing one..."
