@@ -28,40 +28,45 @@ jobs:
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v4
 
+      - name: Empty step
+        # not annotated with if always()
+        run: true
+
       # Each of the following steps is annotated with if: always()
       # running the check even if one of the preceding checks failed.
-
-      - name: Check Version(s)
-        run: poetry run -- nox -s version:check
-
-      - name: Build Documentation
-        if: always()
-        run: poetry run -- nox -s docs:build
-
-      - name: Link Check
-        if: always()
-        run: poetry run -- nox -s links:check
-
-      - name: Run lint
-        if: always()
-        run: poetry run -- nox -s lint:code
-
-      - name: Run type-check
-        if: always()
-        run: poetry run -- nox -s lint:typing
-
-      - name: Run security linter
-        if: always()
-        run: poetry run -- nox -s lint:security
 
       - name: Run format check
         if: always()
         run: poetry run -- nox -s format:check
 
+      - name: Run type-check
+        if: always()
+        run: poetry run -- nox -s lint:typing
+
+      - name: Run Unit Tests
+        if: always()
+        run: poetry run -- nox -s test:unit
+
+      - name: Run lint
+        if: always()
+        run: poetry run -- nox -s lint:code
+
+      - name: Check Version(s)
+        if: always()
+        run: poetry run -- nox -s version:check
+
+      - name: Link Check
+        if: always()
+        run: poetry run -- nox -s links:check
+
+      - name: Run security linter
+        if: always()
+        run: poetry run -- nox -s lint:security
+
       - name: Run Distribution Check
         if: always()
         run: poetry run -- nox -s package:check
 
-      - name: Run Tests and Collect Coverage
+      - name: Build Documentation
         if: always()
-        run: poetry run -- nox -s test:unit
+        run: poetry run -- nox -s docs:build
