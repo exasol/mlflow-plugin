@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
-from pathlib import Path
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -112,10 +111,9 @@ class BucketFsArtifactRepo(ArtifactRepository):
         path = path and validate_path_is_safe(path)
 
         def info(entry: bfs.path.PathLike):
-            full = Path(str(entry))
-            relative = str(full.relative_to(path or "."))
+            relative = entry.path.relative_to(path or "")
             LOG.info("- %s", relative)
-            return FileInfo(path=relative, is_dir=False, file_size=None)
+            return FileInfo(path=str(relative), is_dir=False, file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
         if not bfsloc.is_dir():
