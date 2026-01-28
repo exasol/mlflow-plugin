@@ -15,7 +15,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Failing
+      - id: failing-step
+        name: Failing
         run: |
           echo "This is a step intentionally failing..."
           false
@@ -24,6 +25,12 @@ jobs:
       - name: Follow-up Step
         run: echo "This is a follow-up step after the failing one..."
 
+      - uses: mainmatter/continue-on-error-comment@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          outcome: ${{ steps.build.outcome }}
+          test-id: Error code failing step
+        
 #       - name: Setup Python & Poetry Environment
 #         uses: exasol/python-toolbox/.github/actions/python-environment@v4
 #
