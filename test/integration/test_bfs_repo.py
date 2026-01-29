@@ -6,7 +6,6 @@ Please note: After deleting a file from BucketFS, you can create the same file
 only after some grace period.
 """
 
-from dataclasses import dataclass
 from pathlib import Path
 
 import exasol.bucketfs as bfs
