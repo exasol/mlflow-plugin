@@ -16,19 +16,34 @@ from mlflow.exceptions import MlflowException
 # Required to avoid warnings about circular import of BucketFsArtifactRepo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository as _  # noqa
 
-from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
+from exasol.mlflow_plugin.artifacts.repo import (
+    BucketFsArtifactRepo,
+    purepath,
+)
 
 ROOT_FILE = "root-file.txt"
 FILE_IN_DIR = "dir/file-in-dir.txt"
-SAMPLE_FILES = {"f1.txt", "dir/f1.txt", "dir/f2.txt"}
+SAMPLE_FILES = ["f1.txt", "dir/f1.txt", "dir/f2.txt"]
 ARTIFACT_PATH = "aaa"
 
 
-def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
-    result = []
-    for root, _, files in bfsloc.walk():
-        result += [str(root / f) for f in files]
-    return set(result)
+def pathlike_content(bfsloc: bfs.path.PathLike) -> list[str]:
+    """
+    Return the content of the specified BucketFS PathLike as a list of
+    strings, adding a slash suffix to directories.
+    """
+
+    def entry(f: bfs.path.PathLike) -> str:
+        suffix = "/" if f.is_dir() else ""
+        rel = purepath(f).relative_to(purepath(bfsloc))
+        return f"{rel}{suffix}"
+
+    return sorted([entry(f) for f in bfsloc.iterdir()])
+
+
+def file_info_str(fi: FileInfo) -> str:
+    suffix = "/" if fi.is_dir else ""
+    return f"{fi.path}{suffix}"
 
 
 def create_sample_file(root: Path, entry: str, content: str = "") -> Path:
@@ -42,26 +57,6 @@ def normalize_artifact_path(entry: str) -> str | None:
     """Name of parent path or None."""
     parent = str(Path(entry).parent)
     return None if parent == "." else parent
-
-
-def expected_filenames(
-    files: set[str], prefixes: str | None | list[str] = None
-) -> set[str]:
-    """
-    This function helps specifing a set of files in a single or in
-    multiple directories.  `prefixes` is name of a single directory of a list
-    of such.  The returned result repeats the list of files for each directory
-    in the list of directories.
-    """
-    if prefixes is None:
-        prefixes = ""
-    if isinstance(prefixes, str):
-        prefixes = [prefixes]
-
-    def entry(prefix: str, name: str):
-        return f"{prefix}/{name}" if prefix else name
-
-    return {entry(p, f) for f in files for p in prefixes}
 
 
 @pytest.fixture(scope="module")
@@ -134,17 +129,47 @@ def test_empty_list(testee, connector, path):
 
 
 def test_log_multiple_artifacts_root(logged_files_1, connector):
-    actual = filenames(connector.bucketfs_location)
-    assert actual == expected_filenames(SAMPLE_FILES)
+    actual = pathlike_content(connector.bucketfs_location)
+    assert actual == ["dir/", "f1.txt"]
 
 
 def test_log_multiple_artifacts_with_artifact_path(logged_files, connector):
-    actual = filenames(connector.bucketfs_location / ARTIFACT_PATH)
-    expected = expected_filenames(SAMPLE_FILES, ARTIFACT_PATH)
+    actual = pathlike_content(connector.bucketfs_location / ARTIFACT_PATH)
+    assert actual == ["dir/", "f1.txt"]
+
+
+def list_scenario(
+    id: str,
+    artifact_path: str | None,
+    expected: list[str],
+    description: str = "",
+):
+    return pytest.param(artifact_path, expected, id=id)
+
+
+@pytest.mark.parametrize(
+    "artifact_path, expected",
+    [
+        list_scenario(
+            id="root",
+            artifact_path=None,
+            expected=["aaa/", "dir/", "f1.txt"],
+        ),
+        list_scenario(
+            id="subdir",
+            artifact_path="aaa",
+            expected=["aaa/dir/", "aaa/f1.txt"],
+        ),
+    ],
+)
+def test_list_artifacts(logged_files, testee, artifact_path, expected):
+    file_infos = testee.list_artifacts(artifact_path)
+    assert all(isinstance(f, FileInfo) for f in file_infos)
+    actual = [file_info_str(f) for f in file_infos]
     assert actual == expected
 
 
-def scenario(
+def download_scenario(
     id: str,
     artifact_path: str | None,
     expected_dirs: list[str],
@@ -153,36 +178,37 @@ def scenario(
     return pytest.param(artifact_path, expected_dirs, id=id)
 
 
-@pytest.mark.parametrize(
-    "artifact_path, expected_dirs",
-    [
-        scenario(
-            id="root",
-            artifact_path=None,
-            expected_dirs=["", "aaa"],
-            description="""When listing the root directory, then expect the
-            files from the subdirectory to be included.""",
-        ),
-        scenario(id="subdir", artifact_path="aaa", expected_dirs=[""]),
-    ],
-)
-def test_list_artifacts(logged_files, testee, artifact_path, expected_dirs):
-    actual = testee.list_artifacts(artifact_path)
-    assert all(isinstance(f, FileInfo) for f in actual)
-    assert {f.path for f in actual} == expected_filenames(SAMPLE_FILES, expected_dirs)
+def expected_filenames(
+    files: list[str], prefixes: str | None | list[str] = None
+) -> set[str]:
+    """
+    This function helps specifing a set of files in a single or in
+    multiple directories.  `prefixes` is name of a single directory of a list
+    of such.  The returned result repeats the list of files for each directory
+    in the list of directories.
+    """
+    if prefixes is None:
+        prefixes = ""
+    if isinstance(prefixes, str):
+        prefixes = [prefixes]
+
+    def entry(prefix: str, name: str):
+        return f"{prefix}/{name}" if prefix else name
+
+    return {entry(p, f) for p in prefixes for f in files}
 
 
 @pytest.mark.parametrize(
     "artifact_path, expected_dirs",
     [
-        scenario(
+        download_scenario(
             id="root",
             artifact_path="",
             expected_dirs=["", "aaa"],
             description="""When downloading the root directory, then expect
             the files from the subdirectory to be included.""",
         ),
-        scenario(id="subdir", artifact_path="aaa", expected_dirs=[""]),
+        download_scenario(id="subdir", artifact_path="aaa", expected_dirs=["aaa"]),
     ],
 )
 def test_download_success(logged_files, testee, tmp_path, artifact_path, expected_dirs):

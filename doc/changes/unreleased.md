@@ -11,3 +11,4 @@
 ## Refactorings
 
 * #9: Refactored bucketfs_spec, added class Connector
+* #12: Added end-to-end tests incl. MLflow server
