@@ -22,21 +22,6 @@ from sklearn.linear_model import LogisticRegression  # type: ignore
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 
-@pytest.fixture(scope="session")
-def x1_backend_aware_bucketfs_params():
-    password = os.getenv("BUCKETFS_PASSWORD")
-    return {
-        "backend": "onprem",
-        "url": "http://localhost:2580",
-        "username": "w",
-        "password": password,
-        "service_name": "bfsdefault",
-        "bucket_name": "default",
-        "verify": False,
-        "path": "",
-    }
-
-
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
@@ -137,8 +122,7 @@ def switch_uri(other: Connector, uri: str) -> Connector:
 
 def test_log_model(mlflow_server, connector):
     info = log_sample_model()
-    LOG.info(f"Switching to {info.artifact_path}")
-    c2 = switch_uri(connector, info.artifact_path)
+    other = switch_uri(connector, info.artifact_path)
     expected = {
         "conda.yaml",
         "python_env.yaml",
@@ -146,5 +130,5 @@ def test_log_model(mlflow_server, connector):
         "MLmodel",
         "requirements.txt",
     }
-    actual = filenames(c2.bucketfs_location)
+    actual = filenames(other.bucketfs_location)
     assert actual == expected
