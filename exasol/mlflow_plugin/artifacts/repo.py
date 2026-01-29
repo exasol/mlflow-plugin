@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import logging
+import os
+import posixpath
+from typing import cast
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
+from mlflow.utils.file_utils import relative_path_to_artifact_path
+from mlflow.utils.uri import validate_path_is_safe
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
@@ -20,6 +25,10 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 class BucketFsArtifactRepo(ArtifactRepository):
     """
     Custom artifact repository for schemes 'exa+bfs://' and 'exa+bfss://'
+
+    The class deliberately uses package 'os' instead of pathlib, for maximum
+    compatibility as the plugin is designed for mlflow which also uses package
+    'os'.
     """
 
     def __init__(
@@ -47,33 +56,94 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
     def log_artifact(self, local_file, artifact_path=None):
         """
-        Upload file to BucketFS
+        Upload a single file to BucketFS.
+
+        Calling the method a second time for the same artifact will silently
+        overwrite the artifact.
 
         Sample args:
         * local_file: "/tmp/tmptr2u6e0y/model/requirements.txt"
         * artifact_path: None
         """
         self._log("log_artifact", local_file=local_file, artifact_path=artifact_path)
+        artifact_path = artifact_path and validate_path_is_safe(artifact_path)
+        parent = self._bfs / artifact_path if artifact_path else self._bfs
+        dest = parent / os.path.basename(local_file)
+        with open(local_file, "rb") as fd:
+            dest.write(fd)
+
+    def _child_path(
+        self, root: str, local_dir: str, artifact_path: str | None
+    ) -> str | None:
+        """
+        Compute the artifact_path for files in local_dir wrt. to specified
+        root directory and the artifact_path optionally specified for the
+        parent directory.
+        """
+        local_abs = os.path.abspath(local_dir)
+        if root == local_abs:
+            return artifact_path
+        rel_path = os.path.relpath(root, local_abs)
+        rel = relative_path_to_artifact_path(rel_path)
+        return posixpath.join(artifact_path, rel) if artifact_path else rel
 
     def log_artifacts(self, local_dir, artifact_path=None):
         """
-        Upload all files in the specified directory to BucketFS
+        Upload all files in the specified local directory to BucketFS.
 
         Sample args:
         * local_dir: "/tmp/tmptr2u6e0y/model"
         * artifact_path: None
         """
         self._log("log_artifacts", local_dir=local_dir, artifact_path=artifact_path)
+        for root, _, files in os.walk(local_dir):
+            for f in files:
+                path = self._child_path(root, local_dir, artifact_path)
+                self.log_artifact(os.path.join(root, f), path)
 
     def list_artifacts(self, path=None) -> list[FileInfo]:
         """
-        List artifacts in BucketFS
+        List artifacts in BucketFS.
 
         Sample args:
         * path: "python_env.yaml"
+
+        Please note:
+
+        * Identical to
+          mlflow.store.artifact.local_artifact_repo.LocalArtifactRepository
+          for non-existing directories this methods does not raise an error,
+          but returns an empty list [].
+
+        * BFS does not support empty or pure directories, but only creates
+          these on-the-fly when storing a file with a particular parent path.
+
+        * BFS allows files path/F and path/F/file.txt to exist.  In
+          consequence a specific path (path/F in this case) can be ambiguous
+          and be a file and a directory at the same time.
         """
         self._log("list_artifacts", path=path)
-        return []
+        path = path and validate_path_is_safe(path)
+
+        def info(entry: bfs.path.PathLike):
+            if not isinstance(entry, bfs._path.BucketPath):
+                raise TypeError(
+                    "BucketFsArtifactRepo.list_artifacts() does"
+                    f" not support instances of {type(entry)}."
+                )
+            entry = cast(bfs._path.BucketPath, entry)
+            relative = entry.path.relative_to(path or "")
+            LOG.info("- %s", relative)
+            return FileInfo(path=str(relative), is_dir=False, file_size=None)
+
+        bfsloc = self._bfs / path if path else self._bfs
+        if not bfsloc.is_dir():
+            return []
+
+        result = []
+        for root, _, files in bfsloc.walk():
+            result += [info(root / x) for x in files]
+        return result
 
     # download_artifacts() is already implemented by class ArtifactRepository,
     # but BucketFsArtifactRepo needs to implement the abstractmethod
@@ -92,3 +162,6 @@ class BucketFsArtifactRepo(ArtifactRepository):
             remote_file_path=remote_file_path,
             local_path=local_path,
         )
+        remote_file_path = validate_path_is_safe(remote_file_path)
+        bfsloc = self._bfs / remote_file_path
+        bfs.as_file(bfsloc.read(), local_path)

@@ -1,7 +1,7 @@
 [project]
 name = "exasol-mlflow-plugin"
 version = "0.1.0"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.10,<3.14"
 description = "Plugin for MLflow supporting artifact repository Exasol BucketFS"
 authors = [
     {name = "Exasol AG", email = "christoph.kuhnke@exasol.com"},
@@ -28,6 +28,7 @@ packages = [
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=4.0.1, <5"
+pytest-exasol-backend = ">=1.2.4, <2.0.0"
 
 
 [poetry.urls]
@@ -74,12 +75,6 @@ extend-ignore = [
 ]
 extend-select = ["F401"]
 unfixable = []
-
-[[tool.mypy.overrides]]
-module = [
-    "test.*",
-]
-ignore_errors = true
 
 [tool.sonar]
 projectKey = "mlflow-plugin"
