@@ -131,9 +131,7 @@ def test_round_trip(cls, mlflow_package, mlflow_server, connector):
 
     model_name = f'{cls.__module__}.{cls.__name__}'.replace(".", ">")
     info = mlflow_package.log_model(cls(), name=model_name)
-    LOG.info(f'info.model_uri = {info.model_uri}')
     loaded = mlflow_package.load_model(info.model_uri)
-    LOG.info(f'{type(loaded).__name__}')
     assert type(loaded) == cls
 
 
