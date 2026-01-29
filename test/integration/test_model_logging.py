@@ -119,9 +119,12 @@ def switch_uri(other: Connector, uri: str) -> Connector:
     )
 
 
-@pytest.mark.parametrize("cls, mlflow_package", [
-    (sklearn.linear_model.LogisticRegression, mlflow.sklearn),
-])
+@pytest.mark.parametrize(
+    "cls, mlflow_package",
+    [
+        (sklearn.linear_model.LogisticRegression, mlflow.sklearn),
+    ],
+)
 def test_round_trip(cls, mlflow_package, mlflow_server, connector):
     """
     Parameters:
@@ -129,7 +132,7 @@ def test_round_trip(cls, mlflow_package, mlflow_server, connector):
     * mlflow_package: mlflow package to use for logging and loading the model instance.
     """
 
-    model_name = f'{cls.__module__}.{cls.__name__}'.replace(".", ">")
+    model_name = f"{cls.__module__}.{cls.__name__}".replace(".", ">")
     info = mlflow_package.log_model(cls(), name=model_name)
     loaded = mlflow_package.load_model(info.model_uri)
     assert type(loaded) == cls
