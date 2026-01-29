@@ -18,7 +18,8 @@ import exasol.bucketfs as bfs
 import mlflow
 import pytest
 import sklearn  # type: ignore
-from sklearn.linear_model import LogisticRegression  # type: ignore
+
+from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -80,7 +81,7 @@ class MlflowServer:
 
 
 @pytest.fixture
-def mlflow_server(tmp_path, connector):
+def mlflow_server(tmp_path, connector: Connector):
     path = tmp_path / "mlflow.db"
     port = 5000
     command = [
