@@ -28,7 +28,7 @@ class MlflowServer:
     def __init__(self, command: list[str]):
         self.command = command
         self._proc: subprocess.Popen | None = None
-        self._started = False
+        self._started: bool = False
         self._thread: threading.Thread | None = None
 
     def listen(self, text: str) -> None:
@@ -93,7 +93,7 @@ def mlflow_server(tmp_path, connector):
         "--default-artifact-root",
         connector.uri,
     ]
-    # While tests are running, stderr needs to be consumed continously.
+    # While tests are running, stderr needs to be consumed continuously.
     server = MlflowServer(command).wait_for_message("Application startup complete.")
     mlflow.set_tracking_uri(f"http://localhost:{port}")
     yield
