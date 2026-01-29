@@ -17,10 +17,8 @@ from typing import IO
 import exasol.bucketfs as bfs
 import mlflow
 import pytest
+import sklearn  # type: ignore
 from sklearn.linear_model import LogisticRegression  # type: ignore
-
-from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -103,7 +101,7 @@ def mlflow_server(tmp_path, connector):
 
 
 def log_sample_model() -> mlflow.models.model.ModelInfo:
-    lr = LogisticRegression()
+    lr = sklearn.linear_model.LogisticRegression()
     return mlflow.sklearn.log_model(lr, name="my_first_logistic_regression")
 
 
@@ -118,6 +116,25 @@ def switch_uri(other: Connector, uri: str) -> Connector:
         other.password,
         other.ssl_cert_validation,
     )
+
+
+
+@pytest.mark.parametrize("cls, mlflow_package", [
+    (sklearn.linear_model.LogisticRegression, mlflow.sklearn),
+])
+def test_round_trip(cls, mlflow_package, mlflow_server, connector):
+    """
+    Parameters:
+    * cls: Model class to instantiate for the round trip
+    * mlflow_package: mlflow package to use for logging and loading the model instance.
+    """
+
+    model_name = f'{cls.__module__}.{cls.__name__}'.replace(".", ">")
+    info = mlflow_package.log_model(cls(), name=model_name)
+    LOG.info(f'info.model_uri = {info.model_uri}')
+    loaded = mlflow_package.load_model(info.model_uri)
+    LOG.info(f'{type(loaded).__name__}')
+    assert type(loaded) == cls
 
 
 def test_log_model(mlflow_server, connector):
