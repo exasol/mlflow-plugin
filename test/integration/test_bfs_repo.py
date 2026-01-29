@@ -151,10 +151,14 @@ def list_scenario(
     "artifact_path, expected",
     [
         list_scenario(
-            id="root", artifact_path=None, expected=["aaa/", "dir/", "f1.txt"],
+            id="root",
+            artifact_path=None,
+            expected=["aaa/", "dir/", "f1.txt"],
         ),
         list_scenario(
-            id="subdir", artifact_path="aaa", expected=["aaa/dir/", "aaa/f1.txt"],
+            id="subdir",
+            artifact_path="aaa",
+            expected=["aaa/dir/", "aaa/f1.txt"],
         ),
     ],
 )
