@@ -71,7 +71,7 @@ class MlflowServer:
         if not self._proc:
             return
         p = self._proc
-        LOG.info(f"Termination MLflow server process {p.pid}")
+        LOG.info(f"Stopping MLflow server process {p.pid}")
         os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         p.wait()
         if self._thread:
@@ -116,7 +116,6 @@ def switch_uri(other: Connector, uri: str) -> Connector:
         other.password,
         other.ssl_cert_validation,
     )
-
 
 
 @pytest.mark.parametrize("cls, mlflow_package", [
