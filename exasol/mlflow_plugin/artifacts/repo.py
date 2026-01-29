@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
-from pathlib import Path
+from typing import cast
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -107,15 +107,34 @@ class BucketFsArtifactRepo(ArtifactRepository):
 
         Sample args:
         * path: "python_env.yaml"
+
+        Please note:
+
+        * Identical to
+          mlflow.store.artifact.local_artifact_repo.LocalArtifactRepository
+          for non-existing directories this methods does not raise an error,
+          but returns an empty list [].
+
+        * BFS does not support empty or pure directories, but only creates
+          these on-the-fly when storing a file with a particular parent path.
+
+        * BFS allows files path/F and path/F/file.txt to exist.  In
+          consequence a specific path (path/F in this case) can be ambiguous
+          and be a file and a directory at the same time.
         """
         self._log("list_artifacts", path=path)
         path = path and validate_path_is_safe(path)
 
         def info(entry: bfs.path.PathLike):
-            full = Path(str(entry))
-            relative = str(full.relative_to(path or "."))
+            if not isinstance(entry, bfs._path.BucketPath):
+                raise TypeError(
+                    "BucketFsArtifactRepo.list_artifacts() does"
+                    f" not support instances of {type(entry)}."
+                )
+            entry = cast(bfs._path.BucketPath, entry)
+            relative = entry.path.relative_to(path or "")
             LOG.info("- %s", relative)
-            return FileInfo(path=relative, is_dir=False, file_size=None)
+            return FileInfo(path=str(relative), is_dir=False, file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
         if not bfsloc.is_dir():
