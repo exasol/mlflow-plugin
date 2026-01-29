@@ -8,6 +8,10 @@
 * #6: Added parsing the BucketFS parameters from MLflow `artifact_root` string
 * #8: Added implementation to interface BucketFsArtifactRepo, incl. simple itests
 
+## Documentation
+
+* #14: Added User Guide and Developer Guide
+
 ## Refactorings
 
 * #9: Refactored bucketfs_spec, added class Connector
