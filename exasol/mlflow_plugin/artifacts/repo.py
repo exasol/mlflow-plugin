@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
-from typing import cast
+import typing
+from pathlib import PurePath
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -20,6 +21,17 @@ def bfs_location(artifact_uri: str) -> bfs.path.PathLike:
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+
+
+def purepath(pathlike: bfs.path.PathLike) -> PurePath:
+    """
+    BFSPY public interface PathLike currently does not include property
+    path, see https://github.com/exasol/bucketfs-python/issues/271.
+    """
+
+    if not isinstance(pathlike, bfs._path.BucketPath):
+        raise TypeError(f"purepath() does not support instances of {type(pathlike)}.")
+    return typing.cast(bfs._path.BucketPath, pathlike).path
 
 
 class BucketFsArtifactRepo(ArtifactRepository):
@@ -125,25 +137,18 @@ class BucketFsArtifactRepo(ArtifactRepository):
         self._log("list_artifacts", path=path)
         path = path and validate_path_is_safe(path)
 
-        def info(entry: bfs.path.PathLike):
-            if not isinstance(entry, bfs._path.BucketPath):
-                raise TypeError(
-                    "BucketFsArtifactRepo.list_artifacts() does"
-                    f" not support instances of {type(entry)}."
-                )
-            entry = cast(bfs._path.BucketPath, entry)
-            relative = entry.path.relative_to(path or "")
-            LOG.info("- %s", relative)
-            return FileInfo(path=str(relative), is_dir=False, file_size=None)
+        def info(path: bfs.path.PathLike) -> FileInfo:
+            rel = purepath(path).relative_to(purepath(self._bfs))
+            LOG.info("- %s", rel)
+            return FileInfo(path=str(rel), is_dir=path.is_dir(), file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs
         if not bfsloc.is_dir():
             return []
-
-        result = []
-        for root, _, files in bfsloc.walk():
-            result += [info(root / x) for x in files]
-        return result
+        return sorted(
+            [info(path) for path in bfsloc.iterdir()],
+            key=lambda fi: fi.path,
+        )
 
     # download_artifacts() is already implemented by class ArtifactRepository,
     # but BucketFsArtifactRepo needs to implement the abstractmethod
