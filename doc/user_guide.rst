@@ -4,7 +4,7 @@
 ============================
 
 This MLflow Plugin allows using the **Exasol Bucket File System** (BucketFS)
-as *MLflow Artifact Store*.
+as an *MLflow Artifact Store*.
 
 `BucketFS
 <https://docs.exasol.com/db/latest/database_concepts/bucketfs/bucketfs.htm>`_
@@ -18,7 +18,7 @@ nodes in an Exasol cluster.
   <https://docs.exasol.com/db/latest/database_concepts/udf_scripts.htm>`_
   (UDFs) can retrieve models from Exasol BucketFS very fast.  Loading a 600 MB
   Huggingface model from BucketFS can take less than 2% of the time compared
-  to MLflows regular HTTP interface.
+  to MLflow's regular HTTP interface.
 
 
 Installing
@@ -43,7 +43,7 @@ See the `MLflow documentation
 for specifying the BucketFS Artifact Store either when starting the MLflow
 server or when creating an MLflow *experiment*.
 
-Example for starting an MLflow server with the BucketFS as default artifact
+Example for starting an MLflow server with the BucketFS as the default artifact
 store:
 
 .. code-block:: shell
@@ -55,7 +55,7 @@ store:
 URI Format of Artifact URIs
 ---------------------------
 
-The plugin requires artifact URIs to be specified in the following format:
+The plugin requires that artifact URIs be specified in the following format:
 
 .. code-block:: shell
 
@@ -67,7 +67,7 @@ The plugin requires artifact URIs to be specified in the following format:
    * - Parameter
      - Description
    * - *<scheme>*
-     - Either ``exa+bfs`` or ``exa+bfss`` for HTTP and HTTPS,
+     - Either ``exa+bfs`` or ``exa+bfss`` for HTTP and HTTPS transfer,
        respectively.  Future releases of the plugin will also support ``exa+saas``
        for accessing the BucketFS of an Exasol SaaS instance.
    * - *<host>*
@@ -87,7 +87,7 @@ Environment Variables
 Additional parameters must be specified via environment variables:
 
 * ``EXA_BUCKETFS_PASSWORD``: Mandatory password.
-* ``EXA_BUCKETFS_USER``: Optional user name for writing to the BucketFS, defaults to ``w``.
+* ``EXA_BUCKETFS_USER``: Optional username for writing to the BucketFS, defaults to ``w``.
 * ``EXA_SSL_CERT_VALIDATION``: Optional setting, whether your client should
   verify the SSL certificates of the Exasol BucketFS service, either ``true``
   or ``false``, defaults to ``true``.
