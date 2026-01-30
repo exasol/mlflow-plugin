@@ -23,10 +23,10 @@ You can start the MLflow server with ``--default-artifact-root bfs://``.
 MLflow Server Processes
 -----------------------
 
-The integration tests of Exasol MLflow Plugin (MLFP) use a pytest fixture to
+The integration tests of the Exasol MLflow Plugin (MLFP) use a pytest fixture to
 start an MLflow server.
 
-The command ``mlflow server`` starts multiple processes
+The command ``mlflow server`` starts multiple processes:
 
 .. code-block:: shell
 
@@ -41,9 +41,9 @@ The command ``mlflow server`` starts multiple processes
 Terminating the MLflow server with ``Popen.kill()`` only affects the root
 process, while ``fastapi``, ``main``, and the workers keep running.
 
-The integration tests therefore use ``os.killpg()`` to terminate the complete
+The integration tests, therefore, use ``os.killpg()`` to terminate the complete
 process group.
 
 Additionally, the integration tests add kwarg ``preexec_fn=os.setsid`` when
 starting the MLflow server. This runs the subprocess in its own *session*
-preventing ``os.killpg()`` to terminate the ``pytest`` process itself.
+preventing ``os.killpg()`` from terminating the ``pytest`` process itself.
