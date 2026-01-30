@@ -24,7 +24,7 @@ packages = [
 [tool.poetry.plugins."mlflow.artifact_repository"]
 "exa+bfs" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
 "exa+bfss" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
-
+# end of plugin configuration
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=4.0.1, <5"
@@ -82,4 +82,3 @@ host.url = "https://sonar.exasol.com"
 organization = "exasol"
 exclusions = "exasol/mlflow_plugin/version.py"
 projectName = "mlflow-plugin"
-

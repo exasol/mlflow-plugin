@@ -35,6 +35,8 @@ compatible dependency management tool:
 
     MLflow will be installed as well, as it is a required dependency for the plugin.
 
+.. _starting the MLflow server:
+
 Using the BucketFS Artifact Store
 ---------------------------------
 
