@@ -63,6 +63,7 @@ The plugin requires that artifact URIs be specified in the following format:
 
 .. list-table::
    :header-rows: 1
+   :widths: 20 80
 
    * - Parameter
      - Description
@@ -86,8 +87,17 @@ Environment Variables
 
 Additional parameters must be specified via environment variables:
 
-* ``EXA_BUCKETFS_PASSWORD``: Mandatory password.
-* ``EXA_BUCKETFS_USER``: Optional username for writing to the BucketFS, defaults to ``w``.
-* ``EXA_SSL_CERT_VALIDATION``: Optional setting, whether your client should
-  verify the SSL certificates of the Exasol BucketFS service, either ``true``
-  or ``false``, defaults to ``true``.
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Environment variable
+     - Description
+   * - ``EXA_BUCKETFS_PASSWORD``
+     - Mandatory password.
+   * - ``EXA_BUCKETFS_USER``
+     - Optional username for writing to the BucketFS, defaults to ``w``.
+   * - ``EXA_SSL_CERT_VALIDATION``
+     - Optional setting, whether your client should
+       verify the SSL certificates of the Exasol BucketFS service, either
+       ``true`` or ``false``, defaults to ``true``.
