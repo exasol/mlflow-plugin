@@ -43,7 +43,7 @@ The command ``mlflow server`` starts multiple processes:
 Terminating the MLflow server with ``Popen.kill()`` only affects the root
 process, while ``fastapi``, ``main``, and the workers keep running.
 
-The integration tests, therefore, use ``os.killpg()`` to terminate the complete
+The integration tests, therefore, use ``os.killpg()`` to terminate the entire
 process group.
 
 Additionally, the integration tests add kwarg ``preexec_fn=os.setsid`` when
