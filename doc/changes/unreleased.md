@@ -11,6 +11,7 @@
 ## Documentation
 
 * #14: Added User Guide and Developer Guide
+* #17: Added required scope of plugin availability to the User Guide
 
 ## Refactorings
 
