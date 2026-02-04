@@ -32,6 +32,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           poetry-version: "2.3.0"
 
+      - name: Check of version of Poetry and Python
+        run: |
+          poetry --version
+          poetry run python --version
+
       - name: Run Tests and Collect Coverage
         run: >
           poetry run -- nox -s test:integration --
