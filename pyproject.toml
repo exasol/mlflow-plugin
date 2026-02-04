@@ -32,6 +32,8 @@ pytest-exasol-backend = ">=1.2.4, <2.0.0"
 exasol-python-extension-common = "^0.12.1"
 pytest-exasol-slc = "^0.4.3"
 
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
 
 [poetry.urls]
 repository = "https://github.com/exasol/mlflow-plugin"
