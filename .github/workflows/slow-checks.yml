@@ -38,7 +38,6 @@ jobs:
           poetry run python --version
           poetry run pytest -s test/test_sample.py
 
-
 #       - name: Run Tests and Collect Coverage
 #         run: >
 #           poetry run -- nox -s test:integration --
