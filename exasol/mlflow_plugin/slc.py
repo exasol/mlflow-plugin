@@ -3,7 +3,6 @@ from contextlib import contextmanager
 
 from exasol.python_extension_common.deployment.language_container_builder import (
     LanguageContainerBuilder,
-    exclude_cuda,
     find_path_backwards,
 )
 
