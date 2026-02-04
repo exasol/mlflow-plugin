@@ -54,3 +54,17 @@ class BucketFsCleaner:
 @pytest.fixture(scope="module")
 def cleaner(connector) -> BucketFsCleaner:
     return BucketFsCleaner(connector)
+
+
+@pytest.fixture(scope="session")
+def language_alias():
+    return "MLFLOW"
+
+
+@pytest.fixture(scope="session")
+def slc_builder(use_onprem, use_saas):
+    if use_onprem or use_saas:
+        with slc_build_context() as builder:
+            yield builder
+    else:
+        yield None
