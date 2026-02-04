@@ -11,6 +11,7 @@ import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+from exasol.mlflow_plugin.slc import slc_build_context
 
 
 class DotAccess:
