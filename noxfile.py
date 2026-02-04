@@ -14,8 +14,8 @@ from noxconfig import PROJECT_CONFIG
 @nox.session(name="slc:export", python=False)
 def slc_export(session: nox.Session):
     """
-    Builds and exports an SLC Image to directory .slc
+    Builds and exports an SLC Image to directory export
     """
-    export_path = PROJECT_CONFIG.root_path / ".slc"
+    export_path = PROJECT_CONFIG.root_path / "export"
     with slc_build_context() as builder:
         builder.export(export_path)
