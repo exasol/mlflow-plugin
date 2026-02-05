@@ -38,12 +38,12 @@ jobs:
           poetry run python --version
           poetry run pytest -s test/test_sample.py
 
-#       - name: Run Tests and Collect Coverage
-#         run: >
-#           poetry run -- nox -s test:integration --
-#           --coverage --db-version ${{ matrix.exasol-version }}
-#           -o log_cli=true -o log_cli_level=INFO
-#           --backend onprem
+      - name: Run Tests and Collect Coverage
+        run: >
+          poetry run -- nox -s test:integration --
+          --coverage --db-version ${{ matrix.exasol-version }}
+          -o log_cli=true -o log_cli_level=INFO
+          --backend onprem
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v6
