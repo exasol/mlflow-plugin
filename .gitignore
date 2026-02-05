@@ -155,3 +155,6 @@ itde/
 # MLFlow Model Registry
 /mlflow.db
 /mlartifacts
+
+# SLC building
+/.slc

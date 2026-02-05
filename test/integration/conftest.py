@@ -11,6 +11,7 @@ import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+from exasol.mlflow_plugin.slc import slc_build_context
 
 
 class DotAccess:
@@ -54,3 +55,17 @@ class BucketFsCleaner:
 @pytest.fixture(scope="module")
 def cleaner(connector) -> BucketFsCleaner:
     return BucketFsCleaner(connector)
+
+
+@pytest.fixture(scope="session")
+def language_alias():
+    return "MLFLOW"
+
+
+@pytest.fixture(scope="session")
+def slc_builder(use_onprem, use_saas):
+    if use_onprem or use_saas:
+        with slc_build_context() as builder:
+            yield builder
+    else:
+        yield None
