@@ -32,12 +32,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           poetry-version: "2.3.0"
 
-      - name: Check of version of Poetry and Python
-        run: |
-          poetry --version
-          poetry run python --version
-          poetry run pytest -s test/test_sample.py
-
       - name: Allow unprivileged user namespaces
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
