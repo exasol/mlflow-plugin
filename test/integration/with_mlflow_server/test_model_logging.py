@@ -8,17 +8,6 @@ import sklearn  # type: ignore
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 
-def xlogged_sample_model() -> str:
-    """
-    Return artifact URI, example:
-      exa+bfs://localhost:2580/bfsdefault/default/
-      0/models/m-f9938cdb7b3d4035add2cf24a6c67fad/artifacts
-    """
-    model = sklearn.linear_model.LogisticRegression()
-    info = mlflow.sklearn.log_model(model, name="Example-Model")
-    return info.artifact_path
-
-
 def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
     return {f.name for f in bfsloc.iterdir()}
 
