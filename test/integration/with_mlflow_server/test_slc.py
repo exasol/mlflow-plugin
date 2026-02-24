@@ -5,8 +5,6 @@ from test.integration.udfs import Udf
 import pyexasol
 import pytest
 
-from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logging.getLogger("exasol.bucketfs").setLevel(logging.WARNING)
@@ -30,16 +28,6 @@ def create_udf(
         ).create()
 
     return create
-
-
-@pytest.fixture
-def connector_for_bfs_access(logged_sample_model):
-    return Connector(
-        logged_sample_model,
-        username="not required",
-        password="not required",
-        ssl_cert_validation=False,
-    )
 
 
 def test_bfs_load_model(create_udf, logged_sample_model) -> None:
