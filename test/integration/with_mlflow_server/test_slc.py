@@ -2,7 +2,6 @@ import logging
 from collections.abc import Callable
 from test.integration.udfs import Udf
 
-import mlflow
 import pyexasol
 import pytest
 
@@ -83,18 +82,7 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
-def xtest_bfs2(connector_for_bfs_access) -> None:
-    path = connector_for_bfs_access.bucketfs_location.as_udf_path()
-    print(f"BucketFS Path: {path}")
-    return
-    loaded = mlflow.sklearn.load_model(path)
-
-
-def test_http_load_model(
-    create_udf,
-    bucketfs_env_variables,
-    logged_sample_model: str,
-) -> None:
+def test_http_load_model(create_udf, logged_sample_model: str) -> None:
     udf = create_udf(
         "HTTP_LOAD_MLFLOW_MODEL",
         """
@@ -115,12 +103,3 @@ def test_http_load_model(
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
-
-
-def xtest_http2(bucketfs_env_variables, logged_sample_model) -> None:
-    # This access method may need environment variables
-    # such as BFS user (password not required) and SSL verification.
-    model = mlflow.sklearn.load_model(logged_sample_model)
-    cls = type(model)
-    fqn = f"{cls.__module__}.{cls.__name__}"
-    print(f"{fqn}")

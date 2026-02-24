@@ -10,11 +10,7 @@ from urllib.parse import (
 import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-from exasol.mlflow_plugin.env_vars import (
-    ENV_BUCKETFS_PASSWORD,
-    ENV_BUCKETFS_USER,
-    ENV_SSL_CERT_VALIDATION,
-)
+from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 from exasol.mlflow_plugin.slc import slc_build_context
 
 
@@ -44,24 +40,6 @@ def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]
         prefix = replace_scheme(p.url)
         uri = f"{prefix}/{p.service_name}/{p.bucket_name}/{p.path}"
         yield Connector(uri, p.username, p.password, p.verify)
-
-
-@pytest.fixture(scope="module")
-def bucketfs_env_variables(backend_aware_bucketfs_params):
-    """
-    Simulates environment variables required to access BucketFS.
-    """
-    p = DotAccess(backend_aware_bucketfs_params)
-    if p.backend == "saas":
-        raise NotImplementedError(f"Backend {p.backend}")
-
-    env = {
-        ENV_BUCKETFS_PASSWORD: p.password,
-        ENV_SSL_CERT_VALIDATION: str(p.verify),
-        ENV_BUCKETFS_USER: p.username,
-    }
-    with mock.patch.dict(os.environ, env):
-        yield
 
 
 class BucketFsCleaner:
