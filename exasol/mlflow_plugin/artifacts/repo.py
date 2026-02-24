@@ -20,7 +20,7 @@ def bfs_location(artifact_uri: str) -> bfs.path.PathLike:
 
 
 LOG = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+LOG.setLevel(logging.WARNING)
 
 
 def purepath(pathlike: bfs.path.PathLike) -> PurePath:
@@ -51,7 +51,7 @@ class BucketFsArtifactRepo(ArtifactRepository):
     ) -> None:
         """
         Sample args:
-        * artifact_uri: "bfs://localhost:2580/bfsdefault/default/my_path/"
+        * artifact_uri: "exa+bfs://localhost:2580/bfsdefault/default/my_path/"
                         "0/models/m-e2506c0fa86d43aa8352749b9980c4ec/artifacts"
         """
         super().__init__(artifact_uri)
