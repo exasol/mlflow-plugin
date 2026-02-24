@@ -84,8 +84,7 @@ class MlflowServer:
 @pytest.fixture(scope="module")
 def mlflow_server(tmp_path_factory, connector: Connector, request):
     if server_url := request.config.getoption("--mlflow-server"):
-        print(f'Reusing running MLflow server at {server_url}')
-        LOG.info(f'Reusing running MLflow server at {server_url}')
+        LOG.info(f'Reusing MLflow server already running at {server_url}')
         mlflow.set_tracking_uri(server_url)
         yield
         return
