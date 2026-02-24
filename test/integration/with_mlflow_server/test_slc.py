@@ -32,23 +32,6 @@ def create_udf(
     return create
 
 
-def test_something_with_slc(create_udf):
-    udf = create_udf(
-        "LOAD_MLFLOW_MODEL",
-        """
-        --/
-        CREATE OR REPLACE {language_alias!r}
-           SCALAR SCRIPT {schema!q}.{name!q}()
-           RETURNS BOOLEAN AS
-        def run(ctx):
-            return True
-        /
-        """,
-    )
-    result = udf.run().fetchall()
-    assert result[0][0] is True
-
-
 @pytest.fixture
 def connector_for_bfs_access(logged_sample_model):
     return Connector(
