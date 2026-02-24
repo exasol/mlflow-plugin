@@ -75,7 +75,7 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
             path = con.bucketfs_location.as_udf_path()
             model = mlflow.sklearn.load_model(path)
             c = type(model)
-            return f"{c.__module__}.{c.__name__}"
+            return c.__module__  + "." + c.__name__
         /
         """,
     )
@@ -106,7 +106,7 @@ def test_http_load_model(
         def run(ctx):
             model = mlflow.sklearn.load_model(ctx.uri)
             c = type(model)
-            return f"{c.__module__}.{c.__name__}"
+            return c.__module__  + "." + c.__name__
         /
         """,
     )
