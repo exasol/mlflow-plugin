@@ -1,15 +1,12 @@
 import logging
-from inspect import cleandoc
+from collections.abc import Callable
 from test.integration.udfs import Udf
-from typing import Callable
 
 import mlflow
 import pyexasol
 import pytest
-import sklearn
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-from exasol.mlflow_plugin.artifacts.repo import bfs_location
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -123,4 +120,4 @@ def xtest_http2(bucketfs_env_variables, logged_sample_model) -> None:
     loaded = mlflow.sklearn.load_model(logged_sample_model)
     cls = type(loaded)
     fqn = f"{cls.__module__}.{cls.__name__}"
-    print(f'{fqn}')
+    print(f"{fqn}")

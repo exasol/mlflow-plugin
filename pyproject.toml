@@ -43,6 +43,15 @@ homepage = "https://github.com/exasol/mlflow-plugin"
 requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[[tool.mypy.overrides]]
+module = [
+    # py.typed file only available with version >= 2
+    "pyexasol.*",
+    "sklearn.*",
+]
+follow_untyped_imports = true
+
+
 # Tooling - marking what to show in the documentation
 [tool.coverage.run]
 relative_files = true

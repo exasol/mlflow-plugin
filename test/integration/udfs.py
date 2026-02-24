@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from inspect import cleandoc
 from typing import Any
-import pyexasol
+
+from pyexasol import (
+    ExaConnection,
+    ExaStatement,
+)
 
 
 class Udf:
     def __init__(
         self,
-        connection: pyexasol.ExaConnection,
+        connection: ExaConnection,
         language_alias: str,
         schema: str,
         name: str,
@@ -19,7 +23,7 @@ class Udf:
         self.schema = schema
         self.name = name
         self.impl = impl
-        self._last_result = None
+        self._last_result: ExaStatement | None = None
 
     def create_schema(self) -> Udf:
         sql = "CREATE SCHEMA IF NOT EXISTS {schema!q}"
@@ -38,7 +42,7 @@ class Udf:
         self._last_result = self.connection.execute(sql, params)
         return self
 
-    def run(self, *args: str) -> pyexasol.ExaStatement:
+    def run(self, *args: str) -> ExaStatement:
         def param(n: int, arg: Any):
             type = "r" if isinstance(arg, int) else "s"
             return f"{{arg{n+1}!{type}}}"
@@ -50,4 +54,4 @@ class Udf:
             "schema": self.schema,
             "name": self.name,
         } | args_params
-        return self.connection.execute(sql, params) # .fetchone()
+        return self.connection.execute(sql, params)  # .fetchone()

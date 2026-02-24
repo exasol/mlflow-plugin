@@ -15,7 +15,6 @@ from exasol.mlflow_plugin.env_vars import (
     ENV_BUCKETFS_USER,
     ENV_SSL_CERT_VALIDATION,
 )
-
 from exasol.mlflow_plugin.slc import slc_build_context
 
 
