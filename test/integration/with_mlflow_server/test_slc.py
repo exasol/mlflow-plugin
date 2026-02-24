@@ -75,7 +75,7 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
             path = con.bucketfs_location.as_udf_path()
             model = mlflow.sklearn.load_model(path)
             c = type(model)
-            return c.__module__  + "." + c.__name__
+            return c.__module__ + "." + c.__name__
         /
         """,
     )
@@ -103,10 +103,13 @@ def test_http_load_model(
            SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
            RETURNS VARCHAR(2000) AS
         import mlflow
+        import os
+        from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
         def run(ctx):
+            os.environ[ENV_BUCKETFS_PASSWORD] = "not required"
             model = mlflow.sklearn.load_model(ctx.uri)
             c = type(model)
-            return c.__module__  + "." + c.__name__
+            return c.__module__ + "." + c.__name__
         /
         """,
     )
@@ -121,3 +124,10 @@ def xtest_http2(bucketfs_env_variables, logged_sample_model) -> None:
     cls = type(model)
     fqn = f"{cls.__module__}.{cls.__name__}"
     print(f"{fqn}")
+
+
+def test_x1():
+    import os
+    os.environ["A"] = "hello"
+    p = os.environ.get("A")
+    print(f'{p}')
