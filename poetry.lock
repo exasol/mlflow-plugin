@@ -2448,7 +2448,7 @@ description = "Low-level, pure Python DBus protocol wrapper."
 optional = false
 python-versions = ">=3.7"
 groups = ["dev"]
-markers = "platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and sys_platform == \"linux\""
+markers = "sys_platform == \"linux\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\""
 files = [
     {file = "jeepney-0.9.0-py3-none-any.whl", hash = "sha256:97e5714520c16fc0a45695e5365a2e11b81ea79bba796e26f9f1d178cb182683"},
     {file = "jeepney-0.9.0.tar.gz", hash = "sha256:cf0e9e845622b81e4a28df94c40345400256ec608d0e55bb8a3feaa9163f5732"},
@@ -4797,14 +4797,14 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests
 
 [[package]]
 name = "pytest-exasol-backend"
-version = "1.2.4"
+version = "1.2.5"
 description = ""
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest_exasol_backend-1.2.4-py3-none-any.whl", hash = "sha256:f7fde35be9cea11369a2c249a431f697ecae64276e3ad4764f4140fe5bb2e6e4"},
-    {file = "pytest_exasol_backend-1.2.4.tar.gz", hash = "sha256:ea8680a0fe7cc45626159a451da386ef7c6b90b19ad8c707e86cb7102b08de23"},
+    {file = "pytest_exasol_backend-1.2.5-py3-none-any.whl", hash = "sha256:3adf673df3774f088e6f50e2b8fea8258d753590361b462f6df66ad05d642f27"},
+    {file = "pytest_exasol_backend-1.2.5.tar.gz", hash = "sha256:b47fa38f44fa6e4a0354eaa3b39e10f6870ae0f22a05aeeca9c13f5e74e00ada"},
 ]
 
 [package.dependencies]
@@ -5802,7 +5802,7 @@ description = "Python bindings to FreeDesktop.org Secret Service API"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and sys_platform == \"linux\""
+markers = "sys_platform == \"linux\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\""
 files = [
     {file = "secretstorage-3.5.0-py3-none-any.whl", hash = "sha256:0ce65888c0725fcb2c5bc0fdb8e5438eece02c523557ea40ce0703c266248137"},
     {file = "secretstorage-3.5.0.tar.gz", hash = "sha256:f04b8e4689cbce351744d5537bf6b1329c6fc68f91fa666f60a380edddcd11be"},
