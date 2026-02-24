@@ -79,7 +79,7 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
         /
         """,
     )
-    result = udf.run().fetchone()
+    result = udf.run(logged_sample_model).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
@@ -110,7 +110,7 @@ def test_http_load_model(
         /
         """,
     )
-    result = udf.run().fetchone()
+    result = udf.run(logged_sample_model).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
