@@ -124,10 +124,3 @@ def xtest_http2(bucketfs_env_variables, logged_sample_model) -> None:
     cls = type(model)
     fqn = f"{cls.__module__}.{cls.__name__}"
     print(f"{fqn}")
-
-
-def test_x1():
-    import os
-    os.environ["A"] = "hello"
-    p = os.environ.get("A")
-    print(f'{p}')
