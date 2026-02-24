@@ -74,8 +74,8 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
             con = Connector(ctx.uri, "", "", False)
             path = con.bucketfs_location.as_udf_path()
             model = mlflow.sklearn.load_model(path)
-            cls = type(model)
-            return f"{cls.__module__}.{cls.__name__}"
+            c = type(model)
+            return f"{c.__module__}.{c.__name__}"
         /
         """,
     )
@@ -104,9 +104,9 @@ def test_http_load_model(
            RETURNS VARCHAR(2000) AS
         import mlflow
         def run(ctx):
-            loaded = mlflow.sklearn.load_model(ctx.uri)
-            cls = type(loaded)
-            return f"{cls.__module__}.{cls.__name__}"
+            model = mlflow.sklearn.load_model(ctx.uri)
+            c = type(model)
+            return f"{c.__module__}.{c.__name__}"
         /
         """,
     )
@@ -117,7 +117,7 @@ def test_http_load_model(
 def xtest_http2(bucketfs_env_variables, logged_sample_model) -> None:
     # This access method may need environment variables
     # such as BFS user (password not required) and SSL verification.
-    loaded = mlflow.sklearn.load_model(logged_sample_model)
-    cls = type(loaded)
+    model = mlflow.sklearn.load_model(logged_sample_model)
+    cls = type(model)
     fqn = f"{cls.__module__}.{cls.__name__}"
     print(f"{fqn}")
