@@ -1,10 +1,14 @@
 import logging
 from collections.abc import Callable
-from test.integration.udfs import EnvSpec, Udf
-from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+from test.integration.udfs import (
+    EnvSpec,
+    Udf,
+)
 
 import pyexasol
 import pytest
+
+from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
