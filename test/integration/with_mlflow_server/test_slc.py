@@ -1,6 +1,7 @@
 import logging
 from collections.abc import Callable
-from test.integration.udfs import Udf
+from test.integration.udfs import EnvSpec, Udf
+from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
 import pyexasol
 import pytest
@@ -21,10 +22,10 @@ def create_udf(
     language_alias: str,
     pyexasol_connection: pyexasol.ExaConnection,
     db_schema_name: str,
-) -> Callable[[str, str], Udf]:
-    def create(name: str, impl: str) -> Udf:
+) -> Callable[[str, str, EnvSpec], Udf]:
+    def create(name: str, impl: str, env: EnvSpec = None) -> Udf:
         return Udf(
-            pyexasol_connection, language_alias, db_schema_name, name, impl
+            pyexasol_connection, language_alias, db_schema_name, name, impl, env
         ).create()
 
     return create
@@ -61,16 +62,15 @@ def test_http_load_model(create_udf, logged_sample_model: str) -> None:
         CREATE OR REPLACE {language_alias!r}
            SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
            RETURNS VARCHAR(2000) AS
+        {env!r}
         import mlflow
-        import os
-        from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
         def run(ctx):
-            os.environ[ENV_BUCKETFS_PASSWORD] = "not required"
             model = mlflow.sklearn.load_model(ctx.uri)
             c = type(model)
             return c.__module__ + "." + c.__name__
         /
         """,
+        env={ENV_BUCKETFS_PASSWORD: "not required"},
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"

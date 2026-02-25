@@ -1,12 +1,26 @@
 from __future__ import annotations
 
+import logging
 from inspect import cleandoc
 from typing import Any
 
 from pyexasol import (
     ExaConnection,
+    ExaFormatter,
     ExaStatement,
 )
+
+
+def _exa_formatter(quote_ident: bool = True) -> ExaFormatter:
+    class ConnectionMock:
+        options = {"quote_ident": quote_ident}
+
+    return ExaFormatter(ConnectionMock())
+
+
+LOG = logging.getLogger(__name__)
+EnvSpec = dict[str, str] | None
+FORMATTER = _exa_formatter(quote_ident=True)
 
 
 class Udf:
@@ -17,12 +31,14 @@ class Udf:
         schema: str,
         name: str,
         impl: str,
+        env: EnvSpec = None,
     ):
         self.connection = connection
         self.language_alias = language_alias
         self.schema = schema
         self.name = name
         self.impl = impl
+        self._env = env or {}
         self._last_result: ExaStatement | None = None
 
     def create_schema(self) -> Udf:
@@ -31,6 +47,9 @@ class Udf:
         self._last_result = self.connection.execute(sql, params)
         return self
 
+    def env(self) -> str:
+        return "\n".join(f'%env {k}="{v}";' for k, v in self._env.items())
+
     def create(self) -> Udf:
         self.create_schema()
         sql = cleandoc(self.impl)
@@ -38,7 +57,9 @@ class Udf:
             "language_alias": self.language_alias,
             "schema": self.schema,
             "name": self.name,
+            "env": self.env(),
         }
+        LOG.debug("Creating UDF\n%s", FORMATTER.format(sql, **params))
         self._last_result = self.connection.execute(sql, params)
         return self
 
