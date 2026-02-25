@@ -126,3 +126,8 @@ class Connector:
             password,
             str_to_bool(ssl_cert_validation),
         )
+
+
+def udf_path(artifact_uri: str) -> str:
+    con = Connector(artifact_uri, "", "", False)
+    return con.bucketfs_location.as_udf_path()

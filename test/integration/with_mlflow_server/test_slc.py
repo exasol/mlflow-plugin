@@ -44,10 +44,9 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
            SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
            RETURNS VARCHAR(2000) AS
         import mlflow
-        from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
+        from exasol.mlflow_plugin.artifacts.bucketfs_connector import udf_path
         def run(ctx):
-            con = Connector(ctx.uri, "", "", False)
-            path = con.bucketfs_location.as_udf_path()
+            path = udf_path(ctx.uri)
             model = mlflow.sklearn.load_model(path)
             c = type(model)
             return c.__module__ + "." + c.__name__
