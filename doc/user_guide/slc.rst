@@ -1,3 +1,6 @@
+.. _slct: https://exasol.github.io/script-languages-container-tool/main/index.html
+.. _customize_slc: https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/customize.ipynb
+
 Building and Deploying the Script Language Container
 ====================================================
 
@@ -16,6 +19,15 @@ creating a dedicated `Script Language Container (SLC)
 The current section guides you to build, the SLC, upload it to Exasol's
 BucketFS and activate it for running UDFs.
 
+Adding Additional Dependencies
+------------------------------
+
+Depending on the AI models you want to use in your UDF implementation, you
+might need to add additional libraries as dependencies to be included in the
+SLC image.
+
+Please see the `instructions for customizing an SLC flavor <customize_slc_>`_.
+
 Building the SLC
 ----------------
 
@@ -33,7 +45,7 @@ Deploying the SLC
 An SLC image can be deployed to an Exasol database instance by uploading it to
 the BucketFS.
 
-t.b.d.
+See `Exasol Script Languages Container Tool User Guide <slct_>`_ for details.
 
 Activating the SLC
 ------------------
@@ -42,4 +54,4 @@ Before running a UDF in an SLC, the SLC image needs to be deployed and
 *activated* for the current active SQL session or the system, the latter
 requiring administration permissions.
 
-t.b.d.
+See `Exasol Script Languages Container Tool User Guide <slct_>`_ for details.
