@@ -1,5 +1,5 @@
 .. _slct: https://exasol.github.io/script-languages-container-tool/main/index.html
-.. _customize_slc: https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/customize.ipynb
+.. _customize_slc: https://github.com/exasol/script-languages-release/blob/master/doc/user_guide/usage.md#how-to-customize-an-existing-flavor
 
 Building and Deploying the Script Language Container
 ====================================================
