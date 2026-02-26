@@ -36,6 +36,14 @@ def create_udf(
 
 
 def test_bfs_load_model(create_udf, logged_sample_model) -> None:
+    """
+    Use a sample model already logged to MLflow server and represented by
+    its URI as returned by fixture `logged_sample_model`.
+
+    Create a UDF reading the model from BucketFS mounted as path in the local
+    file system.
+    """
+
     udf = create_udf(
         "BFS_LOAD_MLFLOW_MODEL",
         """
@@ -58,6 +66,19 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
 
 
 def test_http_load_model(create_udf, logged_sample_model: str) -> None:
+    """
+    Use a sample model already logged to MLflow server and represented by
+    its URI as returned by fixture `logged_sample_model`.
+
+    Create a UDF reading the model via HTTP to the MLflow server.
+
+    Environment variable ENV_BUCKETFS_PASSWORD is set to "not required" as the
+    the test uses a public bucket and the UDF performs only read-operations.
+
+    Note: Private buckets can be read using the read-password as well as the
+    write-password).
+    """
+
     udf = create_udf(
         "HTTP_LOAD_MLFLOW_MODEL",
         """
