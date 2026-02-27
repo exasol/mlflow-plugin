@@ -12,6 +12,7 @@
 
 * #14: Added User Guide and Developer Guide
 * #17: Added required scope of plugin availability to the User Guide
+* #25: Described MLflow access from UDFs in the User Guide
 
 ## Refactorings
 
