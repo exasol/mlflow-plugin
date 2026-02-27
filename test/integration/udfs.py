@@ -65,7 +65,7 @@ class Udf:
 
     def run(self, *args: str) -> ExaStatement:
         def param(n: int, arg: Any):
-            type = "r" if isinstance(arg, int) else "s"
+            type = "r" if isinstance(arg, (int, float)) else "s"
             return f"{{arg{n+1}!{type}}}"
 
         args_sql = ", ".join(param(n, arg) for n, arg in enumerate(args))
