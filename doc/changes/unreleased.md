@@ -19,3 +19,4 @@
 * #9: Refactored bucketfs_spec, added class Connector
 * #12: Added end-to-end tests incl. MLflow server
 * #19: Added SLC building to integration tests
+* #23: Created UDFs for itests

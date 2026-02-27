@@ -126,3 +126,17 @@ class Connector:
             password,
             str_to_bool(ssl_cert_validation),
         )
+
+
+def udf_path(artifact_uri: str) -> str:
+    """
+    Accessing `bucketfs_location` calls `bfs.path.build_path()`, which
+    calls `bfs.path._create_onprem_bucket()`, which accesses
+    `bfs.Service.bucketfs`, which reads credentials from class attribute
+    `_authenticator`.
+
+    See ticket https://github.com/exasol/bucketfs-python/issues/270 for
+    ignoring these credentials for onyl calling method `as_udf_path()`.
+    """
+    con = Connector(artifact_uri, "", "", False)
+    return con.bucketfs_location.as_udf_path()
