@@ -53,7 +53,8 @@ preventing ``os.killpg()`` from terminating the ``pytest`` process itself.
 Integration Tests
 -----------------
 
-MLFP integration tests include providing the following prerequisites
+MLFP integration tests automatically provision the following prerequisites via
+fixtures:
 
 * Run a Docker instance of Exasol for accessing the BucketFS
 * Build a Script Language Container (SLC)

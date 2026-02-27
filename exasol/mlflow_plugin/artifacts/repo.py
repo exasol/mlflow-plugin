@@ -20,7 +20,6 @@ def bfs_location(artifact_uri: str) -> bfs.path.PathLike:
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.WARNING)
 
 
 def purepath(pathlike: bfs.path.PathLike) -> PurePath:
