@@ -72,7 +72,7 @@ def test_http_load_model(create_udf, logged_sample_model: str) -> None:
 
     Create a UDF reading the model via HTTP to the MLflow server.
 
-    Environment variable ENV_BUCKETFS_PASSWORD is set to "not required" as the
+    Environment variable ENV_BUCKETFS_PASSWORD is set to "not required" as
     the test uses a public bucket and the UDF performs only read-operations.
 
     Note: Private buckets can be read using the read-password as well as the
