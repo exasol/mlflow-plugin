@@ -12,7 +12,7 @@ Building and Deploying the Script Language Container
   * The MLflow Client API
 
 Enabling a UDF to retrieve MLflow models, requires the implementation of the
-Exasol MLflow Plugin incl. its dependencies to be available.  This is done by
+Exasol MLflow Plugin incl. its dependencies to be available. This is done by
 creating a dedicated `Script Language Container (SLC)
 <https://github.com/exasol/script-languages-release>`_ for running the UDF.
 
@@ -50,7 +50,7 @@ See `Exasol Script Languages Container Tool User Guide <slct_>`_ for details.
 Activating the SLC
 ------------------
 
-Before running a UDF in an SLC, the SLC image needs to be deployed and
+Before running a UDF in a SLC, the SLC image needs to be deployed and
 *activated* for the current active SQL session or the system, the latter
 requiring administration permissions.
 
