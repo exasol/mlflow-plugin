@@ -29,8 +29,9 @@ packages = [
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=5.1.0, <6"
 pytest-exasol-backend = ">=1.2.4, <2.0.0"
-exasol-python-extension-common = "^0.12.1"
-pytest-exasol-slc = "^0.4.3"
+exasol-python-extension-common = ">= 0.12.1"
+pytest-exasol-slc = ">= 0.4.3"
+# pyexasol = "^2.0.0, <3" # requires pec to update dependency first
 
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"
@@ -42,6 +43,15 @@ homepage = "https://github.com/exasol/mlflow-plugin"
 [build-system]
 requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.mypy.overrides]]
+module = [
+    # py.typed file only available with version >= 2
+    "pyexasol.*",
+    "sklearn.*",
+]
+follow_untyped_imports = true
+
 
 # Tooling - marking what to show in the documentation
 [tool.coverage.run]

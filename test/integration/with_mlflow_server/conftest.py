@@ -14,15 +14,15 @@ from datetime import (
 from subprocess import PIPE
 from typing import IO
 
-import exasol.bucketfs as bfs
 import mlflow
 import pytest
-import sklearn  # type: ignore
+import sklearn
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+logging.getLogger("exasol.bucketfs").setLevel(logging.WARNING)
 
 
 class MlflowServer:
@@ -80,9 +80,15 @@ class MlflowServer:
             self._thread = None
 
 
-@pytest.fixture
-def mlflow_server(tmp_path, connector: Connector):
-    path = tmp_path / "mlflow.db"
+@pytest.fixture(scope="module")
+def mlflow_server(tmp_path_factory, connector: Connector, request):
+    if server_url := request.config.getoption("--mlflow-server"):
+        LOG.info(f"Reusing MLflow server already running at {server_url}")
+        mlflow.set_tracking_uri(server_url)
+        yield
+        return
+
+    path = tmp_path_factory.mktemp("data") / "mlflow.db"
     port = 5000
     command = [
         "mlflow",
@@ -101,52 +107,13 @@ def mlflow_server(tmp_path, connector: Connector):
     server.stop()
 
 
-def log_sample_model() -> mlflow.models.model.ModelInfo:
-    lr = sklearn.linear_model.LogisticRegression()
-    return mlflow.sklearn.log_model(lr, name="my_first_logistic_regression")
-
-
-def filenames(bfsloc: bfs.path.PathLike) -> set[str]:
-    return {f.name for f in bfsloc.iterdir()}
-
-
-def switch_uri(other: Connector, uri: str) -> Connector:
-    return Connector(
-        uri,
-        other.username,
-        other.password,
-        other.ssl_cert_validation,
-    )
-
-
-@pytest.mark.parametrize(
-    "cls, mlflow_package",
-    [
-        (sklearn.linear_model.LogisticRegression, mlflow.sklearn),
-    ],
-)
-def test_round_trip(cls, mlflow_package, mlflow_server, connector):
+@pytest.fixture(scope="module")
+def logged_sample_model(mlflow_server) -> str:
     """
-    Parameters:
-    * cls: Model class to instantiate for the round trip
-    * mlflow_package: mlflow package to use for logging and loading the model instance.
+    Return artifact URI, example:
+      exa+bfs://localhost:2580/bfsdefault/default/
+      0/models/m-f9938cdb7b3d4035add2cf24a6c67fad/artifacts
     """
-
-    model_name = f"{cls.__module__}.{cls.__name__}".replace(".", ">")
-    info = mlflow_package.log_model(cls(), name=model_name)
-    loaded = mlflow_package.load_model(info.model_uri)
-    assert type(loaded) == cls
-
-
-def test_log_model(mlflow_server, connector):
-    info = log_sample_model()
-    other = switch_uri(connector, info.artifact_path)
-    expected = {
-        "conda.yaml",
-        "python_env.yaml",
-        "model.pkl",
-        "MLmodel",
-        "requirements.txt",
-    }
-    actual = filenames(other.bucketfs_location)
-    assert actual == expected
+    model = sklearn.linear_model.LogisticRegression()
+    info = mlflow.sklearn.log_model(model, name="Example-Model")
+    return info.artifact_path

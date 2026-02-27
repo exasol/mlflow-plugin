@@ -49,3 +49,37 @@ process group.
 Additionally, the integration tests add kwarg ``preexec_fn=os.setsid`` when
 starting the MLflow server. This runs the subprocess in its own *session*
 preventing ``os.killpg()`` from terminating the ``pytest`` process itself.
+
+Integration Tests
+-----------------
+
+MLFP integration tests automatically provision the following prerequisites via
+fixtures:
+
+* Run a Docker instance of Exasol for accessing the BucketFS
+* Build a Script Language Container (SLC)
+* Run an MLflow server
+
+As these steps can be quite time-consuming, there are options to skip these
+steps and reuse artifacts and services already provided on your local machine.
+
+For reusing an existing database you can use the following pytest CLI options:
+
+.. code-block:: shell
+
+    pytest \
+      --backend=onprem \
+      --itde-db-version=external \
+      --bucketfs-password "$BUCKETFS_PASSWORD"
+
+See Pytest Plugin `Exasol-Backend <PYTBE_>`_.
+
+.. _PYTBE: https://github.com/exasol/pytest-plugins/tree/main/pytest-backend#re-using-an-external-or-local-database
+
+For skipping building and deploying the SLC you can add option ``--skip-slc``.
+
+For reusing an already running instance of MLflow server you can add option
+
+.. code-block:: shell
+
+    pytest --mlflow-server http://localhost:5000
