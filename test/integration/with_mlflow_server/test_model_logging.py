@@ -34,6 +34,10 @@ def test_round_trip(cls, mlflow_package, mlflow_server, connector):
     * cls: Model class to instantiate for the round trip
     * mlflow_package: mlflow package to use for logging and loading the model
       instance.
+
+    See `_validate_logged_model_name()` in
+    https://github.com/mlflow/mlflow/blob/master/mlflow/utils/validation.py#L686
+    for restrictions on model names.
     """
 
     model_name = f"{cls.__module__}.{cls.__name__}".replace(".", ">")
