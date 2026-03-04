@@ -16,10 +16,7 @@ from mlflow.exceptions import MlflowException
 # Required to avoid warnings about circular import of BucketFsArtifactRepo
 from mlflow.store.artifact.artifact_repo import ArtifactRepository as _  # noqa
 
-from exasol.mlflow_plugin.artifacts.repo import (
-    BucketFsArtifactRepo,
-    purepath,
-)
+from exasol.mlflow_plugin.artifacts.repo import BucketFsArtifactRepo
 
 ROOT_FILE = "root-file.txt"
 FILE_IN_DIR = "dir/file-in-dir.txt"
@@ -34,9 +31,8 @@ def pathlike_content(bfsloc: bfs.path.PathLike) -> list[str]:
     """
 
     def entry(f: bfs.path.PathLike) -> str:
-        suffix = "/" if f.is_dir() else ""
-        rel = purepath(f).relative_to(purepath(bfsloc))
-        return f"{rel}{suffix}"
+        rel = f.relative_to(bfsloc)
+        return f"{rel}/" if f.is_dir() else str(rel)
 
     return sorted([entry(f) for f in bfsloc.iterdir()])
 
