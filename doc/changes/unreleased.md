@@ -2,7 +2,7 @@
 
 ## Summary
 
-This is the initial release of Exasol MLflow Plugin.
+This is the initial release of Exasol MLflow Plugin. 
 
 ## Features
 
