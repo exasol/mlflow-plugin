@@ -117,7 +117,7 @@ class Connector:
         return cls(
             artifact_uri,
             username="",
-            password="",  # noqa: B106 - not an actual password
+            password="",  # nosec: B106 - not an actual password
             ssl_cert_validation=False,
             verify_bucket=False,
         )
