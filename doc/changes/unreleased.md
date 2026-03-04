@@ -2,6 +2,8 @@
 
 ## Summary
 
+This is the initial release of Exasol MLflow Plugin.
+
 ## Features
 
 * #3: Added initial plugin configuration and empty interface extending `ArtifactRepository`
@@ -20,3 +22,4 @@
 * #12: Added end-to-end tests incl. MLflow server
 * #19: Added SLC building to integration tests
 * #23: Created UDFs for itests
+* #29: Integrated new version of `exasol-bucketfs`

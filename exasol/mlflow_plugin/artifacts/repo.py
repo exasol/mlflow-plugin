@@ -3,8 +3,6 @@ from __future__ import annotations
 import logging
 import os
 import posixpath
-import typing
-from pathlib import PurePath
 
 import exasol.bucketfs as bfs
 from mlflow.entities import FileInfo
@@ -20,17 +18,6 @@ def bfs_location(artifact_uri: str) -> bfs.path.PathLike:
 
 
 LOG = logging.getLogger(__name__)
-
-
-def purepath(pathlike: bfs.path.PathLike) -> PurePath:
-    """
-    BFSPY public interface PathLike currently does not include property
-    path, see https://github.com/exasol/bucketfs-python/issues/271.
-    """
-
-    if not isinstance(pathlike, bfs._path.BucketPath):
-        raise TypeError(f"purepath() does not support instances of {type(pathlike)}.")
-    return typing.cast(bfs._path.BucketPath, pathlike).path
 
 
 class BucketFsArtifactRepo(ArtifactRepository):
@@ -137,8 +124,8 @@ class BucketFsArtifactRepo(ArtifactRepository):
         path = path and validate_path_is_safe(path)
 
         def info(path: bfs.path.PathLike) -> FileInfo:
-            rel = purepath(path).relative_to(purepath(self._bfs))
-            LOG.info("- %s", rel)
+            rel = path.relative_to(self._bfs)
+            LOG.debug("- %s", rel)
             return FileInfo(path=str(rel), is_dir=path.is_dir(), file_size=None)
 
         bfsloc = self._bfs / path if path else self._bfs

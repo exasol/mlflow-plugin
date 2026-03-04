@@ -74,7 +74,7 @@ For reusing an existing database you can use the following pytest CLI options:
 
 See Pytest Plugin `Exasol-Backend <PYTBE_>`_.
 
-.. _PYTBE: https://github.com/exasol/pytest-plugins/tree/main/pytest-backend#re-using-an-external-or-local-database
+.. _PYTBE: https://github.com/exasol/pytest-backend/tree/main/#re-using-an-external-or-local-database
 
 For skipping building and deploying the SLC you can add option ``--skip-slc``.
 

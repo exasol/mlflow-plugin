@@ -91,6 +91,7 @@ class Connector:
     username: str
     password: str
     ssl_cert_validation: bool
+    verify_bucket: bool = True
 
     @property
     def bucketfs_parameters(self) -> dict[str, Any]:
@@ -104,11 +105,22 @@ class Connector:
             "bucket_name": bucket,
             "verify": self.ssl_cert_validation,
             "path": path,
+            "verify_bucket": self.verify_bucket,
         }
 
     @property
     def bucketfs_location(self) -> bfs.path.PathLike:
         return bfs.path.build_path(**self.bucketfs_parameters)
+
+    @classmethod
+    def for_udfs(cls, artifact_uri: str) -> Connector:
+        return cls(
+            artifact_uri,
+            username="",
+            password="",  # nosec: B106 - not an actual password
+            ssl_cert_validation=False,
+            verify_bucket=False,
+        )
 
     @classmethod
     def from_env(cls, artifact_uri: str) -> Connector:
@@ -129,14 +141,5 @@ class Connector:
 
 
 def udf_path(artifact_uri: str) -> str:
-    """
-    Accessing `bucketfs_location` calls `bfs.path.build_path()`, which
-    calls `bfs.path._create_onprem_bucket()`, which accesses
-    `bfs.Service.bucketfs`, which reads credentials from class attribute
-    `_authenticator`.
-
-    See ticket https://github.com/exasol/bucketfs-python/issues/270 for
-    ignoring these credentials for onyl calling method `as_udf_path()`.
-    """
-    con = Connector(artifact_uri, "", "", False)
+    con = Connector.for_udfs(artifact_uri)
     return con.bucketfs_location.as_udf_path()

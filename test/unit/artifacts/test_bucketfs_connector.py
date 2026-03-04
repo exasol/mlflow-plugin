@@ -8,6 +8,7 @@ from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
     Connector,
     EnvError,
     ParseError,
+    udf_path,
 )
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
@@ -58,14 +59,32 @@ def test_valid_spec(monkeypatch, protocol, host, port, service, bucket, path) ->
         "bucket_name": bucket,
         "verify": True,
         "path": path[1:],
+        "verify_bucket": True,
     }
     assert actual == expected
 
 
-def test_missing_password() -> None:
-    artifact_root = "exa+bfs://localhost:1234/bfsdefault/default"
+@pytest.fixture
+def missing_password_env(monkeypatch) -> None:
+    monkeypatch.delitem(os.environ, ENV_BUCKETFS_PASSWORD, raising=False)
+
+
+@pytest.fixture
+def valid_artifact_root():
+    return "exa+bfs://localhost:1234/bfsdefault/default"
+
+
+def test_missing_password(missing_password_env, valid_artifact_root) -> None:
     with pytest.raises(
         EnvError,
         match=f"Environment variable {ENV_BUCKETFS_PASSWORD} must be set",
     ):
-        bucketfs_parameters_from_env(artifact_root)
+        bucketfs_parameters_from_env(valid_artifact_root)
+
+
+def test_for_udfs(missing_password_env, valid_artifact_root) -> None:
+    """
+    Although ENV_BUCKETFS_PASSWORD is not set, assert no exception is
+    raised and the correct path for use inside a UDF to be returned.
+    """
+    assert udf_path(valid_artifact_root) == "/buckets/bfsdefault/default"
