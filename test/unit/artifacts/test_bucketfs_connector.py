@@ -66,7 +66,7 @@ def test_valid_spec(monkeypatch, protocol, host, port, service, bucket, path) ->
 
 @pytest.fixture
 def missing_password_env(monkeypatch) -> None:
-    monkeypatch.delitem(os.environ, ENV_BUCKETFS_PASSWORD)
+    monkeypatch.delitem(os.environ, ENV_BUCKETFS_PASSWORD, raising=False)
 
 
 @pytest.fixture
