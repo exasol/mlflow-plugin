@@ -117,7 +117,7 @@ class Connector:
         return cls(
             artifact_uri,
             username="",
-            password="",
+            password="",  # noqa: B106 - not an actual password
             ssl_cert_validation=False,
             verify_bucket=False,
         )
@@ -141,6 +141,5 @@ class Connector:
 
 
 def udf_path(artifact_uri: str) -> str:
-    # con = Connector(artifact_uri, "", "", False)
     con = Connector.for_udfs(artifact_uri)
     return con.bucketfs_location.as_udf_path()
