@@ -1,4 +1,4 @@
-name: Status Report
+name: Report Quality Metrics
 
 on:
   workflow_call:
@@ -6,6 +6,7 @@ on:
 jobs:
 
   report:
+    name: Quality Metrics
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
