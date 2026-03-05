@@ -15,7 +15,7 @@ This is the initial release of Exasol MLflow Plugin.
 * #14: Added User Guide and Developer Guide
 * #17: Added required scope of plugin availability to the User Guide
 * #25: Described MLflow access from UDFs in the User Guide
-* #33: Added creating experiments to the User Guide
+* #33: Added to the User Guide how to create MLflow experiments
 
 ## Refactorings
 
