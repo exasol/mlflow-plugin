@@ -27,7 +27,7 @@ packages = [
 # end of plugin configuration
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=5.1.0, <7"
+exasol-toolbox = ">=6, <7"
 pytest-exasol-backend = ">=1.2.4, <2.0.0"
 exasol-python-extension-common = ">= 0.12.1"
 pytest-exasol-slc = ">= 0.4.3"
