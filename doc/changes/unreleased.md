@@ -23,3 +23,4 @@ This is the initial release of Exasol MLflow Plugin.
 * #19: Added SLC building to integration tests
 * #23: Created UDFs for itests
 * #29: Integrated new version of `exasol-bucketfs`
+* #31: Updated Python Toolbox and re-generated GitHub workflows
