@@ -134,7 +134,7 @@ jobs:
         run: poetry run -- nox -s lint:typing
 
   audit-security:
-    name: Audit Security (Python-${{ matrix.python-versions }})
+    name: Security (Python-${{ matrix.python-versions }})
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
@@ -211,7 +211,7 @@ jobs:
         run: poetry run -- nox -s package:check
 
   run-unit-tests:
-    name: Run Unit Tests (Python-${{ matrix.python-versions }})
+    name: Unit Tests (Python-${{ matrix.python-versions }})
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
