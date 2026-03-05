@@ -37,16 +37,16 @@ MLflow allows creating experiments via UI, CLI, and API.
 .. _create_experiment_api: https://mlflow.org/docs/latest/ml/tracking/tracking-api/#experiment-organization
 
 
-Create an MLflow Experiment via UI
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Via UI
+^^^^^^
 
 .. image:: create-experiment-ui.png
     :scale: 40 %
     :class: with-border
 
 
-Create an MLflow Experiment via CLI
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Via CLI
+^^^^^^^
 
 .. code-block:: shell
 
@@ -57,8 +57,8 @@ Create an MLflow Experiment via CLI
 For details, see `MLflow CLI Documentation <create_experiment_cli_>`_ and
 :ref:`URI Format<uri_format>`.
 
-Create an MLflow Experiment via API
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Via API
+^^^^^^^
 
 .. code-block:: python
 
