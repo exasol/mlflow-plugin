@@ -91,7 +91,7 @@ extend-select = ["F401"]
 unfixable = []
 
 [tool.sonar]
-projectKey = "mlflow-plugin"
+projectKey = "com.exasol:mlflow-plugin"
 host.url = "https://sonar.exasol.com"
 organization = "exasol"
 exclusions = "exasol/mlflow_plugin/version.py"
