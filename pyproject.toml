@@ -92,7 +92,7 @@ unfixable = []
 
 [tool.sonar]
 projectKey = "com.exasol:mlflow-plugin"
-host.url = "https://sonar.exasol.com"
+host.url = "https://sonarcloud.io"
 organization = "exasol"
 exclusions = "exasol/mlflow_plugin/version.py"
 projectName = "mlflow-plugin"
