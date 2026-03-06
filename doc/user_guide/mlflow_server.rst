@@ -25,47 +25,32 @@ change its startup options.
 
 For more details, see :ref:`uri_format`.
 
-For a Single MLflow Experiment
-------------------------------
+In the Scope of an Individual MLflow Experiment
+-----------------------------------------------
+
+.. _set_experiment:
+   https://mlflow.org/docs/latest/api_reference/python_api/mlflow.html#mlflow.set_experiment
 
 If you cannot change the startup options of your MLflow server, then you still
 can use the BucketFS Artifact Store for individual MLflow *experiments*.
 
-MLflow allows creating experiments via UI, CLI, and API.
+:ref:`create_mlflow_experiment` describes how to create an MLflow experiment
+via UI, CLI, and API.
 
-.. _create_experiment_cli: https://mlflow.org/docs/latest/api_reference/cli.html#mlflow-experiments-create
-.. _create_experiment_api: https://mlflow.org/docs/latest/ml/tracking/tracking-api/#experiment-organization
-
-
-Via UI
-^^^^^^
-
-.. image:: create-experiment-ui.png
-    :scale: 40 %
-    :class: with-border
-
-
-Via CLI
-^^^^^^^
-
-.. code-block:: shell
-
-    mlflow experiments create \
-      --experiment-name "My Experiment"
-      --artifact-location "exa+bfs://localhost:2580/bfsdefault/default/my-experiment"
-
-For details, see `MLflow CLI Documentation <create_experiment_cli_>`_ and
-:ref:`URI Format<uri_format>`.
-
-Via API
-^^^^^^^
+As soon as such an experiment exists, you can use it via MLflow API function
+``set_experiment()`` providing the name or the ID of the experiment as
+argument.
 
 .. code-block:: python
 
     import mlflow
+    import sklearn
 
-    uri = "exa+bfs://localhost:2580/bfsdefault/default/my-experiment"
-    experiment_id = mlflow.create_experiment("My Experiment", artifact_location=uri)
+    mlflow.set_experiment("My Experiment")
+    model = sklearn.linear_model.LogisticRegression()
+    info = mlflow.sklearn.log_model(model, name="My_Model")
+    print(f"stored model at {info.artifact_path}")
 
-For details, see `MLflow API Documentation <create_experiment_api_>`_ and
-:ref:`URI Format<uri_format>`.
+
+For details, see the `MLflow API function set_experiment()
+<set_experiment_>`_.
