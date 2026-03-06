@@ -3,7 +3,6 @@
 :octicon:`person` User Guide
 ============================
 
-
 This MLflow Plugin allows using the **Exasol Bucket File System** (BucketFS)
 as an *MLflow Artifact Store*.
 
