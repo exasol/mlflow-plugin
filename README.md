@@ -1,4 +1,4 @@
-# mlflow-plugin
+# Exasol MLflow Plugin
 
 This MLflow Plugin allows using the **Exasol Bucket File System** (BucketFS) as an *MLflow Artifact Store*.
 
