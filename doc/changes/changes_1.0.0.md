@@ -2,7 +2,7 @@
 
 ## Summary
 
-This is the initial release of Exasol MLflow Plugin. Please see the user guide for installation, getting started, and additional information on using this plugin.
+This is the initial release of Exasol MLflow Plugin. Please see the [user guide](https://exasol.github.io/mlflow-plugin/) for installation, getting started, and additional information on using this plugin.
 
 ## Features
 
