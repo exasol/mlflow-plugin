@@ -29,6 +29,7 @@ Contents
 
    installation
    mlflow_server
+   create_experiment
    uri_format
    plugin_availability
    slc

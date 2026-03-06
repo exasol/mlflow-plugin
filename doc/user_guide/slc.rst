@@ -1,57 +1,39 @@
-.. _slct: https://exasol.github.io/script-languages-container-tool/main/index.html
-.. _customize_slc: https://github.com/exasol/script-languages-release/blob/master/doc/user_guide/usage.md#how-to-customize-an-existing-flavor
 
-Building and Deploying the Script Language Container
-====================================================
+.. _mlflow_dependencies_general: https://mlflow.org/docs/latest/ml/model/dependencies/
+.. _mlflow_extras_overview:
+   https://github.com/mlflow/mlflow/blob/c9d7d067c1a2564b4380fc2d6c807518b8dcb179/EXTRA_DEPENDENCIES.rst
+.. _mlflow_extra-ml-requirements:
+   https://github.com/mlflow/mlflow/blob/master/requirements/extra-ml-requirements.txt
 
-..
-  The project description of the Exasol MLflow Plugin defines the following dependencies:
 
-  * The implementation of the plugin itself
-  * Exasol BucketFS Client
-  * The MLflow Client API
+.. _slcs: https://github.com/exasol/script-languages-release/blob/master/doc/user_guide/usage.md
+.. _customize_slc:
+   https://github.com/exasol/script-languages-release/blob/master/doc/user_guide/usage.md#how-to-customize-an-existing-flavor
+.. _export_slc:
+   https://github.com/exasol/script-languages-release/blob/master/doc/user_guide/usage.md#export-a-flavor
+.. _activate-slc:
+   https://github.com/exasol/script-languages-release/blob/master/doc/user_guide/usage.md#how-to-activate-a-script-language-container-in-the-database
 
-Enabling a UDF to retrieve MLflow models, requires the implementation of the
-Exasol MLflow Plugin incl. its dependencies to be available. This is done by
-creating a dedicated `Script Language Container (SLC)
+Using a Script Language Container
+=================================
+
+Enabling a UDF to load MLflow models, requires the installation of the Exasol
+MLflow Plugin incl. its dependencies into the Exasol Database.  This is done
+by creating a dedicated `Script Language Container (SLC)
 <https://github.com/exasol/script-languages-release>`_ for running the UDF.
 
-The current section guides you to build, the SLC, upload it to Exasol's
-BucketFS and activate it for running UDFs.
+Depending on the models you want to use in your UDF implementation, you might
+need to add additional libraries as *dependencies* to be included in the
+SLC. See also
 
-Adding Additional Dependencies
-------------------------------
+* The MLflow documentation on `dependencies in general
+  <mlflow_dependencies_general_>`_
+* An overview about `MLflow optional dependencies
+  <mlflow_extras_overview_>`_ (aka. "Extras")
+* The entire `list of MLflow extras <mlflow_extra-ml-requirements_>`_
 
-Depending on the AI models you want to use in your UDF implementation, you
-might need to add additional libraries as dependencies to be included in the
-SLC image.
+For more information on SLCs, see the `User Guide <slcs_>`_ of the
+``script-languages-release`` repository incl. `customizing <customize_slc_>`_,
+`deploying <export_slc_>`_, and `activating <activate-slc_>`_ SLCs.
 
-Please see the `instructions for customizing an SLC flavor <customize_slc_>`_.
 
-Building the SLC
-----------------
-
-The following command offered by Exasol MLflow Plugin builds an SLC image
-containing the implementation of the Exasol MLflow Plugin and all its
-dependencies and stores the image in directory ``.slc``.
-
-.. code-block:: shell
-
-    poetry run nox -s slc:export
-
-Deploying the SLC
------------------
-
-An SLC image can be deployed to an Exasol database instance by uploading it to
-the BucketFS.
-
-See `Exasol Script Languages Container Tool User Guide <slct_>`_ for details.
-
-Activating the SLC
-------------------
-
-Before running a UDF in a SLC, the SLC image needs to be deployed and
-*activated* for the current active SQL session or the system, the latter
-requiring administration permissions.
-
-See `Exasol Script Languages Container Tool User Guide <slct_>`_ for details.
