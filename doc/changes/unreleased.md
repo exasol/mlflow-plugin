@@ -9,6 +9,7 @@ This is the initial release of Exasol MLflow Plugin.
 * #3: Added initial plugin configuration and empty interface extending `ArtifactRepository`
 * #6: Added parsing the BucketFS parameters from MLflow `artifact_root` string
 * #8: Added implementation to interface `BucketFsArtifactRepo`, incl. simple itests
+* #27: Prepared release `1.0.0`
 
 ## Documentation
 
