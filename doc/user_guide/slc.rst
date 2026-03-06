@@ -23,8 +23,8 @@ by creating a dedicated `Script Language Container (SLC)
 <https://github.com/exasol/script-languages-release>`_ for running the UDF.
 
 Depending on the models you want to use in your UDF implementation, you might
-need to add additional libraries as *dependencies* to be included in the SLC
-image. See also
+need to add additional libraries as *dependencies* to be included in the
+SLC. See also
 
 * The MLflow documentation on `dependencies in general
   <mlflow_dependencies_general_>`_
