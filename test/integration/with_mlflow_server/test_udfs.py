@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Callable
-from test.integration.udfs import (
+from test.integration.with_mlflow_server.udfs import (
     EnvSpec,
     Udf,
 )
@@ -9,6 +9,7 @@ import pyexasol
 import pytest
 
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+import pytest
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -63,6 +64,48 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
+
+
+@pytest.fixture
+def non_bucketfs_model() -> str:
+    mlflow.set_experiment("Non-BucketFS-Experiment")
+    model = sklearn.linear_model.LogisticRegression()
+    info = mlflow.sklearn.log_model(model, name="Non-BucketFS-Model")
+    return info.artifact_path
+
+
+def test_load_model_with_fallback(create_udf: str, non_bucketfs_model) -> None:
+    """
+    Given a model, with an experiment not using BucketFS as artifact
+    store: Try to load the model from BucketFS mounted into local file system.
+
+    Expect the model to be loaded successfully, though, by utilizing the
+    fallback loading the model by its URI via network data transfer.
+    """
+
+    udf = create_udf(
+        "LOAD_MLFLOW_MODEL_WITH_FALLBACK",
+        """
+        --/
+        CREATE OR REPLACE {language_alias!r}
+           SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
+           RETURNS VARCHAR(2000) AS
+        {env!r}
+        import mlflow
+        from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
+          load_mlflow_model_with_fallback
+        )
+        def run(ctx):
+            model = load_local_file_with_uri_fallback(ctx.uri, mlflow.sklearn.load_model)
+            c = type(model)
+            return c.__module__ + "." + c.__name__
+        /
+        """,
+        env={ENV_BUCKETFS_PASSWORD: "not required"},
+    )
+    result = udf.run(non_bucketfs_model).fetchone()
+    assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
+
 
 
 def test_http_load_model(create_udf, logged_sample_model: str) -> None:

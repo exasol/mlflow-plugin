@@ -27,7 +27,7 @@ def switch_uri(other: Connector, uri: str) -> Connector:
         (sklearn.linear_model.LogisticRegression, mlflow.sklearn),
     ],
 )
-def test_round_trip(cls, mlflow_package, mlflow_server, connector):
+def test_round_trip(cls, mlflow_package, mlflow_server, connector, bfs_experiment):
     """
     Parameters:
 

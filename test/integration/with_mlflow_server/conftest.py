@@ -19,6 +19,7 @@ import pytest
 import sklearn
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
+import pytest
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -97,8 +98,8 @@ def mlflow_server(tmp_path_factory, connector: Connector, request):
         f"sqlite:///{path}",
         "--port",
         str(port),
-        "--default-artifact-root",
-        connector.uri,
+        # "--default-artifact-root",
+        # connector.uri,
     ]
     # While tests are running, stderr needs to be consumed continuously.
     server = MlflowServer(command).wait_for_message("Application startup complete.")
@@ -108,7 +109,15 @@ def mlflow_server(tmp_path_factory, connector: Connector, request):
 
 
 @pytest.fixture(scope="module")
-def logged_sample_model(mlflow_server) -> str:
+def bfs_experiment(connector: Connector) -> str:
+    name = "BFS-Experiment"
+    mlflow.create_experiment(name, artifact_location=connector.uri)
+    mlflow.set_experiment(name)
+    return name
+
+
+@pytest.fixture(scope="module")
+def logged_sample_model(mlflow_server, bfs_experiment: str) -> str:
     """
     Return artifact URI, example:
       exa+bfs://localhost:2580/bfsdefault/default/
