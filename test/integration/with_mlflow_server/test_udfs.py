@@ -104,13 +104,17 @@ def test_http_load_model(create_udf, logged_sample_model: str) -> None:
             return c.__module__ + "." + c.__name__
         /
         """,
-        env={ENV_BUCKETFS_PASSWORD: "not required",},
+        env={
+            ENV_BUCKETFS_PASSWORD: "not required",
+        },
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
-def test_load_model_with_fallback_1(mlflow_server, create_udf, non_bucketfs_model: str) -> None:
+def test_load_model_with_fallback_1(
+    mlflow_server, create_udf, non_bucketfs_model: str
+) -> None:
     """
     Given a model, with an experiment not using BucketFS as artifact
     store: Try to load the model from BucketFS mounted into local file system.

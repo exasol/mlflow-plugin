@@ -7,6 +7,7 @@ import subprocess
 import sys
 import threading
 import time
+from collections.abc import Generator
 from datetime import (
     datetime,
     timedelta,
@@ -14,7 +15,6 @@ from datetime import (
 from subprocess import PIPE
 from typing import (
     IO,
-    Generator,
 )
 
 import mlflow
@@ -84,7 +84,7 @@ class MlflowServer:
 
 
 @pytest.fixture(scope="module")
-def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[str, None, None]:
+def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[str]:
     if server_url := request.config.getoption("--mlflow-server"):
         LOG.info(f"Reusing MLflow server already running at {server_url}")
         mlflow.set_tracking_uri(server_url)
