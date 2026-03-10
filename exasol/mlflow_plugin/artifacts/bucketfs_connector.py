@@ -148,9 +148,7 @@ def udf_path(artifact_uri: str) -> str:
     return con.bucketfs_location.as_udf_path()
 
 
-def load_model_with_fallback(
-    artifact_uri: str, load_func: Callable[[str], Any]
-) -> Any:
+def load_model_with_fallback(artifact_uri: str, load_func: Callable[[str], Any]) -> Any:
     """
     Assuming the artifact_uri points to the BucketFS: Try loading the
     artifact using the associated path mounted in local file system.  On
@@ -165,8 +163,22 @@ def load_model_with_fallback(
         Function to actually load the model, e.g. ``mlflow.sklearn.load_model``.
     """
 
-    path = udf_path(artifact_uri)
     try:
+        path = udf_path(artifact_uri)
         return load_func(path)
     except:
         return load_func(artifact_uri)
+
+
+def local_path_or_uri(artifact_uri: str) -> str:
+    """
+    If artifact_uri points to the BucketFS and the associated path is
+    mounted in local file system, then return this path.  Otherwise return the
+    URI.
+    """
+    try:
+        path = udf_path(artifact_uri)
+    except ParseError:
+        return artifact_uri
+
+    return path if Path(path).exists() else artifact_uri
