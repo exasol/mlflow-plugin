@@ -150,7 +150,9 @@ def test_load_model_with_fallback_1(
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
-def test_load_model_with_fallback_2(create_udf, non_bucketfs_model: str) -> None:
+def test_load_model_with_fallback_2(
+    mlflow_server, create_udf, non_bucketfs_model: str
+) -> None:
     """
     Given a model, with an experiment not using BucketFS as artifact
     store: Try to load the model from BucketFS mounted into local file system.
