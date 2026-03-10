@@ -14,11 +14,11 @@ provided by various database instances and access protocols:
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import (
     Any,
-    Callable,
 )
 from urllib.parse import urlparse
 
@@ -148,7 +148,9 @@ def udf_path(artifact_uri: str) -> str:
     return con.bucketfs_location.as_udf_path()
 
 
-def load_local_file_with_uri_fallback(artifact_uri: str, load_func: Callable[[str], Any]) -> Any:
+def load_model_with_fallback(
+    artifact_uri: str, load_func: Callable[[str], Any]
+) -> Any:
     """
     Assuming the artifact_uri points to the BucketFS: Try loading the
     artifact using the associated path mounted in local file system.  On
@@ -163,7 +165,7 @@ def load_local_file_with_uri_fallback(artifact_uri: str, load_func: Callable[[st
         Function to actually load the model, e.g. ``mlflow.sklearn.load_model``.
     """
 
-    path = udf_path(artifact_uri.uri)
+    path = udf_path(artifact_uri)
     try:
         return load_func(path)
     except:
