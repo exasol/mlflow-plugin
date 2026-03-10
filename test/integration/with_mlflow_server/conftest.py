@@ -12,7 +12,10 @@ from datetime import (
     timedelta,
 )
 from subprocess import PIPE
-from typing import IO
+from typing import (
+    IO,
+    Generator,
+)
 
 import mlflow
 import pytest
@@ -81,11 +84,11 @@ class MlflowServer:
 
 
 @pytest.fixture(scope="module")
-def mlflow_server(tmp_path_factory, connector: Connector, request):
+def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[str, None, None]:
     if server_url := request.config.getoption("--mlflow-server"):
         LOG.info(f"Reusing MLflow server already running at {server_url}")
         mlflow.set_tracking_uri(server_url)
-        yield
+        yield server_url
         return
 
     path = tmp_path_factory.mktemp("data") / "mlflow.db"
@@ -103,8 +106,9 @@ def mlflow_server(tmp_path_factory, connector: Connector, request):
     ]
     # While tests are running, stderr needs to be consumed continuously.
     server = MlflowServer(command).wait_for_message("Application startup complete.")
-    mlflow.set_tracking_uri(f"http://localhost:{port}")
-    yield
+    tracking_uri = f"http://localhost:{port}"
+    mlflow.set_tracking_uri(tracking_uri)
+    yield tracking_uri
     server.stop()
 
 
