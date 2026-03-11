@@ -1,3 +1,5 @@
+from typing import Any
+
 import docker
 from docker.models.containers import Container as DockerContainer
 from exasol.pytest_backend.itde import OnpremDBConfig
@@ -26,14 +28,26 @@ def first_gateway(container: DockerContainer) -> str | None:
     Docker container or None if there is not any network specifying a gateway.
     """
     networks = container.attrs.get("NetworkSettings", {}).get("Networks", {})
-    from typing import Any
-
-    v: dict[str, Any] = next(iter(networks.values()), {})
-    return v.get("Gateway", None)
-    # return next(iter(networks.values()), {}).get("Gateway", None)
+    first: dict[str, Any] = next(iter(networks.values()), {})
+    return first.get("Gateway", None)
 
 
-def find_gateway(
+def find_gateway(itde_info: EnvironmentInfo, request) -> str | None:
+    """
+    Return the ip address of the network gateway of the Exasol database.
+
+    * In case the database is launched by ITDE, the gateway can be taken from
+      the EnvironmentInfo provided by the ITDE.
+
+    * In case the user uses an external database, try to inquire the gateway
+      via the Docker client.
+    """
+    if tracking_uri := request.config.getoption("--mlflow-tracking-uri"):
+        return tracking_uri
+    return itde_info.network_info.gateway
+
+
+def find_gateway_old(
     itde_info: EnvironmentInfo, exasol_config: OnpremDBConfig
 ) -> str | None:
     """

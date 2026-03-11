@@ -13,7 +13,6 @@ from datetime import (
     timedelta,
 )
 from subprocess import PIPE
-from test.integration.with_mlflow_server.gateway import find_gateway
 from typing import (
     IO,
 )
@@ -22,7 +21,6 @@ from urllib.parse import urlsplit
 import mlflow
 import pytest
 import sklearn
-from exasol.pytest_backend.itde import OnpremDBConfig
 from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
     EnvironmentInfo,
 )
@@ -104,6 +102,8 @@ def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[
         "server",
         "--backend-store-uri",
         f"sqlite:///{path}",
+        "--host",
+        "0.0.0.0",
         "--port",
         str(port),
         # Option "--default-artifact-root" connector.uri has been removed in
@@ -120,9 +120,9 @@ def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[
 
 @pytest.fixture(scope="module")
 def mlflow_tracking_uri(
+    request,
     mlflow_server: str,
     backend_aware_onprem_database: EnvironmentInfo,
-    exasol_config: OnpremDBConfig,
 ):
     """
     Return the tracking URI of the MLflow server as needed within a UDF,
@@ -131,7 +131,9 @@ def mlflow_tracking_uri(
     UDFs are running inside the database inside a Docker container and need to
     access the MLflow server on localhost via the Docker container's gateway.
     """
-    if gateway := find_gateway(backend_aware_onprem_database, exasol_config):
+    if request.config.getoption("--mlflow-server"):
+        return mlflow_server
+    if gateway := backend_aware_onprem_database.network_info.gateway:
         orig = urlsplit(mlflow_server)
         return f"{orig.scheme}://{gateway}:{orig.port}"
     return mlflow_server
@@ -154,4 +156,12 @@ def logged_sample_model(mlflow_server, bfs_experiment: str) -> str:
     """
     model = sklearn.linear_model.LogisticRegression()
     info = mlflow.sklearn.log_model(model, name="Example-Model")
+    return info.artifact_path
+
+
+@pytest.fixture(scope="module")
+def non_bucketfs_model(mlflow_server) -> str:
+    mlflow.set_experiment("Non-BucketFS-Experiment")
+    model = sklearn.linear_model.LogisticRegression()
+    info = mlflow.sklearn.log_model(model, name="Non-BucketFS-Model")
     return info.artifact_path

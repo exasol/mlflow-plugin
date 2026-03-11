@@ -67,14 +67,6 @@ def test_bfs_load_model(create_udf, logged_sample_model) -> None:
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
-@pytest.fixture(scope="module")
-def non_bucketfs_model() -> str:
-    mlflow.set_experiment("Non-BucketFS-Experiment")
-    model = sklearn.linear_model.LogisticRegression()
-    info = mlflow.sklearn.log_model(model, name="Non-BucketFS-Model")
-    return info.artifact_path
-
-
 def test_http_load_model(create_udf, logged_sample_model: str) -> None:
     """
     Use a sample model already logged to MLflow server and represented by
@@ -147,6 +139,66 @@ def test_load_model_with_fallback_1(
         },
     )
     result = udf.run(non_bucketfs_model).fetchone()
+    assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
+
+
+def xtest_x2(mlflow_tracking_uri, create_udf):
+    udf = create_udf(
+        "LOAD_MLFLOW_MODEL_WITH_FALLBACK_2",
+        """
+        --/
+        CREATE OR REPLACE {language_alias!r}
+           SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
+           RETURNS VARCHAR(2000) AS
+        {env!r}
+        import os
+        def run(ctx):
+            return os.environ.get("MLFLOW_TRACKING_URI")
+            # return ctx.uri
+        /
+        """,
+        env={
+            ENV_BUCKETFS_PASSWORD: "not required",
+            "MLFLOW_TRACKING_URI": mlflow_tracking_uri,
+        },
+    )
+    uri = "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
+    result = udf.run(uri).fetchone()
+    print(f'{result[0]}')
+
+
+@pytest.fixture(scope="session")
+def xlanguage_alias(build_slc):
+    return "MLFLOW" # if build_slc else "PYTHON3"
+
+
+def stest_x3(mlflow_tracking_uri, create_udf):
+    udf = create_udf(
+        "LOAD_MLFLOW_MODEL_WITH_FALLBACK_2",
+        """
+        --/
+        CREATE OR REPLACE {language_alias!r}
+           SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
+           RETURNS VARCHAR(2000) AS
+        {env!r}
+        import mlflow
+        from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
+          local_path_or_uri
+        )
+        def run(ctx):
+            # locator = local_path_or_uri(ctx.uri)
+            model = mlflow.sklearn.load_model(ctx.uri)
+            c = type(model)
+            return c.__module__ + "." + c.__name__
+        /
+        """,
+        env={
+            ENV_BUCKETFS_PASSWORD: "not required",
+            "MLFLOW_TRACKING_URI": mlflow_tracking_uri,
+        },
+    )
+    uri = "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
+    result = udf.run(uri).fetchone()
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
