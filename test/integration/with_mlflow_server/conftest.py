@@ -119,7 +119,7 @@ def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[
 
 
 @pytest.fixture(scope="module")
-def mlflow_tracking_url(
+def mlflow_tracking_uri(
     mlflow_server: str,
     backend_aware_onprem_database: EnvironmentInfo,
     exasol_config: OnpremDBConfig,
