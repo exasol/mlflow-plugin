@@ -125,7 +125,8 @@ def mlflow_tracking_uri(
     exasol_config: OnpremDBConfig,
 ):
     """
-    Return the tracking URL of the MLflow server as needed within a UDF.
+    Return the tracking URI of the MLflow server as needed within a UDF,
+    e.g. via environment variable MLFLOW_TRACKING_URI.
 
     UDFs are running inside the database inside a Docker container and need to
     access the MLflow server on localhost via the Docker container's gateway.
