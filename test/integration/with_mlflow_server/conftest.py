@@ -22,6 +22,7 @@ from urllib.parse import urlsplit
 import mlflow
 import pytest
 import sklearn
+from exasol.pytest_backend.itde import OnpremDBConfig
 from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
     EnvironmentInfo,
 )
