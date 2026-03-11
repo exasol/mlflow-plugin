@@ -200,6 +200,36 @@ def xtest_x3(mlflow_tracking_uri, create_udf):
     assert result[0] == "sklearn.linear_model._logistic.LogisticRegression"
 
 
+def xtest_x4(mlflow_tracking_uri, create_udf):
+    udf = create_udf(
+        "LOAD_MLFLOW_MODEL_WITH_FALLBACK_2",
+        """
+        --/
+        CREATE OR REPLACE {language_alias!r}
+           SCALAR SCRIPT {schema!q}.{name!q}(uri VARCHAR(2000))
+           RETURNS VARCHAR(2000) AS
+        {env!r}
+        import requests
+        def run(ctx):
+            resp = requests.get(
+                ctx.uri,
+                headers={{"User-Agent": "Mozilla/5.0"}},
+                timeout=20,
+            )
+            resp.raise_for_status()
+            return resp.text
+        /
+        """,
+        env={
+            ENV_BUCKETFS_PASSWORD: "not required",
+            "MLFLOW_TRACKING_URI": mlflow_tracking_uri,
+        },
+    )
+    uri = "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
+    result = udf.run(mlflow_tracking_uri).fetchone()
+    print(f'{result}')
+
+
 def test_load_model_with_fallback_2(
     mlflow_tracking_uri, create_udf, non_bucketfs_model: str
 ) -> None:

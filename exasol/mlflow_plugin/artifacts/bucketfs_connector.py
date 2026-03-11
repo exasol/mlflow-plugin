@@ -14,6 +14,7 @@ provided by various database instances and access protocols:
 from __future__ import annotations
 
 import os
+import typing
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,6 +31,10 @@ from exasol.mlflow_plugin.env_vars import (
     ENV_SSL_CERT_VALIDATION,
     str_to_bool,
 )
+
+if typing.TYPE_CHECKING:
+    from mlflow.models import Model as MLflowModel
+
 
 URL_SCHEMES = ["exa+bfs", "exa+bfss"]
 
@@ -150,9 +155,9 @@ def udf_path(artifact_uri: str) -> str:
 
 def load_model_with_fallback(
     artifact_uri: str,
-    load_func: Callable[..., "mlflow.models.Model"],
+    load_func: Callable[..., "MLflowModel"],
     **kwargs,
-) -> "mlflow.models.Model":
+) -> "MLflowModel":
     """
     Assuming the artifact_uri points to the BucketFS: Try loading the
     artifact using the associated path mounted in local file system.  On
