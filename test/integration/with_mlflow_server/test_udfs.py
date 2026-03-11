@@ -13,6 +13,7 @@ from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logging.getLogger("exasol.bucketfs").setLevel(logging.WARNING)
+logging.getLogger("test.integration.with_mlflow_server.udfs").setLevel(logging.DEBUG)
 
 
 @pytest.fixture(scope="session")
@@ -227,7 +228,7 @@ def xtest_x4(mlflow_tracking_uri, create_udf):
     )
     uri = "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
     result = udf.run(mlflow_tracking_uri).fetchone()
-    print(f'{result}')
+    print(f"{result}")
 
 
 def test_load_model_with_fallback_2(

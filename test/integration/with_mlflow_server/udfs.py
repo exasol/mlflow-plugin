@@ -48,7 +48,7 @@ class Udf:
         return self
 
     def env(self) -> str:
-        return "\n".join(f'%env {k}="{v}";' for k, v in self._env.items())
+        return "\n".join(f'%env {k}={v};' for k, v in self._env.items())
 
     def create(self) -> Udf:
         self.create_schema()
