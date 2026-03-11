@@ -13,13 +13,18 @@ from datetime import (
     timedelta,
 )
 from subprocess import PIPE
+from test.integration.with_mlflow_server.gateway import find_gateway
 from typing import (
     IO,
 )
+from urllib.parse import urlsplit
 
 import mlflow
 import pytest
 import sklearn
+from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
+    EnvironmentInfo,
+)
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
@@ -110,6 +115,24 @@ def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[
     mlflow.set_tracking_uri(tracking_uri)
     yield tracking_uri
     server.stop()
+
+
+@pytest.fixture(scope="module")
+def mlflow_tracking_url(
+    mlflow_server: str,
+    backend_aware_onprem_database: EnvironmentInfo,
+    exasol_config: OnpremDBConfig,
+):
+    """
+    Return the tracking URL of the MLflow server as needed within a UDF.
+
+    UDFs are running inside the database inside a Docker container and need to
+    access the MLflow server on localhost via the Docker container's gateway.
+    """
+    if gateway := find_gateway(backend_aware_onprem_database, exasol_config):
+        orig = urlsplit(mlflow_server)
+        return f"{orig.scheme}://{gateway}:{orig.port}"
+    return mlflow_server
 
 
 @pytest.fixture(scope="module")

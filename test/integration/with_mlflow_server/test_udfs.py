@@ -11,6 +11,8 @@ import pytest
 import sklearn
 
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+import pytest
+import pytest
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -113,7 +115,7 @@ def test_http_load_model(create_udf, logged_sample_model: str) -> None:
 
 
 def test_load_model_with_fallback_1(
-    mlflow_server, create_udf, non_bucketfs_model: str
+    mlflow_tracking_uri, create_udf, non_bucketfs_model: str
 ) -> None:
     """
     Given a model, with an experiment not using BucketFS as artifact
@@ -143,7 +145,7 @@ def test_load_model_with_fallback_1(
         """,
         env={
             ENV_BUCKETFS_PASSWORD: "not required",
-            "MLFLOW_TRACKING_URI": mlflow_server,
+            "MLFLOW_TRACKING_URI": mlflow_tracking_uri,
         },
     )
     result = udf.run(non_bucketfs_model).fetchone()
@@ -151,7 +153,7 @@ def test_load_model_with_fallback_1(
 
 
 def test_load_model_with_fallback_2(
-    mlflow_server, create_udf, non_bucketfs_model: str
+    mlflow_tracking_uri, create_udf, non_bucketfs_model: str
 ) -> None:
     """
     Given a model, with an experiment not using BucketFS as artifact
@@ -182,7 +184,7 @@ def test_load_model_with_fallback_2(
         """,
         env={
             ENV_BUCKETFS_PASSWORD: "not required",
-            "MLFLOW_TRACKING_URI": mlflow_server,
+            "MLFLOW_TRACKING_URI": mlflow_tracking_uri,
         },
     )
     result = udf.run(non_bucketfs_model).fetchone()
