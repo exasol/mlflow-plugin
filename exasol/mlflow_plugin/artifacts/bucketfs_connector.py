@@ -148,7 +148,7 @@ def udf_path(artifact_uri: str) -> str:
     return con.bucketfs_location.as_udf_path()
 
 
-def load_model_with_fallback(artifact_uri: str, load_func: Callable[[str], Any]) -> Any:
+def load_model_with_fallback(artifact_uri: str, load_func: Callable[...,mlflow.Model, **kwargs) -> MLFlow.Model:
     """
     Assuming the artifact_uri points to the BucketFS: Try loading the
     artifact using the associated path mounted in local file system.  On
