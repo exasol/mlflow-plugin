@@ -11,8 +11,6 @@ import pytest
 import sklearn
 
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
-import pytest
-import pytest
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
