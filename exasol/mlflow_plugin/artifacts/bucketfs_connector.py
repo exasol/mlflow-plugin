@@ -157,7 +157,10 @@ def load_model_with_fallback(artifact_uri: str, load_func: Callable[[str], Any])
     Arguments:
 
       artifact_uri:
-        The URI of the artifact, e.g. "exa+bfs://localhost:1234/bfsdefault/default".
+        The URI of the artifact, examples:
+
+        * "exa+bfs://localhost:1234/bfsdefault/default"
+        * "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
 
       load_func:
         Function to actually load the model, e.g. ``mlflow.sklearn.load_model``.

@@ -172,7 +172,7 @@ def xlanguage_alias(build_slc):
     return "MLFLOW" # if build_slc else "PYTHON3"
 
 
-def stest_x3(mlflow_tracking_uri, create_udf):
+def xtest_x3(mlflow_tracking_uri, create_udf):
     udf = create_udf(
         "LOAD_MLFLOW_MODEL_WITH_FALLBACK_2",
         """
