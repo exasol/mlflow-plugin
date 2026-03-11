@@ -23,6 +23,7 @@ from typing import (
 from urllib.parse import urlparse
 
 import exasol.bucketfs as bfs
+import mlflow
 
 from exasol.mlflow_plugin.env_vars import (
     ENV_BUCKETFS_PASSWORD,
@@ -148,7 +149,11 @@ def udf_path(artifact_uri: str) -> str:
     return con.bucketfs_location.as_udf_path()
 
 
-def load_model_with_fallback(artifact_uri: str, load_func: Callable[...,mlflow.Model, **kwargs) -> MLFlow.Model:
+def load_model_with_fallback(
+    artifact_uri: str,
+    load_func: Callable[..., mlflow.models.Model],
+    **kwargs,
+) -> mlflow.models.Model:
     """
     Assuming the artifact_uri points to the BucketFS: Try loading the
     artifact using the associated path mounted in local file system.  On
