@@ -62,12 +62,3 @@ def test_log_model(connector, logged_sample_model):
 def test_non_bfs_model(connector, non_bucketfs_model):
     loaded = mlflow.sklearn.load_model(non_bucketfs_model)
     assert type(loaded) == sklearn.linear_model.LogisticRegression
-
-
-def xtest_x1(monkeypatch):
-    import os
-
-    monkeypatch.setitem(os.environ, "MLFLOW_TRACKING_URI", "http://localhost:5000")
-    uri = "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
-    loaded = mlflow.sklearn.load_model(uri)
-    assert type(loaded) == sklearn.linear_model.LogisticRegression
