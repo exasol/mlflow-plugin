@@ -10,7 +10,7 @@ def exposes_port(container: DockerContainer, port: int) -> bool:
     """
     Check whether the provided Docker container exposes the specified port.
     """
-    port_config = []
+    port_config = {}
     if network := container.attrs.get("NetworkSettings"):
         port_config = network.get("Ports", {})
     for _, forwards in port_config.items():
@@ -26,7 +26,11 @@ def first_gateway(container: DockerContainer) -> str | None:
     Docker container or None if there is not any network specifying a gateway.
     """
     networks = container.attrs.get("NetworkSettings", {}).get("Networks", {})
-    return next(iter(networks.values()), {}).get("Gateway", None)
+    from typing import Any
+
+    v: dict[str, Any] = next(iter(networks.values()), {})
+    return v.get("Gateway", None)
+    # return next(iter(networks.values()), {}).get("Gateway", None)
 
 
 def find_gateway(

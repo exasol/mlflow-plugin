@@ -46,6 +46,7 @@ build-backend = "poetry.core.masonry.api"
 
 [[tool.mypy.overrides]]
 module = [
+    "docker.*",
     # py.typed file only available with version >= 2
     "pyexasol.*",
     "sklearn.*",
