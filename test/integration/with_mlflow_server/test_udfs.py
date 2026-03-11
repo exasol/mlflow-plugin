@@ -5,10 +5,8 @@ from test.integration.with_mlflow_server.udfs import (
     Udf,
 )
 
-import mlflow
 import pyexasol
 import pytest
-import sklearn
 
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
@@ -164,12 +162,12 @@ def xtest_x2(mlflow_tracking_uri, create_udf):
     )
     uri = "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
     result = udf.run(uri).fetchone()
-    print(f'{result[0]}')
+    print(f"{result[0]}")
 
 
 @pytest.fixture(scope="session")
 def xlanguage_alias(build_slc):
-    return "MLFLOW" # if build_slc else "PYTHON3"
+    return "MLFLOW"  # if build_slc else "PYTHON3"
 
 
 def xtest_x3(mlflow_tracking_uri, create_udf):
