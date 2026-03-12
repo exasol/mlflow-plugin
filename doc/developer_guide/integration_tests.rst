@@ -55,7 +55,7 @@ access the MLflow server via ``localhost``, but only via the default gateway
 of the virtual machine.
 
 When using a Lima VM, you can retrieve the IP address with the following
-command
+command:
 
 .. code-block:: shell
 
@@ -63,7 +63,7 @@ command
         limactl shell default ip route show match default | awk '{print $3}'
     }
 
-Here is a complete example
+Here is a complete example:
 
 .. code-block:: shell
 

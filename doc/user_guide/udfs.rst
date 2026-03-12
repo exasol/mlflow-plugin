@@ -25,7 +25,7 @@ Setting the MLflow Tracking URI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In all cases (potentially) accessing the MLflow server, the UDF needs to set
-the MLflow Tracking URI. This can be done, by
+the MLflow Tracking URI. This can be done, by:
 
 * Setting environment variable ``MLFLOW_TRACKING_URI`` or
 * Calling ``mlflow.set_tracking_uri()`` within the UDF implementation.
@@ -64,7 +64,7 @@ Now you can run the UDF via the following SQL statement
 Function ``local_path_or_uri()``
 --------------------------------
 
-The function checks if
+The function checks if:
 
 * The URI points to the BucketFS artifact store and
 * The associated path is mounted into the local file system of the UDF.
