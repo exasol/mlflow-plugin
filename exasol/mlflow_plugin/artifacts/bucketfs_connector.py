@@ -32,6 +32,7 @@ from exasol.mlflow_plugin.env_vars import (
     str_to_bool,
 )
 
+# Import mlflow.models only for type checking to avoid circular imports.
 if typing.TYPE_CHECKING:
     from mlflow.models import Model as MLflowModel
 else:

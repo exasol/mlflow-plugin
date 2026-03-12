@@ -11,9 +11,9 @@ This MLflow plugin uses dependencies ``mlflow`` and ``exasol-bucketfs``.
 File ``pyproject.toml`` assigns URI schemes to the plugin:
 
 .. literalinclude:: ../pyproject.toml
-  :language: python
+  :language: toml
   :start-at: [tool.poetry.plugins."mlflow.artifact_repository"]
-  :end-at: # end of plugin configuration
+  :end-before: # end of plugin configuration
 
 The plugin is implemented in ``exasol/mlflow_plugin/artifacts/repo.py``.
 

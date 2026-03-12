@@ -150,11 +150,6 @@ def test_load_model_with_fallback_1(
     assert result[0] == SKLEARN_PACKAGE
 
 
-@pytest.fixture
-def xnon_bucketfs_model():
-    return "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
-
-
 def test_load_model_with_fallback_2(
     mlflow_tracking_uri, create_udf, non_bucketfs_model: str
 ) -> None:
@@ -200,20 +195,11 @@ def user_guide_udf(
             .replace('"<UDF_NAME>"', "{name!q}")
             .replace("http://localhost:5000", mlflow_tracking_uri)
         )
-        # print(f"{sql}")
         return Udf(
             pyexasol_connection, language_alias, db_schema_name, name, sql
         ).create()
 
     return create
-
-
-@pytest.fixture(scope="module")
-def xlogged_sample_model() -> str:
-    return (
-        "exa+bfs://localhost:2580/bfsdefault/default/"
-        "models/m-b886ee61f5cd4aa3996e58e81d03ee9e/artifacts"
-    )
 
 
 def test_user_guide_example_1(user_guide_udf, mlflow_tracking_uri, logged_sample_model):
