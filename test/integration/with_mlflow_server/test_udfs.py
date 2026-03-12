@@ -268,13 +268,3 @@ def test_user_guide_example_2(user_guide_udf, mlflow_tracking_uri, logged_sample
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0]
-
-
-import mlflow
-
-
-def test_x1(monkeypatch, xlogged_sample_model) -> None:
-    import os
-
-    monkeypatch.setitem(os.environ, ENV_BUCKETFS_PASSWORD, "value")
-    mlflow.models.Model.load(xlogged_sample_model)
