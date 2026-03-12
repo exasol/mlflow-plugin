@@ -26,7 +26,6 @@ def db_schema_name() -> str:
     return "ITEST_MLFLOW"
 
 
-
 def indent(amount: int, text: str) -> str:
     return textwrap.indent(cleandoc(text), " " * amount)
 
@@ -42,22 +41,22 @@ def create_udf(
         name: str,
         impl: str,
         env: EnvSpec = None,
-        return_type: str = "VARCHAR(2000)",
     ) -> Udf:
         env = env or {}
         header = cleandoc(
             f"""
             CREATE OR REPLACE {{language_alias!r}} SCALAR SCRIPT
                 {{schema!q}}.{{name!q}}(uri VARCHAR(2000))
-                RETURNS {return_type} AS
+                RETURNS VARCHAR(2000) AS
                 {{env!r}}
             import mlflow
             """
         )
-        footer = (
-            "return True"
-            if return_type == "BOOL"
-            else 'c = type(model)\nreturn c.__module__ + "." + c.__name__'
+        footer = cleandoc(
+            """
+            c = type(model)
+            return c.__module__ + "." + c.__name__
+            """
         )
         sql = "\n".join(["--/", header, cleandoc(impl), indent(4, footer), "/"])
         print(f"{sql}")
@@ -183,30 +182,27 @@ def test_load_model_with_fallback_2(
     assert result[0] == SKLEARN_PACKAGE
 
 
-
 @pytest.fixture(scope="session")
 def user_guide_udf(
     deployed_slc: str,
     language_alias: str,
     pyexasol_connection: pyexasol.ExaConnection,
     db_schema_name: str,
-) -> Callable[[str, str, EnvSpec], Udf]:
+) -> Callable[[str, str, str], Udf]:
     def create(
         name: str,
         mlflow_tracking_uri: str,
         sql: str,
-        env: EnvSpec = None,
     ) -> Udf:
         sql = (
-            sql
-            .replace("MLFLOW_SLC", "{language_alias!r}")
+            sql.replace("MLFLOW_SLC", "{language_alias!r}")
             .replace('"<SCHEMA>"', "{schema!q}")
             .replace('"<UDF_NAME>"', "{name!q}")
             .replace("http://localhost:5000", mlflow_tracking_uri)
         )
         # print(f"{sql}")
         return Udf(
-            pyexasol_connection, language_alias, db_schema_name, name, sql, env
+            pyexasol_connection, language_alias, db_schema_name, name, sql
         ).create()
 
     return create
@@ -243,7 +239,7 @@ def test_user_guide_example_1(user_guide_udf, mlflow_tracking_uri, logged_sample
             #--
             return True
         /
-        """ # /end-sample
+        """,  # /end-sample
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0]
@@ -268,7 +264,17 @@ def test_user_guide_example_2(user_guide_udf, mlflow_tracking_uri, logged_sample
             model = load_model_with_fallback(ctx.uri, mlflow.sklearn.load_model)
             return True
         /
-        """ # /end-sample
+        """,  # /end-sample
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0]
+
+
+import mlflow
+
+
+def test_x1(monkeypatch, xlogged_sample_model) -> None:
+    import os
+
+    monkeypatch.setitem(os.environ, ENV_BUCKETFS_PASSWORD, "value")
+    mlflow.models.Model.load(xlogged_sample_model)
