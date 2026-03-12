@@ -51,17 +51,6 @@ to define a UDF like this:
   :end-before: /end-sample
   :dedent: 8
 
-..
-    The **MLflow Tracking URI** is only required, when accessing the HTTP
-    interface of the MLflow server. You can provide it via environment
-    variable ``MLFLOW_TRACKING_URI`` as shown above or using the API call
-    inside the UDF: ``mlflow.set_tracking_uri("http://localhost:5000")``.
-
-    Depending on the environment your Exasol instance is running in, the
-    MLflow Tracking URI might differ from the one you can use on your local
-    machine. This applies in particular when running an `Exasol DockerDB
-    <exasol_docker_db_>`_ instance inside a virtual machine.
-
 
 Running the UDF
 ---------------
@@ -85,8 +74,8 @@ file system, that can be passed to one of the ``load_model()`` functions of
 the MLflow API, e.g. ``mlflow.models.Model.load()`` or
 ``mlflow.sklearn.load_model()``.
 
-Otherwise the function will return the URI to load the model via the MLflow
-server which can be significantly slower.
+Otherwise the function will return the original URI without changes, for
+loading the model via the MLflow server which can be significantly slower.
 
 Function ``load_model_with_fallback()``
 ---------------------------------------
