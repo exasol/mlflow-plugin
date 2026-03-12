@@ -194,6 +194,7 @@ def user_guide_udf(
     * The localhost MLflow Trackign URI is replaced by the gateway obtained
       from the ITDE test environment info.
     """
+
     def create(
         name: str,
         mlflow_tracking_uri: str,

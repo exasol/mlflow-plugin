@@ -19,7 +19,6 @@ from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
 )
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
-import pytest
 
 def bucketfs_parameters_from_env(artifact_root: str) -> dict[str, Any]:
     return Connector.from_env(artifact_root).bucketfs_parameters
@@ -109,9 +108,7 @@ def test_load_model_with_fallback__path(mock_path_to_exist):
 
 INVALID_URIS = [
     pytest.param("invalid", id="invalid_uri"),
-    pytest.param(
-        "mlflow-artifacts:/2/models/m-0abc/artifacts", id="non_bfs_uri"
-    ),
+    pytest.param("mlflow-artifacts:/2/models/m-0abc/artifacts", id="non_bfs_uri"),
     pytest.param(VALID_ARTIFACT_ROOT, id="local_path_does_not_exist"),
 ]
 
@@ -135,7 +132,7 @@ def test_load_model_with_fallback__uri(uri):
 
 @pytest.fixture
 def mock_path_to_exist(monkeypatch):
-    """ Actually mock any path to be rated as existing. """
+    """Actually mock any path to be rated as existing."""
     mock = Mock()
     mock.exists.return_value = True
     mock.parts = ["/", "bfsdefault", "default"]
