@@ -1,5 +1,7 @@
 import logging
+import textwrap
 from collections.abc import Callable
+from inspect import cleandoc
 from test.integration.with_mlflow_server.udfs import (
     EnvSpec,
     Udf,
@@ -24,6 +26,11 @@ def db_schema_name() -> str:
     return "ITEST_MLFLOW"
 
 
+
+def indent(amount: int, text: str) -> str:
+    return textwrap.indent(cleandoc(text), " " * amount)
+
+
 @pytest.fixture(scope="session")
 def create_udf(
     deployed_slc: str,
@@ -31,18 +38,28 @@ def create_udf(
     pyexasol_connection: pyexasol.ExaConnection,
     db_schema_name: str,
 ) -> Callable[[str, str, EnvSpec], Udf]:
-    def create(name: str, impl: str, env: EnvSpec = None) -> Udf:
+    def create(
+        name: str,
+        impl: str,
+        env: EnvSpec = None,
+        return_type: str = "VARCHAR(2000)",
+    ) -> Udf:
         env = env or {}
-        sql = f"""
-        --/
-        CREATE OR REPLACE {{language_alias!r}} SCALAR SCRIPT
-            {{schema!q}}.{{name!q}}(uri VARCHAR(2000))
-            RETURNS VARCHAR(2000) AS
-        {{env!r}}
-        import mlflow{impl}    c = type(model)
-            return c.__module__ + "." + c.__name__
-        /
-        """
+        header = cleandoc(
+            f"""
+            CREATE OR REPLACE {{language_alias!r}} SCALAR SCRIPT
+                {{schema!q}}.{{name!q}}(uri VARCHAR(2000))
+                RETURNS {return_type} AS
+                {{env!r}}
+            import mlflow
+            """
+        )
+        footer = (
+            "return True"
+            if return_type == "BOOL"
+            else 'c = type(model)\nreturn c.__module__ + "." + c.__name__'
+        )
+        sql = "\n".join(["--/", header, cleandoc(impl), indent(4, footer), "/"])
         print(f"{sql}")
         return Udf(
             pyexasol_connection, language_alias, db_schema_name, name, sql, env
@@ -164,3 +181,94 @@ def test_load_model_with_fallback_2(
     )
     result = udf.run(non_bucketfs_model).fetchone()
     assert result[0] == SKLEARN_PACKAGE
+
+
+
+@pytest.fixture(scope="session")
+def user_guide_udf(
+    deployed_slc: str,
+    language_alias: str,
+    pyexasol_connection: pyexasol.ExaConnection,
+    db_schema_name: str,
+) -> Callable[[str, str, EnvSpec], Udf]:
+    def create(
+        name: str,
+        mlflow_tracking_uri: str,
+        sql: str,
+        env: EnvSpec = None,
+    ) -> Udf:
+        sql = (
+            sql
+            .replace("MLFLOW_SLC", "{language_alias!r}")
+            .replace('"<SCHEMA>"', "{schema!q}")
+            .replace('"<UDF_NAME>"', "{name!q}")
+            .replace("http://localhost:5000", mlflow_tracking_uri)
+        )
+        # print(f"{sql}")
+        return Udf(
+            pyexasol_connection, language_alias, db_schema_name, name, sql, env
+        ).create()
+
+    return create
+
+
+@pytest.fixture(scope="module")
+def xlogged_sample_model() -> str:
+    return (
+        "exa+bfs://localhost:2580/bfsdefault/default/"
+        "models/m-b886ee61f5cd4aa3996e58e81d03ee9e/artifacts"
+    )
+
+
+def test_user_guide_example_1(user_guide_udf, mlflow_tracking_uri, logged_sample_model):
+    udf = user_guide_udf(
+        "USER_GUIDE_EXAMPLE_1",
+        mlflow_tracking_uri,
+        """
+        -- User Guide sample UDF #1
+        --/
+        CREATE OR REPLACE MLFLOW_SLC SCALAR SCRIPT
+           "<SCHEMA>"."<UDF_NAME>"(uri VARCHAR(2000))
+           RETURNS BOOL AS
+        %env MLFLOW_TRACKING_URI=http://localhost:5000;
+        import mlflow
+        from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
+            local_path_or_uri
+        )
+        def run(ctx):
+            locator = local_path_or_uri(ctx.uri)
+            model = mlflow.sklearn.load_model(locator)
+            #--
+            #-- your implementation using the model goes here
+            #--
+            return True
+        /
+        """ # /end-sample
+    )
+    result = udf.run(logged_sample_model).fetchone()
+    assert result[0]
+
+
+def test_user_guide_example_2(user_guide_udf, mlflow_tracking_uri, logged_sample_model):
+    udf = user_guide_udf(
+        "USER_GUIDE_EXAMPLE_2",
+        mlflow_tracking_uri,
+        """
+        -- User Guide sample UDF #2
+        --/
+        CREATE OR REPLACE MLFLOW_SLC SCALAR SCRIPT
+           "<SCHEMA>"."<UDF_NAME>"(uri VARCHAR(2000))
+           RETURNS BOOL AS
+        import mlflow
+        from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
+            load_model_with_fallback
+        )
+        def run(ctx):
+            mlflow.set_tracking_uri("http://localhost:5000")
+            model = load_model_with_fallback(ctx.uri, mlflow.sklearn.load_model)
+            return True
+        /
+        """ # /end-sample
+    )
+    result = udf.run(logged_sample_model).fetchone()
+    assert result[0]
