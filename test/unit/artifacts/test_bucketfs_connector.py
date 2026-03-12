@@ -104,11 +104,14 @@ def test_local_path_or_uri__path(monkeypatch):
     assert actual == "/buckets/bfsdefault/default"
 
 
-@pytest.mark.parametrize("uri", [
-    "invalid",
-    "mlflow-artifacts:/2/models/m-0abc/artifacts",
-    VALID_ARTIFACT_ROOT, # local path does not exist
-])
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "invalid",
+        "mlflow-artifacts:/2/models/m-0abc/artifacts",
+        VALID_ARTIFACT_ROOT,  # local path does not exist
+    ],
+)
 def test_local_path_or_uri__uri(uri):
     """
     When uri is VALID_ARTIFACT_ROOT, then still the associated path in the
@@ -118,11 +121,18 @@ def test_local_path_or_uri__uri(uri):
     assert local_path_or_uri(uri) == uri
 
 
-@pytest.mark.parametrize("uri, expected", [
-    pytest.param("invalid", None, id="invalid_uri"),
-    pytest.param("mlflow-artifacts:/2/models/m-0abc/artifacts", None, id="non_bfs_uri"),
-    pytest.param(VALID_ARTIFACT_ROOT, "/buckets/bfsdefault/default", id="valid_bfs_uri"),
-])
+@pytest.mark.parametrize(
+    "uri, expected",
+    [
+        pytest.param("invalid", None, id="invalid_uri"),
+        pytest.param(
+            "mlflow-artifacts:/2/models/m-0abc/artifacts", None, id="non_bfs_uri"
+        ),
+        pytest.param(
+            VALID_ARTIFACT_ROOT, "/buckets/bfsdefault/default", id="valid_bfs_uri"
+        ),
+    ],
+)
 def test_load_model_with_fallback(uri, expected):
     mock = Mock()
     load_model_with_fallback(uri, mock)
