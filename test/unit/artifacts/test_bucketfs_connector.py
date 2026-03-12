@@ -19,6 +19,7 @@ from exasol.mlflow_plugin.artifacts.bucketfs_connector import (
 )
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 
+import pytest
 
 def bucketfs_parameters_from_env(artifact_root: str) -> dict[str, Any]:
     return Connector.from_env(artifact_root).bucketfs_parameters
@@ -95,23 +96,27 @@ def test_for_udfs(missing_password_env) -> None:
     assert udf_path(VALID_ARTIFACT_ROOT) == "/buckets/bfsdefault/default"
 
 
-def test_local_path_or_uri__path(monkeypatch):
-    mock = Mock()
-    mock.exists.return_value = True
-    mock.parts = ["root", "bfsdefault", "default"]
-    monkeypatch.setattr(bucketfs_connector, "Path", Mock(return_value=mock))
+def test_local_path_or_uri__path(mock_path_to_exist):
     actual = local_path_or_uri(VALID_ARTIFACT_ROOT)
     assert actual == "/buckets/bfsdefault/default"
 
 
-@pytest.mark.parametrize(
-    "uri",
-    [
-        "invalid",
-        "mlflow-artifacts:/2/models/m-0abc/artifacts",
-        VALID_ARTIFACT_ROOT,  # local path does not exist
-    ],
-)
+def test_load_model_with_fallback__path(mock_path_to_exist):
+    mock = Mock()
+    load_model_with_fallback(VALID_ARTIFACT_ROOT, mock)
+    assert mock.call_args == call("/buckets/bfsdefault/default")
+
+
+INVALID_URIS = [
+    pytest.param("invalid", id="invalid_uri"),
+    pytest.param(
+        "mlflow-artifacts:/2/models/m-0abc/artifacts", id="non_bfs_uri"
+    ),
+    pytest.param(VALID_ARTIFACT_ROOT, id="local_path_does_not_exist"),
+]
+
+
+@pytest.mark.parametrize("uri", INVALID_URIS)
 def test_local_path_or_uri__uri(uri):
     """
     When uri is VALID_ARTIFACT_ROOT, then still the associated path in the
@@ -121,19 +126,17 @@ def test_local_path_or_uri__uri(uri):
     assert local_path_or_uri(uri) == uri
 
 
-@pytest.mark.parametrize(
-    "uri, expected",
-    [
-        pytest.param("invalid", None, id="invalid_uri"),
-        pytest.param(
-            "mlflow-artifacts:/2/models/m-0abc/artifacts", None, id="non_bfs_uri"
-        ),
-        pytest.param(
-            VALID_ARTIFACT_ROOT, "/buckets/bfsdefault/default", id="valid_bfs_uri"
-        ),
-    ],
-)
-def test_load_model_with_fallback(uri, expected):
+@pytest.mark.parametrize("uri", INVALID_URIS)
+def test_load_model_with_fallback__uri(uri):
     mock = Mock()
     load_model_with_fallback(uri, mock)
-    assert mock.call_args == call(expected or uri)
+    assert mock.call_args == call(uri)
+
+
+@pytest.fixture
+def mock_path_to_exist(monkeypatch):
+    """ Actually mock any path to be rated as existing. """
+    mock = Mock()
+    mock.exists.return_value = True
+    mock.parts = ["/", "bfsdefault", "default"]
+    monkeypatch.setattr(bucketfs_connector, "Path", Mock(return_value=mock))
