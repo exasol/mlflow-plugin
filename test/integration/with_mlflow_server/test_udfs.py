@@ -101,7 +101,7 @@ def test_http_load_model(
         """,
         env={
             ENV_BUCKETFS_PASSWORD: "not required",
-            MLFLOW_TRACKING_URI: mlflow_tracking_uri,
+            "MLFLOW_TRACKING_URI": mlflow_tracking_uri,
         },
     )
     result = udf.run(logged_sample_model).fetchone()
