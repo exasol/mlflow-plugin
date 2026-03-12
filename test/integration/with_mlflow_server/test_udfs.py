@@ -150,15 +150,14 @@ def test_load_model_with_fallback_1(
     assert result[0] == SKLEARN_PACKAGE
 
 
-def test_load_model_with_fallback_2(
+def test_local_path_or_uri(
     mlflow_tracking_uri, create_udf, non_bucketfs_model: str
 ) -> None:
     """
     Given a model, with an experiment not using BucketFS as artifact
-    store: Try to load the model from BucketFS mounted into local file system.
-
-    Expect the model to be loaded successfully, though, by utilizing the
-    fallback loading the model by its URI via network data transfer.
+    store: verify loading the model successfully, by using function
+    local_path_or_uri() which is expected returning the original URI instead
+    of a path in the local file system.
     """
 
     udf = create_udf(
@@ -184,6 +183,17 @@ def user_guide_udf(
     pyexasol_connection: pyexasol.ExaConnection,
     db_schema_name: str,
 ) -> Callable[[str, str, str], Udf]:
+    """
+    This fixture prepares a UDF designed to be displayed in the user guide
+    to be verified by an integration test:
+
+    * The placeholders for language alias, database schema, and name of the
+      UDF are replaced by prepared statement variables to be populated by the
+      dynamic values for integration tests.
+
+    * The localhost MLflow Trackign URI is replaced by the gateway obtained
+      from the ITDE test environment info.
+    """
     def create(
         name: str,
         mlflow_tracking_uri: str,

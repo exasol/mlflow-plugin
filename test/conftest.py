@@ -1,4 +1,8 @@
 def pytest_addoption(parser):
+    """
+    See details in the developer guide.
+    """
+
     parser.addoption(
         "--mlflow-server",
         type=str,

@@ -13,9 +13,7 @@ from datetime import (
     timedelta,
 )
 from subprocess import PIPE
-from typing import (
-    IO,
-)
+from typing import IO
 from urllib.parse import urlsplit
 
 import mlflow
