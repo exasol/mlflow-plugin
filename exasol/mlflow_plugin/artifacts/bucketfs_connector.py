@@ -181,7 +181,7 @@ def load_model_with_fallback(
     try:
         path = udf_path(artifact_uri)
         return load_func(path)
-    except:
+    except Exception:
         return load_func(artifact_uri)
 
 
