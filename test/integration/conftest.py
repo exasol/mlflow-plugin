@@ -65,7 +65,9 @@ def build_slc(use_onprem, use_saas, request) -> bool:
 
 
 @pytest.fixture(scope="session")
-def language_alias(build_slc):
+def language_alias(request, build_slc):
+    if override := request.config.getoption("--language-alias"):
+        return override
     return "MLFLOW" if build_slc else "PYTHON3"
 
 

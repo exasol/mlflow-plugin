@@ -8,3 +8,11 @@ def pytest_addoption(parser):
             "the specified URL, e.g. http://localhost:5000."
         ),
     )
+    parser.addoption(
+        "--language-alias",
+        type=str,
+        help=(
+            "Can be set to override the default. The default is MLFLOW or "
+            "PYTHON3 when CLI option --skip-slc is specified."
+        ),
+    )
