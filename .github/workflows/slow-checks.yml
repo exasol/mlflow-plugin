@@ -39,7 +39,7 @@ jobs:
       - name: Run Tests and Collect Coverage
         run: >
           poetry run -- nox -s test:integration --
-          -rA --show-setup -o log_cli=true -o log_cli_level=INFO
+          -rA --setup-show -o log_cli=true -o log_cli_level=INFO
           --coverage --db-version 2025.1.8 --backend onprem
 
       - name: Upload Artifacts
