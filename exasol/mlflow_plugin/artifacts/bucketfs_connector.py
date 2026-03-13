@@ -121,10 +121,22 @@ class Connector:
 
     @property
     def bucketfs_location(self) -> bfs.path.PathLike:
+        """
+        The ``exasol.bucketfs.PathLike`` associated with the current
+        ``Connector`` instance.
+        """
+
         return bfs.path.build_path(**self.bucketfs_parameters)
 
     @classmethod
     def for_udfs(cls, artifact_uri: str) -> Connector:
+        """
+        Construct a ``Connector`` instance for accessing the path mounted
+        in local file system associated with the specified ``artifact_uri``.
+
+        Environment variables are not required in this case.
+        """
+
         return cls(
             artifact_uri,
             username="",
@@ -135,6 +147,16 @@ class Connector:
 
     @classmethod
     def from_env(cls, artifact_uri: str) -> Connector:
+        """
+        Construct a ``Connector`` instance from the specified
+        ``artifact_uri`` and the related environment variables.
+
+        Environment variables ``ENV_BUCKETFS_USER`` and
+        ``ENV_SSL_CERT_VALIDATION`` are optional.
+
+        Raises an ``EnvError`` in case the required variable
+        ``ENV_BUCKETFS_PASSWORD`` is not set or empty.
+        """
         password = os.getenv(ENV_BUCKETFS_PASSWORD)
         if not password:
             raise EnvError(
@@ -152,6 +174,13 @@ class Connector:
 
 
 def udf_path(artifact_uri: str) -> str:
+    """
+    If artifact_uri points to the BucketFS, return the associated path
+    mounted in local file system.
+
+    Raises a ``ParseError`` in case ``artifact_uri`` does not point to
+    BucketFS.
+    """
     con = Connector.for_udfs(artifact_uri)
     return con.bucketfs_location.as_udf_path()
 
@@ -186,18 +215,17 @@ def load_model_with_fallback(
 
     Arguments:
 
-      artifact_uri:
-        The URI of the artifact, examples:
+      artifact_uri: The URI of the artifact, examples:
 
-        * "exa+bfs://localhost:1234/bfsdefault/default"
-        * "mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"
+        * ``"exa+bfs://localhost:1234/bfsdefault/default"``
+        * ``"mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"``
 
-      load_func:
-        Function to actually load the model, e.g. ``mlflow.sklearn.load_model``.
+      load_func: Function to actually load the model,
+        e.g. ``mlflow.sklearn.load_model``.
     """
 
     path = local_path_or_uri(artifact_uri)
     try:
-        return load_func(path)
+        return load_func(path, **kwargs)
     except Exception:
-        return load_func(artifact_uri)
+        return load_func(artifact_uri, **kwargs)
