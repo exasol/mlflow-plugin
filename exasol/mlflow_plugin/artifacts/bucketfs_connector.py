@@ -188,7 +188,7 @@ def udf_path(artifact_uri: str) -> str:
 def local_path_or_uri(artifact_uri: str) -> str:
     """
     If artifact_uri points to the BucketFS and the associated path is
-    mounted in local file system, then return this path.  Otherwise return the
+    mounted in local file system, then return this path. Otherwise return the
     URI.
     """
     try:
@@ -206,11 +206,11 @@ def load_model_with_fallback(
 ) -> MLflowModel:
     """
     Assuming the artifact_uri points to the BucketFS: Try loading the
-    artifact using the associated path mounted in local file system.  On
+    artifact using the associated path mounted in local file system. On
     exception try loading the artifact via the URI (e.g. HTTP).
 
     Loading the model from the local file system can fail due to multiple
-    reasons, e.g. the UDF does not have read permissions for the path or the
+    reasons, e.g. the UDF does not have read permission for the path or the
     model is damaged or cannot be loaded for other reasons.
 
     Arguments:
