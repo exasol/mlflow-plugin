@@ -59,13 +59,17 @@ def cleaner(connector) -> BucketFsCleaner:
 
 @pytest.fixture(scope="session")
 def build_slc(use_onprem, use_saas, request) -> bool:
+    """See developer guide for details."""
     if request.config.getoption("--skip-slc"):
         return False
     return use_onprem or use_saas
 
 
 @pytest.fixture(scope="session")
-def language_alias(build_slc):
+def language_alias(request, build_slc):
+    """See developer guide for details."""
+    if override := request.config.getoption("--language-alias"):
+        return override
     return "MLFLOW" if build_slc else "PYTHON3"
 
 

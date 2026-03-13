@@ -7,16 +7,21 @@ import subprocess
 import sys
 import threading
 import time
+from collections.abc import Generator
 from datetime import (
     datetime,
     timedelta,
 )
 from subprocess import PIPE
 from typing import IO
+from urllib.parse import urlsplit
 
 import mlflow
 import pytest
 import sklearn
+from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
+    EnvironmentInfo,
+)
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
 
@@ -81,11 +86,11 @@ class MlflowServer:
 
 
 @pytest.fixture(scope="module")
-def mlflow_server(tmp_path_factory, connector: Connector, request):
+def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[str]:
     if server_url := request.config.getoption("--mlflow-server"):
         LOG.info(f"Reusing MLflow server already running at {server_url}")
         mlflow.set_tracking_uri(server_url)
-        yield
+        yield server_url
         return
 
     path = tmp_path_factory.mktemp("data") / "mlflow.db"
@@ -95,20 +100,53 @@ def mlflow_server(tmp_path_factory, connector: Connector, request):
         "server",
         "--backend-store-uri",
         f"sqlite:///{path}",
+        "--host",
+        "0.0.0.0",
         "--port",
         str(port),
-        "--default-artifact-root",
-        connector.uri,
+        # Option "--default-artifact-root" connector.uri has been removed in
+        # favor of fixture bfs_experiment creating a dedidated experiment
+        # using the BucketFS as artifact store.
     ]
     # While tests are running, stderr needs to be consumed continuously.
     server = MlflowServer(command).wait_for_message("Application startup complete.")
-    mlflow.set_tracking_uri(f"http://localhost:{port}")
-    yield
+    tracking_uri = f"http://localhost:{port}"
+    mlflow.set_tracking_uri(tracking_uri)
+    yield tracking_uri
     server.stop()
 
 
 @pytest.fixture(scope="module")
-def logged_sample_model(mlflow_server) -> str:
+def mlflow_tracking_uri(
+    request,
+    mlflow_server: str,
+    backend_aware_onprem_database: EnvironmentInfo,
+):
+    """
+    Return the tracking URI of the MLflow server as needed within a UDF,
+    e.g. via environment variable MLFLOW_TRACKING_URI.
+
+    UDFs are running inside the database inside a Docker container and need to
+    access the MLflow server on localhost via the Docker container's gateway.
+    """
+    if request.config.getoption("--mlflow-server"):
+        return mlflow_server
+    if gateway := backend_aware_onprem_database.network_info.gateway:
+        orig = urlsplit(mlflow_server)
+        return f"{orig.scheme}://{gateway}:{orig.port}"
+    return mlflow_server
+
+
+@pytest.fixture(scope="module")
+def bfs_experiment(connector: Connector) -> str:
+    name = "BFS-Experiment"
+    mlflow.create_experiment(name, artifact_location=connector.uri)
+    mlflow.set_experiment(name)
+    return name
+
+
+@pytest.fixture(scope="module")
+def logged_sample_model(mlflow_server, bfs_experiment: str) -> str:
     """
     Return artifact URI, example:
       exa+bfs://localhost:2580/bfsdefault/default/
@@ -116,4 +154,12 @@ def logged_sample_model(mlflow_server) -> str:
     """
     model = sklearn.linear_model.LogisticRegression()
     info = mlflow.sklearn.log_model(model, name="Example-Model")
+    return info.artifact_path
+
+
+@pytest.fixture(scope="module")
+def non_bucketfs_model(mlflow_server) -> str:
+    mlflow.set_experiment("Non-BucketFS-Experiment")
+    model = sklearn.linear_model.LogisticRegression()
+    info = mlflow.sklearn.log_model(model, name="Non-BucketFS-Model")
     return info.artifact_path

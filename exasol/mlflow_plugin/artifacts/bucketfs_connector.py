@@ -14,9 +14,13 @@ provided by various database instances and access protocols:
 from __future__ import annotations
 
 import os
+import typing
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import (
+    Any,
+)
 from urllib.parse import urlparse
 
 import exasol.bucketfs as bfs
@@ -27,6 +31,13 @@ from exasol.mlflow_plugin.env_vars import (
     ENV_SSL_CERT_VALIDATION,
     str_to_bool,
 )
+
+# Import mlflow.models only for type checking to avoid circular imports.
+if typing.TYPE_CHECKING:
+    from mlflow.models import Model as MLflowModel
+else:
+    MLflowModel = Any
+
 
 URL_SCHEMES = ["exa+bfs", "exa+bfss"]
 
@@ -110,10 +121,22 @@ class Connector:
 
     @property
     def bucketfs_location(self) -> bfs.path.PathLike:
+        """
+        The ``exasol.bucketfs.PathLike`` associated with the current
+        ``Connector`` instance.
+        """
+
         return bfs.path.build_path(**self.bucketfs_parameters)
 
     @classmethod
     def for_udfs(cls, artifact_uri: str) -> Connector:
+        """
+        Construct a ``Connector`` instance for accessing the path mounted
+        in local file system associated with the specified ``artifact_uri``.
+
+        Environment variables are not required in this case.
+        """
+
         return cls(
             artifact_uri,
             username="",
@@ -124,6 +147,16 @@ class Connector:
 
     @classmethod
     def from_env(cls, artifact_uri: str) -> Connector:
+        """
+        Construct a ``Connector`` instance from the specified
+        ``artifact_uri`` and the related environment variables.
+
+        Environment variables ``ENV_BUCKETFS_USER`` and
+        ``ENV_SSL_CERT_VALIDATION`` are optional.
+
+        Raises an ``EnvError`` in case the required variable
+        ``ENV_BUCKETFS_PASSWORD`` is not set or empty.
+        """
         password = os.getenv(ENV_BUCKETFS_PASSWORD)
         if not password:
             raise EnvError(
@@ -141,5 +174,58 @@ class Connector:
 
 
 def udf_path(artifact_uri: str) -> str:
+    """
+    If artifact_uri points to the BucketFS, return the associated path
+    mounted in local file system.
+
+    Raises a ``ParseError`` in case ``artifact_uri`` does not point to
+    BucketFS.
+    """
     con = Connector.for_udfs(artifact_uri)
     return con.bucketfs_location.as_udf_path()
+
+
+def local_path_or_uri(artifact_uri: str) -> str:
+    """
+    If artifact_uri points to the BucketFS and the associated path is
+    mounted in local file system, then return this path. Otherwise return the
+    URI.
+    """
+    try:
+        path = udf_path(artifact_uri)
+    except ParseError:
+        return artifact_uri
+
+    return path if Path(path).exists() else artifact_uri
+
+
+def load_model_with_fallback(
+    artifact_uri: str,
+    load_func: Callable[..., MLflowModel],
+    **kwargs,
+) -> MLflowModel:
+    """
+    Assuming the artifact_uri points to the BucketFS: Try loading the
+    artifact using the associated path mounted in local file system. On
+    exception try loading the artifact via the URI (e.g. HTTP).
+
+    Loading the model from the local file system can fail due to multiple
+    reasons, e.g. the UDF does not have read permission for the path or the
+    model is damaged or cannot be loaded for other reasons.
+
+    Arguments:
+
+      artifact_uri: The URI of the artifact, examples:
+
+        * ``"exa+bfs://localhost:1234/bfsdefault/default"``
+        * ``"mlflow-artifacts:/2/models/m-0b55c1c46bcd47f9a633bc3fd1b59e4a/artifacts"``
+
+      load_func: Function to actually load the model,
+        e.g. ``mlflow.sklearn.load_model``.
+    """
+
+    path = local_path_or_uri(artifact_uri)
+    try:
+        return load_func(path, **kwargs)
+    except Exception:
+        return load_func(artifact_uri, **kwargs)

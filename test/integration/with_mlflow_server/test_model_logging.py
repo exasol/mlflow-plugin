@@ -27,7 +27,7 @@ def switch_uri(other: Connector, uri: str) -> Connector:
         (sklearn.linear_model.LogisticRegression, mlflow.sklearn),
     ],
 )
-def test_round_trip(cls, mlflow_package, mlflow_server, connector):
+def test_round_trip(cls, mlflow_package, mlflow_server, connector, bfs_experiment):
     """
     Parameters:
 
@@ -57,3 +57,8 @@ def test_log_model(connector, logged_sample_model):
     }
     actual = filenames(other.bucketfs_location)
     assert actual == expected
+
+
+def test_non_bfs_model(connector, non_bucketfs_model):
+    loaded = mlflow.sklearn.load_model(non_bucketfs_model)
+    assert type(loaded) == sklearn.linear_model.LogisticRegression

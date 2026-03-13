@@ -152,7 +152,7 @@ itde/
 /.security.json
 /.sonar
 
-# MLFlow Model Registry
+# MLflow Model Registry
 /mlflow.db
 /mlartifacts
 

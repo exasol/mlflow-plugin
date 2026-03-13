@@ -29,7 +29,7 @@ Documentation of  Exasol MLflow Plugin
    :hidden:
 
    user_guide/index
-   developer_guide
+   developer_guide/index
    api
    faq
    changes/changelog

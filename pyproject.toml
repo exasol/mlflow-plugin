@@ -1,6 +1,6 @@
 [project]
 name = "exasol-mlflow-plugin"
-version = "1.0.0"
+version = "1.1.0"
 requires-python = ">=3.10,<3.14"
 description = "Plugin for MLflow supporting artifact repository Exasol BucketFS"
 authors = [
@@ -46,6 +46,7 @@ build-backend = "poetry.core.masonry.api"
 
 [[tool.mypy.overrides]]
 module = [
+    "docker.*",
     # py.typed file only available with version >= 2
     "pyexasol.*",
     "sklearn.*",
