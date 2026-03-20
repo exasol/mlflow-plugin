@@ -158,3 +158,6 @@ itde/
 
 # SLC building
 /.slc
+
+# Drawio Image backups
+.$*.bkp

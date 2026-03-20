@@ -8,6 +8,10 @@ See the `MLflow documentation
 for specifying the BucketFS Artifact Store either when starting the MLflow
 server or when creating an MLflow *experiment*.
 
+.. image:: enabling-bucketfs-artifact-store.png
+    :scale: 130 %
+
+
 As Default Artifact Repository
 ------------------------------
 
