@@ -15,7 +15,7 @@ Alternatives for Loading an MLflow Model
 The following figure shows different alternatives for loading an MLflow model
 from within a UDF:
 
-.. image:: udf-loading-alternatives.png
+.. image:: udf-loading-alternatives.svg
     :scale: 100 %
 
 
