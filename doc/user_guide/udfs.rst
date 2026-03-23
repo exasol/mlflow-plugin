@@ -9,20 +9,42 @@ in Exasol `UDFs
 
 There are a few things to keep in mind, though.
 
-MLflow Tracking URI
--------------------
+Alternatives for Loading an MLflow Model
+----------------------------------------
 
-Loading the MLflow model directly from the BucketFS mounted into the local
-file system of the UDF is the **fastest option**. It also does not require
-communication with the MLflow server and consequently the MLflow Tracking URI
-is not required.
+The following figure shows different alternatives for loading an MLflow model
+from within a UDF:
+
+.. image:: udf-loading-alternatives.svg
+    :scale: 100 %
+
+
+See the differences, prerequisites, benefits and drawbacks compared in the
+following table:
+
+.. list-table::
+   :header-rows: 1
+
+   * -
+     - From the Local File System
+     - Via MLflow REST API
+   * - Speed
+     - **Fastest option**
+     - Significantly slower
+   * - Supported Artifacts Stores
+     - Only BucketFS
+     - Arbitrary, incl. BucketFS
+   * - Setting the MLflow Tracking URI
+     - Not required
+     - Required
 
 When you cannot guarantee the model to be accessible in the local file system
 of the UDF, some **utility functions** will help you to automatically choose
-the fastest loading option.
+the fastest loading option, see the examples in the following sections for
+details.
 
-Setting the MLflow Tracking URI
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+MLflow Tracking URI
+-------------------
 
 In all cases (potentially) accessing the MLflow server, the UDF needs to set
 the MLflow Tracking URI. This can be done, by:
