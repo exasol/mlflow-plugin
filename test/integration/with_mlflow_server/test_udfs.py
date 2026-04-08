@@ -43,21 +43,17 @@ def create_udf(
         env: EnvSpec = None,
     ) -> Udf:
         env = env or {}
-        header = cleandoc(
-            f"""
+        header = cleandoc(f"""
             CREATE OR REPLACE {{language_alias!r}} SCALAR SCRIPT
                 {{schema!q}}.{{name!q}}(uri VARCHAR(2000))
                 RETURNS VARCHAR(2000) AS
                 {{env!r}}
             import mlflow
-            """
-        )
-        footer = cleandoc(
-            """
+            """)
+        footer = cleandoc("""
             c = type(model)
             return c.__module__ + "." + c.__name__
-            """
-        )
+            """)
         sql = "\n".join(["--/", header, cleandoc(impl), indent(4, footer), "/"])
         print(f"{sql}")
         return Udf(

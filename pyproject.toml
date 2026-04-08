@@ -1,42 +1,51 @@
 [project]
 name = "exasol-mlflow-plugin"
 version = "1.1.0"
-requires-python = ">=3.10,<3.14"
 description = "Plugin for MLflow supporting artifact repository Exasol BucketFS"
-authors = [
-    {name = "Exasol AG", email = "christoph.kuhnke@exasol.com"},
-]
+authors = [{ name = "Exasol AG", email = "christoph.kuhnke@exasol.com" }]
+requires-python = ">=3.10,<3.14"
 readme = "README.rst"
 license = "MIT"
-keywords = ['exasol', 'mlflow_plugin']
-dynamic = ["dependencies"]
+keywords = [
+    "exasol",
+    "mlflow_plugin",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
 dependencies = [
     "exasol-bucketfs (>=2.1.0,<3.0.0)",
     "mlflow (>=3.8.1, <4)",
 ]
 
 [tool.poetry]
-requires-poetry = ">=2.1.0"
+requires-poetry = ">=2.3.0"
 packages = [
     { include = "exasol" },
 ]
 
-[tool.poetry.plugins."mlflow.artifact_repository"]
+[project.entry-points."mlflow.artifact_repository"]
 "exa+bfs" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
 "exa+bfss" = "exasol.mlflow_plugin.artifacts.repo:BucketFsArtifactRepo"
 # end of plugin configuration
 
-[tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=6, <7"
-pytest-exasol-backend = ">=1.2.4, <2.0.0"
-exasol-python-extension-common = ">= 0.12.1"
-pytest-exasol-slc = ">= 0.4.3"
-# pyexasol = "^2.0.0, <3" # requires pec to update dependency first
+[dependency-groups]
+dev = [
+    "exasol-toolbox>=6, <7",
+    "pytest-exasol-backend>=1.2.4, <2.0.0",
+    "exasol-python-extension-common>= 0.12.1",
+    "pytest-exasol-slc>= 0.4.3",
+    # pyexasol = "^2.0.0, <3" # requires pec to update dependency first
+]
 
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"
 
-[poetry.urls]
+[project.urls]
 repository = "https://github.com/exasol/mlflow-plugin"
 homepage = "https://github.com/exasol/mlflow-plugin"
 
@@ -83,10 +92,10 @@ max-module-lines = 800
 
 [tool.ruff.lint]
 extend-ignore = [
-    "E",      # Syntax errors
-    "F",      # Pyflakes rules (excluding F401)
-    "UP",     # pyupgrade rules
-    "D",      # Docstring rules
+    "E", # Syntax errors
+    "F", # Pyflakes rules (excluding F401)
+    "UP", # pyupgrade rules
+    "D", # Docstring rules
 ]
 extend-select = ["F401"]
 unfixable = []
