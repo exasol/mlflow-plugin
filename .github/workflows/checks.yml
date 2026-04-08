@@ -5,7 +5,7 @@ on:
 
 jobs:
   check-version:
-    name: Version
+    name: Check Version
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
@@ -51,7 +51,7 @@ jobs:
         run: poetry run -- nox -s links:check
 
   check-changelog-was-updated:
-    name: Changelog
+    name: Check Changelog was Updated
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
@@ -99,7 +99,7 @@ jobs:
 
       - name: Upload Artifacts
         id: upload-artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: lint-python${{ matrix.python-versions }}
           path: |
@@ -134,7 +134,7 @@ jobs:
         run: poetry run -- nox -s lint:typing
 
   audit-security:
-    name: Security (Python-${{ matrix.python-versions }})
+    name: Audit Security (Python-${{ matrix.python-versions }})
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
@@ -161,14 +161,14 @@ jobs:
 
       - name: Upload Artifacts
         id: upload-artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-python${{ matrix.python-versions }}
           path: .security.json
           include-hidden-files: true
 
   check-format:
-    name: Format
+    name: Check Format
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
@@ -238,7 +238,7 @@ jobs:
 
       - name: Upload Artifacts
         id: upload-artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-python${{ matrix.python-versions }}-fast
           path: .coverage
