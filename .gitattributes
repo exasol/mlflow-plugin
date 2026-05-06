@@ -1,5 +1,4 @@
 poetry.lock                              linguist-generated
-exasol/exasol.mlflow_plugin/version.py   linguist-generated
 doc/changes/changelog.md                 linguist-generated
 /.github/workflows/build-and-publish.yml linguist-generated
 /.github/workflows/cd.yml                linguist-generated

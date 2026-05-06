@@ -21,3 +21,4 @@ To ensure usage of secure packages, it is up to the user to similarly relock the
 ## Security
 
 * #48: Relocked vulnerable transitive and dev dependencies
+* #51: Fixed vulnerabilities by updating dependencies
