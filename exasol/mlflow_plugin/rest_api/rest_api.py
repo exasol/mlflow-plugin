@@ -65,4 +65,4 @@ class MLflowRestApi:
             resp = requests.post(self.endpoint, json=query).json()
             yield from self._process(resp.get(self.key, []))
             page_token = resp.get("next_page_token")
-            LOG.debug(f'retrieving page {page_token}')
+            LOG.debug(f"retrieving page {page_token}")

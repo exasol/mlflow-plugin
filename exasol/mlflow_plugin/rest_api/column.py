@@ -5,7 +5,7 @@ from typing import Any
 
 
 def time_str(seconds_since_epoc: int) -> str:
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds_since_epoc/1000))
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds_since_epoc / 1000))
 
 
 class Column:
@@ -34,8 +34,8 @@ class Column:
         else:
             v = str(value)
         if body and self.align == "right":
-            return v.rjust(self.width)[-self.width:]
-        return v.ljust(self.width)[:self.width]
+            return v.rjust(self.width)[-self.width :]
+        return v.ljust(self.width)[: self.width]
 
     @classmethod
     def timestamp(cls, name: str, header: str) -> Column:

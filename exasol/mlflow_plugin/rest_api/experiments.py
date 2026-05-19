@@ -1,5 +1,3 @@
-from typing import Any
-
 from exasol.mlflow_plugin.rest_api.column import Column
 from exasol.mlflow_plugin.rest_api.rest_api import (
     JsonObject,
@@ -11,6 +9,7 @@ class ExperimentsSearch(MLflowRestApi):
     """
     base_uri: e.g. "http://localhost:5000/api/2.0/mlflow/"
     """
+
     def __init__(self, base_uri: str, params: JsonObject):
         super().__init__(
             f"{base_uri}/experiments/search",
