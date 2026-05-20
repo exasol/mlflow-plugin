@@ -37,6 +37,16 @@ class Column:
             return v.rjust(self.width)[-self.width :]
         return v.ljust(self.width)[: self.width]
 
+    def __eq__(self, other: Any) -> bool:
+        return (
+            isinstance(other, Column)
+            and other.name == self.name
+            and other.width == self.width
+            and other.header == self.header
+            and other.data_type == self.data_type
+            and other.align == self.align
+        )
+
     @classmethod
     def timestamp(cls, name: str, header: str) -> Column:
         return cls(name, 20, header=header, data_type="timestamp")

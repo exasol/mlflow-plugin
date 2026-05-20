@@ -7,6 +7,7 @@ import requests
 from exasol.mlflow_plugin.rest_api.column import Column
 
 LOG = logging.getLogger(__name__)
+TIMEOUT_IN_SECONDS = 5
 
 JsonData = dict[str, Any] | list[Any]
 JsonObject = dict[str, Any]
@@ -59,10 +60,15 @@ class MLflowRestApi:
         )
 
     def result(self) -> Generator[JsonObject]:
-        page_token = ""
+        page_token = ""  # nosec: B105 - this is not an aktual token
         while page_token is not None:
             query = self.params | {"page_token": page_token}
-            resp = requests.post(self.endpoint, json=query).json()
+            raw_respose = requests.post(
+                self.endpoint,
+                json=query,
+                timeout=TIMEOUT_IN_SECONDS,
+            )
+            resp = raw_respose.json()
             yield from self._process(resp.get(self.key, []))
             page_token = resp.get("next_page_token")
             LOG.debug(f"retrieving page {page_token}")
