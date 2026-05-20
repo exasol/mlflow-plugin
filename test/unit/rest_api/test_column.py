@@ -1,4 +1,4 @@
-from exasol.mlflow_plugin.rest_api.data.column import Column
+from exasol.mlflow_plugin.rest_api.data import Column
 
 
 def test_default_values() -> None:
