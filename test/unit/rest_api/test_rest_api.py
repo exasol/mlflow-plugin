@@ -20,7 +20,7 @@ def endpoint() -> rest_api.MLflowRestApi:
 
 
 @pytest.fixture
-def mock_requests(monkeypatch) -> Callable[[list[JsonObject]], Mock]:
+def mock_requests(monkeypatch) -> Callable[[str, list[JsonObject]], Mock]:
     def func(target: str, return_values: list[JsonObject]) -> Mock:
         def response(value):
             response = Mock()
