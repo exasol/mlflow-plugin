@@ -16,8 +16,10 @@ class Column:
         header: str = "",
         data_type: str = "",
         align: str = "left",
+        key: str = "",
     ):
         self.name = name
+        self.key = key or name
         self.header = header or name.title().replace("_", " ")
         self.width = width
         self.data_type = data_type
@@ -30,6 +32,7 @@ class Column:
         return (
             isinstance(other, Column)
             and other.name == self.name
+            and other.key == self.key
             and other.width == self.width
             and other.header == self.header
             and other.data_type == self.data_type

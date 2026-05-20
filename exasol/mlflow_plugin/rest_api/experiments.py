@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import Any
 
 from exasol.mlflow_plugin.rest_api import (
@@ -8,6 +9,15 @@ from exasol.mlflow_plugin.rest_api import (
 from exasol.mlflow_plugin.rest_api.data import (
     Column,
     JsonObject,
+)
+from exasol.mlflow_plugin.rest_api.expanding import Expander
+
+EXPAND_TAGS = Expander(
+    "tags",
+    [
+        Column("tag_key", 15, align="right", key="key"),
+        Column("tag_value", 15, key="value"),
+    ],
 )
 
 
@@ -22,7 +32,6 @@ class ExperimentsSearch:
             key="experiments",
         )
         self._processor = processing.PostProcessor(
-            has_tags=True,
             columns=[
                 Column("experiment_id", 2, header="ID"),
                 Column("name", 15, align="right"),
@@ -31,6 +40,7 @@ class ExperimentsSearch:
                 Column.timestamp("last_update_time", header="Updated"),
                 Column.timestamp("creation_time", header="Created"),
             ],
+            expanders=[EXPAND_TAGS],
         )
 
     def call(self, params: JsonObject) -> Iterable[Any]:

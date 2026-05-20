@@ -5,34 +5,26 @@ from exasol.mlflow_plugin.rest_api.data import (
     Column,
     JsonObject,
 )
+from exasol.mlflow_plugin.rest_api.expanding import Expander
 
 
 class PostProcessor:
     """
-    Process the generic Json response
+    Process the generic Json response from MLflow REST API and return only
+    the values in the order of the columns.
+
+    The keys of the original Json response are ommitted.
+
+    Columns with array values are expanded by repeating the other columns with
+    additional columns c_i, representing one element of the original array
+    value.
     """
 
-    DEFAULT_TAGS = [{"key": None, "value": None}]
-    TAG_COLUMNS = [
-        Column("tag_key", 15, align="right"),
-        Column("tag_value", 15),
-    ]
-
-    def __init__(self, has_tags: bool, columns: list[Column]):
-        self.has_tags = has_tags
-        self.columns = columns + self.TAG_COLUMNS if has_tags else columns
-
-    def _expand(self, data: Iterable[JsonObject]) -> Iterable[JsonObject]:
-        if not self.has_tags:
-            return data
-        return (
-            el | {"tag_key": tag["key"], "tag_value": tag["value"]}
-            for el in data
-            for tag in el.get("tags", self.DEFAULT_TAGS)
-        )
+    def __init__(self, columns: list[Column], expanders: list[Expander] | None = None):
+        self.expanders = expanders or []
+        self.columns = columns + [c for e in self.expanders for c in e.columns]
 
     def process(self, data: Iterable[JsonObject]) -> Iterable[list[Any]]:
-        return (
-            [c.process(el.get(c.name)) for c in self.columns]
-            for el in self._expand(data)
-        )
+        for expander in self.expanders:
+            data = expander.expand(data)
+        return ([c.process(el.get(c.name)) for c in self.columns] for el in data)
