@@ -59,17 +59,8 @@ class MLflowRestApi:
 
         yield from data
 
-        # if not self.has_tags:
-        #     yield from data
-        #     return
-        # yield from (
-        #     el | {"tag_key": tag["key"], "tag_value": tag["value"]}
-        #     for el in data
-        #     for tag in el.get("tags", self.DEFAULT_TAGS)
-        # )
-
     def result(self) -> Generator[JsonObject]:
-        page_token = ""  # nosec: B105 - this is not an aktual token
+        page_token = ""  # nosec: B105 - this is not an actual token
         while page_token is not None:
             query = self.params | {"page_token": page_token}
             raw_respose = requests.post(
