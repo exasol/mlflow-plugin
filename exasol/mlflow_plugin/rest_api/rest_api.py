@@ -37,18 +37,6 @@ class MLflowRestApi:
         self.has_tags = has_tags
         self.columns = columns + self.TAG_COLUMNS if has_tags else columns
 
-    @property
-    def header(self) -> str:
-        data = {c.name: c.header for c in self.columns}
-        return (
-            self.format(data, body=False)
-            + "\n"
-            + "-".join("-" * c.width for c in self.columns)
-        )
-
-    def format(self, data: JsonObject, body: bool = True) -> str:
-        return " ".join(c.format(data.get(c.name), body) for c in self.columns)
-
     def sql(self, data: JsonObject) -> list[Any]:
         return [c.sql(data.get(c.name)) for c in self.columns]
 
