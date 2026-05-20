@@ -26,4 +26,4 @@ class MLflowRestApi:
             resp = raw_respose.json()
             yield from resp.get(self.key, [])
             page_token = resp.get("next_page_token")
-            LOG.debug(f"retrieving page {page_token}")
+            LOG.debug("retrieving page %s", page_token)
