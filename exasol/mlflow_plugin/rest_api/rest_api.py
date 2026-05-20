@@ -15,9 +15,11 @@ class MLflowRestApi:
         self.key = key
 
     def call(self, params: JsonObject) -> Iterable[JsonObject]:
+        query = {"max_results": 1000}
+        query |= {k: v for k, v in params.items() if v is not None}
         page_token = ""  # nosec: B105 - this is not an actual token
         while page_token is not None:
-            query = params | {"page_token": page_token}
+            query = query | {"page_token": page_token}
             raw_respose = requests.post(
                 self.endpoint,
                 json=query,

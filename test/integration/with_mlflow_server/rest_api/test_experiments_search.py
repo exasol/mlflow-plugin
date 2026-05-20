@@ -31,15 +31,14 @@ def experiments_search(mlflow_server, sample_data):
 
 
 def test_deleted(experiments_search):
-    params = {"view_type": "DELETED_ONLY"}
-    actual = list(experiments_search.call(params))
+    actual = list(experiments_search.call(view_type = "DELETED_ONLY"))
     count_deleted = sum(1 for a in actual if a[3] == "deleted")
     assert count_deleted > 0
 
 
 def test_tags(experiments_search):
-    params = {"filter": f"name = '{TAGGED_EXPERIMENT}'"}
-    actual = list(experiments_search.call(params))
+    filter = f"name = '{TAGGED_EXPERIMENT}'"
+    actual = list(experiments_search.call(filter=filter))
     tags = [tuple(el[-2:]) for el in actual]
     assert tags == SAMPLE_TAGS
 
@@ -53,5 +52,5 @@ def test_other_options(experiments_search):
         "filter": "name LIKE 'a-%'",
         "order_by": ["name"],
     }
-    actual = experiments_search.call(params)
+    actual = experiments_search.call(**params)
     assert [el[1] for el in actual] == ["a-1", "a-2"]
