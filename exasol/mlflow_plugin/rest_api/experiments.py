@@ -1,6 +1,7 @@
-from collections.abc import Iterable
-from dataclasses import dataclass
-from typing import Any
+from typing import (
+    Any,
+    Iterable,
+)
 
 from exasol.mlflow_plugin.rest_api import (
     processing,
