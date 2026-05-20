@@ -1,5 +1,8 @@
 import logging
-from collections.abc import Generator
+from collections.abc import (
+    Generator,
+    Iterable,
+)
 from typing import Any
 
 import requests
@@ -49,7 +52,7 @@ class MLflowRestApi:
     def sql(self, data: JsonObject) -> list[Any]:
         return [c.sql(data.get(c.name)) for c in self.columns]
 
-    def _process(self, data: list[JsonObject]) -> Generator[JsonObject]:
+    def _process(self, data: Iterable[JsonObject]) -> Generator[JsonObject]:
         if self.has_tags:
             data = (
                 el | {"tag_key": tag["key"], "tag_value": tag["value"]}
