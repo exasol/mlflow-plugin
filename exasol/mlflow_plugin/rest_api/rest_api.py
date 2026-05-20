@@ -50,14 +50,23 @@ class MLflowRestApi:
         return [c.sql(data.get(c.name)) for c in self.columns]
 
     def _process(self, data: list[JsonObject]) -> Generator[JsonObject]:
-        if not self.has_tags:
-            yield from data
-            return
-        yield from (
-            el | {"tag_key": tag["key"], "tag_value": tag["value"]}
-            for el in data
-            for tag in el.get("tags", self.DEFAULT_TAGS)
-        )
+        if self.has_tags:
+            data = (
+                el | {"tag_key": tag["key"], "tag_value": tag["value"]}
+                for el in data
+                for tag in el.get("tags", self.DEFAULT_TAGS)
+            )
+
+        yield from data
+
+        # if not self.has_tags:
+        #     yield from data
+        #     return
+        # yield from (
+        #     el | {"tag_key": tag["key"], "tag_value": tag["value"]}
+        #     for el in data
+        #     for tag in el.get("tags", self.DEFAULT_TAGS)
+        # )
 
     def result(self) -> Generator[JsonObject]:
         page_token = ""  # nosec: B105 - this is not an aktual token
