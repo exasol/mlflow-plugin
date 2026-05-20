@@ -23,19 +23,8 @@ class Column:
         self.data_type = data_type
         self.align = align
 
-    def sql(self, value: Any) -> Any:
-        if self.data_type != "timestamp":
-            return value
-        return time_str(value)
-
-    def format(self, value: Any, body: bool = True) -> str:
-        if self.data_type == "timestamp" and body:
-            v = time_str(value)
-        else:
-            v = str(value)
-        if body and self.align == "right":
-            return v.rjust(self.width)[-self.width :]
-        return v.ljust(self.width)[: self.width]
+    def process(self, value: Any) -> Any:
+        return value if self.data_type != "timestamp" else time_str(value)
 
     def __eq__(self, other: Any) -> bool:
         return (
