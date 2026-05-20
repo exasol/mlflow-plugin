@@ -3,10 +3,9 @@ import pytest
 
 from exasol.mlflow_plugin.rest_api import ExperimentsSearch
 
-import pytest
-
 TAGGED_EXPERIMENT = "zzz"
 SAMPLE_TAGS = [("T1", "V1"), ("T2", "V2")]
+
 
 @pytest.fixture(scope="module")
 def sample_data(request, mlflow_server):
@@ -34,7 +33,7 @@ def experiments_search(mlflow_server, sample_data):
 def test_deleted(experiments_search):
     params = {"view_type": "DELETED_ONLY"}
     actual = list(experiments_search.call(params))
-    count_deleted =sum(1 for a in actual if a[3] == "deleted")
+    count_deleted = sum(1 for a in actual if a[3] == "deleted")
     assert count_deleted > 0
 
 

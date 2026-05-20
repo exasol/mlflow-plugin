@@ -1,12 +1,14 @@
 from collections.abc import Iterable
 from typing import Any
 
-from exasol.mlflow_plugin.rest_api import rest_api
+from exasol.mlflow_plugin.rest_api import (
+    processing,
+    rest_api,
+)
 from exasol.mlflow_plugin.rest_api.data import (
     Column,
     JsonObject,
 )
-from exasol.mlflow_plugin.rest_api import processing
 
 
 class ExperimentsSearch:
@@ -32,6 +34,6 @@ class ExperimentsSearch:
         )
 
     def call(self, params: JsonObject) -> Iterable[Any]:
-        params={"max_results": 10} | params
+        params = {"max_results": 10} | params
         data = self._api.call(params)
         return self._processor.process(data)
