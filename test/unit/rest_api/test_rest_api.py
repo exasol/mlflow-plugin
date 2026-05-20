@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from typing import Callable
 from unittest.mock import Mock
 
@@ -40,4 +39,4 @@ def test_paging(endpoint, mock_requests) -> None:
     mock = mock_requests("post", ANSWERS)
     actual = list(endpoint.call({}))
     assert mock.call_count == 2
-    assert actual == ['a', 'b', 'c', 'd']
+    assert actual == list("abcd")
