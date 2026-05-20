@@ -1,6 +1,4 @@
-from collections.abc import (
-    Iterable,
-)
+from collections.abc import Iterable
 from typing import Any
 
 from exasol.mlflow_plugin.rest_api.data import (
