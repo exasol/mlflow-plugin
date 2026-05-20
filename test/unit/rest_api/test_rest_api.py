@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -28,7 +28,7 @@ def mock_requests(monkeypatch) -> Callable[[list[JsonObject]], Mock]:
             return response
 
         post = Mock()
-        post.side_effect=[response(v) for v in return_values]
+        post.side_effect = [response(v) for v in return_values]
         monkeypatch.setattr(rest_api.requests, target, post)
         return post
 
