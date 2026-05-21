@@ -53,5 +53,5 @@ def test_other_options(experiments_search):
         "max_results": 1,
     }
     actual = experiments_search.call(**params)
-    names = assert [el[1] for el in actual]
+    names = [el[1] for el in actual]
     assert names == ["a-1", "a-2"]
