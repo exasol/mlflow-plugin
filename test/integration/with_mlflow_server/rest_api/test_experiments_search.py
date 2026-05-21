@@ -31,7 +31,7 @@ def experiments_search(mlflow_server, sample_data):
 
 
 def test_deleted(experiments_search):
-    actual = list(experiments_search.call(view_type = "DELETED_ONLY"))
+    actual = list(experiments_search.call(view_type="DELETED_ONLY"))
     count_deleted = sum(1 for a in actual if a[3] == "deleted")
     assert count_deleted > 0
 
