@@ -15,7 +15,8 @@ def test_no_expansion() -> None:
         {"c1": 1, "c2": 2},
         {"c1": 3, "c2": 4},
     ]
-    assert list(testee.process(input)) == [[1, 2], [3, 4]]
+    actual = list(testee.process(input))
+    assert actual == [[1, 2], [3, 4]]
 
 
 def test_expansion() -> None:
