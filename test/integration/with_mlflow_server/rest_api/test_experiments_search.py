@@ -48,9 +48,9 @@ def test_other_options(experiments_search):
     Tests other options max_results, filter, order_by.
     """
     params = {
-        "max_results": 1,
         "filter": "name LIKE 'a-%'",
         "order_by": ["name"],
+        "max_results": 1,
     }
     actual = experiments_search.call(**params)
     assert [el[1] for el in actual] == ["a-1", "a-2"]
