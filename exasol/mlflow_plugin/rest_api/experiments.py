@@ -13,7 +13,6 @@ from exasol.mlflow_plugin.rest_api.data import (
 )
 from exasol.mlflow_plugin.rest_api.expanding import (
     EXPAND_TAGS,
-    Expander,
 )
 
 
