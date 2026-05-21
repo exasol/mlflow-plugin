@@ -16,7 +16,7 @@ class PostProcessor:
 
     DEFAULT_TAGS = [{"key": None, "value": None}]
     TAG_COLUMNS = [
-        Column("tag_key", 15, align="right"),
+        Column("tag_key", 15),
         Column("tag_value", 15),
     ]
 

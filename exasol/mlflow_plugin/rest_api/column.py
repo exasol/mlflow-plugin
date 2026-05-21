@@ -13,15 +13,14 @@ class Column:
         self,
         name: str,
         width: int,
-        header: str = "",
+        sql_name: str = "",
         data_type: str = "",
-        align: str = "left",
+        key: str = "",
     ):
         self.name = name
-        self.header = header or name.title().replace("_", " ")
+        self.sql_name = sql_name or name.upper()
         self.width = width
         self.data_type = data_type
-        self.align = align
 
     def process(self, value: Any) -> Any:
         return value if self.data_type != "timestamp" else time_str(value)
@@ -31,11 +30,10 @@ class Column:
             isinstance(other, Column)
             and other.name == self.name
             and other.width == self.width
-            and other.header == self.header
+            and other.sql_name == self.sql_name
             and other.data_type == self.data_type
-            and other.align == self.align
         )
 
     @classmethod
-    def timestamp(cls, name: str, header: str) -> Column:
-        return cls(name, 20, header=header, data_type="timestamp")
+    def timestamp(cls, name: str, sql_name: str) -> Column:
+        return cls(name, 20, sql_name=sql_name, data_type="timestamp")

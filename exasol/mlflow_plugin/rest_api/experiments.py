@@ -26,12 +26,12 @@ class ExperimentsSearch:
         self._processor = processing.PostProcessor(
             has_tags=True,
             columns=[
-                Column("experiment_id", 2, header="ID"),
-                Column("name", 15, align="right"),
-                Column("artifact_location", 10, align="right"),
+                Column("experiment_id", 2, sql_name="ID"),
+                Column("name", 15),
+                Column("artifact_location", 10),
                 Column("lifecycle_stage", 6),
-                Column.timestamp("last_update_time", header="Updated"),
-                Column.timestamp("creation_time", header="Created"),
+                Column.timestamp("last_update_time", sql_name="UPDATED"),
+                Column.timestamp("creation_time", sql_name="CREATED"),
             ],
         )
 
