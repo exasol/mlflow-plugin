@@ -24,7 +24,7 @@ class PostProcessor:
 
     def __init__(self, columns: list[Column], expanders: list[Expander] | None = None):
         self.expanders = expanders or []
-        self.columns = columns + [c for e in self.expanders for c in e.columns]
+        self.columns = columns + [c for e in self.expanders for c in e.output_columns]
 
     def process(self, data: Iterable[JsonObject]) -> Iterable[list[Any]]:
         for expander in self.expanders:
