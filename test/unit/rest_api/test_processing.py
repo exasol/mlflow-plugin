@@ -25,7 +25,8 @@ def test_expansion() -> None:
         {"key": "K2", "value": "V2"},
     ]
     input: list[JsonObject] = [{"c1": 1, "tags": tags}, {"c1": 2}]
-    assert list(testee.process(input)) == [
+    actual = list(testee.process(input))
+    assert actual == [
         [1, "K1", "V1"],
         [1, "K2", "V2"],
         [2, None, None],
