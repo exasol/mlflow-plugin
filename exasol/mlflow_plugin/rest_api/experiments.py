@@ -11,14 +11,9 @@ from exasol.mlflow_plugin.rest_api.data import (
     Column,
     JsonObject,
 )
-from exasol.mlflow_plugin.rest_api.expanding import Expander
-
-EXPAND_TAGS = Expander(
-    "tags",
-    [
-        Column("tag_key", 15, align="right", key="key"),
-        Column("tag_value", 15, key="value"),
-    ],
+from exasol.mlflow_plugin.rest_api.expanding import (
+    EXPAND_TAGS,
+    Expander,
 )
 
 
@@ -34,12 +29,12 @@ class ExperimentsSearch:
         )
         self._processor = processing.PostProcessor(
             columns=[
-                Column("experiment_id", 2, header="ID"),
-                Column("name", 15, align="right"),
-                Column("artifact_location", 10, align="right"),
+                Column("experiment_id", 2, sql_name="ID"),
+                Column("name", 15),
+                Column("artifact_location", 10),
                 Column("lifecycle_stage", 6),
-                Column.timestamp("last_update_time", header="Updated"),
-                Column.timestamp("creation_time", header="Created"),
+                Column.timestamp("last_update_time", sql_name="UPDATED"),
+                Column.timestamp("creation_time", sql_name="CREATED"),
             ],
             expanders=[EXPAND_TAGS],
         )

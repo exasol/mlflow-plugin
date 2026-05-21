@@ -31,3 +31,12 @@ class Expander:
             for d in data
             for tag in d.get(self.source, self._default)
         )
+
+
+EXPAND_TAGS = Expander(
+    "tags",
+    [
+        Column("tag_key", 15, key="key"),
+        Column("tag_value", 15, key="value"),
+    ],
+)
