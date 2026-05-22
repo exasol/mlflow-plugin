@@ -1,11 +1,18 @@
 from __future__ import annotations
 
-import time
+import datetime
+from datetime import timezone
 from typing import Any
 
 
-def time_str(seconds_since_epoc: int) -> str:
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds_since_epoc / 1000))
+def dtime(seconds_since_epoc: int) -> datetime.datetime:
+    return datetime.datetime.fromtimestamp(seconds_since_epoc / 1000)
+
+
+SQL_TYPE = {
+    "int": "INT",
+    "timestamp": "TIMESTAMP",
+}
 
 
 class Column:
@@ -20,11 +27,16 @@ class Column:
         self.name = name
         self.sql_name = sql_name or name.upper()
         self.width = width
-        self.data_type = data_type
+        self.data_type = data_type or "str"
         self.key = key or name
 
+    @property
+    def sql(self) -> str:
+        type = SQL_TYPE.get(self.data_type, "VARCHAR")
+        return f"{self.sql_name} {type}({self.width})"
+
     def process(self, value: Any) -> Any:
-        return value if self.data_type != "timestamp" else time_str(value)
+        return value if self.data_type != "timestamp" else dtime(value)
 
     def __eq__(self, other: Any) -> bool:
         return (
@@ -32,6 +44,7 @@ class Column:
             and other.name == self.name
             and other.width == self.width
             and other.sql_name == self.sql_name
+            and other.key == self.key
             and other.data_type == self.data_type
             and other.key == self.key
         )

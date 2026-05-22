@@ -1,3 +1,5 @@
+import datetime
+
 from exasol.mlflow_plugin.rest_api.data import Column
 
 
@@ -9,4 +11,5 @@ def test_default_values() -> None:
 def test_timestamp() -> None:
     column = Column.timestamp("col", sql_name="TIME")
     assert column == Column("col", 20, "TIME", "timestamp")
-    assert column.process(1779258738 * 1000) == "2026-05-20 06:32:18"
+    expected = datetime.datetime.fromisoformat("2026-05-20 08:32:18")
+    assert column.process(1779258738 * 1000) == expected
