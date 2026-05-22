@@ -20,11 +20,12 @@ from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 
 
 def render_udf(
+    language_alias: str,
     schema: str,
     name: str,
     class_name: str,
-    input_parameters: list[Column],
-    output_parameters: list[Column],
+    input_columns: list[Column],
+    output_columns: list[Column],
 ) -> str:
     def sql(columns: list[Column]) -> str:
         return ",\n  ".join(c.sql for c in columns)
@@ -34,16 +35,16 @@ def render_udf(
 
     return cleandoc("""
     --/
-    CREATE OR REPLACE PYTHON3 SCALAR SCRIPT "{schema}"."{udf_name}" (
-      {input_parameters}
+    CREATE OR REPLACE {language_alias} SCALAR SCRIPT "{schema}"."{udf_name}" (
+      {input_columns}
     ) EMITS (
-      {output_parameters}
+      {output_columns}
     ) AS
     from exasol.mlflow_plugin.rest_api import {class_name}
 
     def run(ctx):
         # probably depends on a connection object
-        endpoint = {class_name}("URI")
+        endpoint = {class_name}("URI", ("admin", "password1234"))
         params = {{
             {api_params}
         }}
@@ -51,22 +52,23 @@ def render_udf(
             ctx.emit(*row))
     /
     """).format(
+        language_alias=language_alias,
         schema=schema,
         udf_name=name,
         class_name=class_name,
-        input_parameters=sql(input_parameters),
-        output_parameters=sql(output_parameters),
-        api_params=api_params(input_parameters),
+        input_columns=sql(input_columns),
+        output_columns=sql(output_columns),
+        api_params=api_params(input_columns),
     )
 
 
 class ExperimentsSearch:
     """
-    base_uri: e.g. "http://localhost:5000/api/2.0/mlflow/"
+    base_uri: e.g. "http://localhost:5000/api/2.0/mlflow"
     """
 
-    def __init__(self, base_uri: str):
-        self.input_parameters = [
+    def __init__(self, base_uri: str, auth: tuple[str, str] | None = None):
+        self.input_columns = [
             Column("filter", 2000),
             Column("view_type", 2000),
             Column("order_by", 2000),
@@ -75,6 +77,7 @@ class ExperimentsSearch:
         self._api = rest_api.MLflowRestApi(
             f"{base_uri}/experiments/search",
             key="experiments",
+            auth=auth,
         )
         self._processor = processing.PostProcessor(
             columns=[
@@ -91,11 +94,12 @@ class ExperimentsSearch:
     @property
     def udf(self) -> str:
         return render_udf(
-            "MLFLOW_REST_API",
-            "EXPERIMENTS_SEARCH",
-            type(self).__name__,
-            self.input_parameters,
-            self._processor.columns,
+            language_alias="MLFLOW",
+            schema="MLFLOW_REST_API",
+            name="EXPERIMENTS_SEARCH",
+            class_name=type(self).__name__,
+            input_columns=self.input_columns,
+            output_columns=self._processor.columns,
         )
 
     def call(
@@ -106,6 +110,6 @@ class ExperimentsSearch:
         max_results: int | None = None,
     ) -> Iterable[Any]:
         values = (filter, view_type, order_by, max_results)
-        params = dict(zip((p.name for p in self.input_parameters), values))
+        params = dict(zip((p.name for p in self.input_columns), values))
         data = self._api.call(params)
         return self._processor.process(data)

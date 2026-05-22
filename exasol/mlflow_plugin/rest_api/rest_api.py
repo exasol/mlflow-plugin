@@ -10,9 +10,10 @@ TIMEOUT_IN_SECONDS = 5
 
 
 class MLflowRestApi:
-    def __init__(self, endpoint: str, key: str):
+    def __init__(self, endpoint: str, key: str, auth: tuple[str, str] | None = None):
         self.endpoint = endpoint
         self.key = key
+        self.auth = auth or ("", "")
 
     def call(self, params: JsonObject) -> Iterable[JsonObject]:
         query: JsonObject = {"max_results": 1000}
@@ -24,6 +25,7 @@ class MLflowRestApi:
                 self.endpoint,
                 json=query,
                 timeout=TIMEOUT_IN_SECONDS,
+                auth=self.auth,
             )
             resp = raw_respose.json()
             yield from resp.get(self.key, [])
