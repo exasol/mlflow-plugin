@@ -86,7 +86,7 @@ class MlflowServer:
 
 
 @pytest.fixture(scope="module")
-def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[str]:
+def mlflow_server(tmp_path_factory, request) -> Generator[str]:
     if server_url := request.config.getoption("--mlflow-server"):
         LOG.info(f"Reusing MLflow server already running at {server_url}")
         mlflow.set_tracking_uri(server_url)
@@ -107,6 +107,11 @@ def mlflow_server(tmp_path_factory, connector: Connector, request) -> Generator[
         # Option "--default-artifact-root" connector.uri has been removed in
         # favor of fixture bfs_experiment creating a dedidated experiment
         # using the BucketFS as artifact store.
+        #
+        # In consequence also the mlflow_server fixture no longer depends on
+        # an Exasol database or a BucketFS to be available.  Integration tests
+        # requiring an MLflow server *and* a database, need to specify their
+        # dependencies individually.
     ]
     # While tests are running, stderr needs to be consumed continuously.
     server = MlflowServer(command).wait_for_message("Application startup complete.")

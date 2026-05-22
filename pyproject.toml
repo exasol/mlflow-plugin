@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     "exasol-bucketfs (>=2.1.0,<3.0.0)",
     "mlflow (>=3.8.1, <4)",
+    "mlflow-skinny (<3.12)",
 ]
 
 [tool.poetry]
@@ -77,6 +78,7 @@ fail_under = 0 # set to 15 as soon as there are some sources incl. tests
 line-length = 88
 verbose = false
 include = "\\.pyi?$"
+target-version = ["py310"]
 
 [tool.isort]
 profile = "black"
