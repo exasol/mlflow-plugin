@@ -14,7 +14,7 @@ from noxconfig import PROJECT_CONFIG
 @nox.session(name="slc:export", python=False)
 def slc_export(session: nox.Session):
     """
-    Build and exports an SLC Image to directory ``.slc``.
+    Build and export an SLC Image to directory ``.slc``.
     """
     export_path = PROJECT_CONFIG.root_path / ".slc"
     with slc_build_context() as builder:
@@ -37,4 +37,8 @@ def slc_activation(session: nox.Session):
         f"='{prefix} MLFLOW=localzmq+protobuf:///{bfspath}/{stem}?"
         f"lang=python#buckets/{bfspath}/{stem}/exaudf/{udf_client_binary}';"
     )
-    print(f'Use the following SQL command to active the Script language alias MLFLOW:\n{sql}')
+    print(
+        "Use the following SQL command",
+        "to active the Script language alias MLFLOW:\n\n",
+        sql
+    )

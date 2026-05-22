@@ -5,7 +5,10 @@ from datetime import timezone
 from typing import Any
 
 
-def dtime(seconds_since_epoc: int) -> datetime.datetime:
+def timestamp_to_datetime(seconds_since_epoc: int) -> datetime.datetime:
+    """
+    Convert MLflow timestamp to datetime.
+    """
     return datetime.datetime.fromtimestamp(seconds_since_epoc / 1000)
 
 
@@ -36,15 +39,14 @@ class Column:
         return f"{self.sql_name} {type}({self.width})"
 
     def process(self, value: Any) -> Any:
-        return value if self.data_type != "timestamp" else dtime(value)
+        return value if self.data_type != "timestamp" else timestamp_to_datetime(value)
 
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, Column)
             and other.name == self.name
-            and other.width == self.width
             and other.sql_name == self.sql_name
-            and other.key == self.key
+            and other.width == self.width
             and other.data_type == self.data_type
             and other.key == self.key
         )

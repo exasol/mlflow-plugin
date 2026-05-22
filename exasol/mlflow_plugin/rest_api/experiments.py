@@ -109,8 +109,3 @@ class ExperimentsSearch:
         params = dict(zip((p.name for p in self.input_parameters), values))
         data = self._api.call(params)
         return self._processor.process(data)
-
-    # def _call(self, params: JsonObject) -> Iterable[Any]:
-    #     params = {"max_results": 10} | params
-    #     data = self._api.call(params)
-    #     return self._processor.process(data)
