@@ -18,7 +18,7 @@ For upload you can use ``curl``:
 .. code-block:: shell
 
     FILE=.slc/*.tar.gz
-    curl -v --insecure -T ".slc/$FILE" "https://localhost:2581/$(basename $FILE)"
+    curl -v --insecure -T "$FILE" "https://localhost:2581/$(basename $FILE)"
 
 The specified port needs to be forwarded by the Docker container.
 
@@ -26,7 +26,7 @@ If using http, then the port might be ``2580``, and ``curl`` option ``--insecure
 
 .. code-block:: shell
 
-    curl -v -T ".slc/$FILE" "http://localhost:2580/$(basename $FILE)"
+    curl -v -T "$FILE" "http://localhost:2580/$(basename $FILE)"
 
 Activating the Script Language
 ------------------------------
