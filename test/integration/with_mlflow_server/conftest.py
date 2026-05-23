@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import logging
 import os
 import signal
@@ -8,15 +9,18 @@ import sys
 import threading
 import time
 from collections.abc import Generator
+from dataclasses import dataclass
 from datetime import (
     datetime,
     timedelta,
 )
+from inspect import cleandoc
 from subprocess import PIPE
 from typing import IO
 from urllib.parse import urlsplit
 
 import mlflow
+import pyexasol
 import pytest
 import sklearn
 from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
@@ -140,6 +144,49 @@ def mlflow_tracking_uri(
         orig = urlsplit(mlflow_server)
         return f"{orig.scheme}://{gateway}:{orig.port}"
     return mlflow_server
+
+
+@dataclass(frozen=True)
+class MLflowConnection:
+    url: str
+    user: str
+    password: str
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection_name() -> str:
+    return "MLFLOW"
+
+
+@pytest.fixture(scope="module")
+def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
+    return MLflowConnection(
+        url=f"{mlflow_tracking_uri}/api/2.0/mlflow",
+        user="admin",
+        password="password1234",
+    )
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection(
+    mlflow_connection: MlflowConnection,
+    mlflow_exa_connection_name: str,
+    pyexasol_connection: pyexasol.ExaConnection,
+) -> str:
+    """
+    Create an Exasol Connection object containing credentials to access
+    MLflow REST API.
+    """
+    name = mlflow_exa_connection_name
+
+    sql = cleandoc(f"""
+        CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
+            TO '{mlflow_connection.url}'
+            USER '{mlflow_connection.user}'
+            IDENTIFIED BY '{mlflow_connection.password}'
+    """)
+    pyexasol_connection.execute(sql)
+    return mlflow_exa_connection_name
 
 
 @pytest.fixture(scope="module")

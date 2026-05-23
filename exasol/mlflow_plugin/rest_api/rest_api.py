@@ -21,13 +21,13 @@ class MLflowRestApi:
         page_token = ""  # nosec: B105 - this is not an actual token
         while page_token is not None:
             query = query | {"page_token": page_token}
-            raw_respose = requests.post(
+            raw_response = requests.post(
                 self.endpoint,
                 json=query,
                 timeout=TIMEOUT_IN_SECONDS,
                 auth=self.auth,
             )
-            resp = raw_respose.json()
+            resp = raw_response.json()
             yield from resp.get(self.key, [])
             page_token = resp.get("next_page_token")
             LOG.debug("retrieving page %s", page_token)

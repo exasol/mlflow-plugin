@@ -35,7 +35,7 @@ class Expander:
 EXPAND_TAGS = Expander(
     "tags",
     [
-        Column("tag_key", 15, key="key"),
-        Column("tag_value", 15, key="value"),
+        Column.varchar("tag_key", key="key"),
+        Column.varchar("tag_value", key="value"),
     ],
 )
