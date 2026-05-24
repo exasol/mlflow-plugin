@@ -21,11 +21,32 @@ For reusing an existing database you can use the following pytest CLI options:
     pytest \
       --backend=onprem \
       --itde-db-version=external \
+      --bucketfs-url https://127.0.0.1:2581 \
       --bucketfs-password "$BUCKETFS_PASSWORD"
 
-See Pytest Plugin `Exasol-Backend <PYTBE_>`_.
+CLI option ``--bucketfs-url`` is required for uploading the SLC.
+
+See also Pytest Plugin `Exasol-Backend <PYTBE_>`_.
 
 .. _PYTBE: https://github.com/exasol/pytest-backend/tree/main/#re-using-an-external-or-local-database
+
+
+.. _slc_interaction:
+
+Using the Deployed SLC Interactively
+------------------------------------
+
+Some integration tests are using the fixture ``deployed_slc`` for building and
+deploying an SLC and activating it by setting a language alias.  As the script
+language is activated for the system and is not removed after the tests, you
+can happily create UDFs using your SLC after one of these tests has been
+executed.
+
+The tests define the alias by means of Pytest fixture ``language_alias``:
+
+.. literalinclude:: ../../test/integration/conftest.py
+  :pyobject: language_alias
+
 
 Reuse SLC
 ---------
