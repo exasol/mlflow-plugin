@@ -21,11 +21,6 @@ logging.getLogger("test.integration.with_mlflow_server.udfs").setLevel(logging.D
 SKLEARN_PACKAGE = "sklearn.linear_model._logistic.LogisticRegression"
 
 
-@pytest.fixture(scope="session")
-def db_schema_name() -> str:
-    return "ITEST_MLFLOW"
-
-
 def indent(amount: int, text: str) -> str:
     return textwrap.indent(cleandoc(text), " " * amount)
 

@@ -10,33 +10,51 @@ from pyexasol import (
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin import rest_api
 
-CAMEL_CASE_TO_SNAKE_CASE =  re.compile(r'(?<!^)(?=[A-Z])')
+CAMEL_TO_SNAKE_CASE =  re.compile(r'(?<!^)(?=[A-Z])')
 
 
-class Deployer:
+class Deployable:
+    """
+    Represents a UDF implementing a call to the MLflow REST API.
+    """
+
     def __init__(
         self,
         language_alias: str,
-        schema: str,
+        db_schema: str,
+        api_cls: Type,
+        udf_name: str = "",
     ):
         self.language_alias = language_alias
-        self.schema = schema
+        self.db_schema = db_schema
+        self.api_cls = api_cls
+        self.udf_name = (
+            udf_name or CAMEL_TO_SNAKE_CASE.sub('_', api_cls.__name__).upper()
+        )
 
-    def render(self, api_cls: Type, name: str = "") -> str:
+    @property
+    def quoted_name(self) -> str:
+        return f'"{self.db_schema}"."{self.udf_name}"'
+
+    @property
+    def sql(self) -> str:
+        def expander_columns() -> list[Column]:
+            return [
+                c for e in self.api_cls.EXPANDERS
+                for c in e.output_columns
+            ]
+
         def sql(columns: list[Column]) -> str:
             return ",\n  ".join(c.sql for c in columns)
 
         def api_params(columns: list[Column]) -> str:
             return "\n        ".join(f'"{c.name}": ctx.{c.sql_name},' for c in columns)
 
-        cls_name = api_cls.__name__
-        name = name or CAMEL_CASE_TO_SNAKE_CASE.sub('_', cls_name).upper()
-        input_columns = api_cls.INPUT_COLUMNS
-        output_columns = api_cls.OUTPUT_COLUMNS
-        output_columns += [c for e in api_cls.EXPANDERS for c in e.output_columns]
+        input_columns = self.api_cls.INPUT_COLUMNS
+        output_columns = self.api_cls.OUTPUT_COLUMNS + expander_columns()
         return cleandoc("""
             --/
-            CREATE OR REPLACE {language_alias} SCALAR SCRIPT "{schema}"."{udf_name}" (
+            CREATE OR REPLACE {language_alias} SCALAR SCRIPT {udf_name} (
               "connection_name" VARCHAR(2000000),
               {input_columns}
             ) EMITS (
@@ -51,26 +69,25 @@ class Deployer:
             /
             """).format(
                 language_alias=self.language_alias,
-                schema=self.schema,
-                udf_name=name,
-                class_name=cls_name,
+                udf_name=self.quoted_name,
+                class_name=self.api_cls.__name__,
                 input_columns=sql(input_columns),
                 output_columns=sql(output_columns),
                 api_params=api_params(input_columns),
             )
 
-    def deploy(
-        self,
-        pyexasol_connection: ExaConnection,
-        api_cls: Type,
-        name: str = "",
-    ) -> ExaStatement:
-        sql = self.render(api_cls, name)
-        return pyexasol_connection.execute(sql)
+    def deploy(self, pyexasol_connection: ExaConnection) -> ExaStatement:
+        return pyexasol_connection.execute(self.sql)
 
-    def deploy_all(self, pyexasol_connection: ExaConnection) -> None:
-        ENDPOINTS = [
-            rest_api.ExperimentsSearch,
-        ]
-        for cls in ENDPOINTS:
-            self.deploy(pyexasol_connection, cls)
+
+def deploy_all(
+    language_alias: str,
+    db_schema: str,
+    pyexasol_connection: ExaConnection,
+) -> None:
+    ENDPOINTS = [
+        rest_api.ExperimentsSearch,
+    ]
+    for cls in ENDPOINTS:
+        udf = Deployable(language_alias, db_schema, cls)
+        udf.deploy(pyexasol_connection)
