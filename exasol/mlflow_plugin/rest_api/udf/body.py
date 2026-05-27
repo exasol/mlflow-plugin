@@ -26,7 +26,7 @@ class Body:
         # base_url = self.create_url(infos)
         # self.endpoint = api(base_url)
 
-    def run(self, ctx):
+    def run(self, ctx) -> None:
         # endpoint = ExperimentsSearch("URI", ("admin", "password1234"))
         # conn.address should contain something like
         # "http://localhost:5000/api/2.0/mlflow"

@@ -4,8 +4,8 @@ from exasol.mlflow_plugin.rest_api.data import Column
 
 
 def test_default_values() -> None:
-    column = Column("col_suffix", width=20)
-    assert column == Column("col_suffix", 20, "COL_SUFFIX", "")
+    column = Column("col_suffix", size=20)
+    assert column == Column("col_suffix", 20, "col_suffix", "")
 
 
 def test_timestamp() -> None:

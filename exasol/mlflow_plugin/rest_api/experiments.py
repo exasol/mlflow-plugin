@@ -16,14 +16,12 @@ from exasol.mlflow_plugin.rest_api.expanding import (
     EXPAND_TAGS,
 )
 
-from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
-
 
 class ExperimentsSearch:
     INPUT_COLUMNS = [
         Column.varchar("filter"),
         Column.varchar("view_type"),
-        Column.varchar("order_by"),
+        Column.varchar("order_by", comma_sep=True),
         Column.decimal("max_results"),
     ]
     OUTPUT_COLUMNS = [
@@ -54,6 +52,16 @@ class ExperimentsSearch:
     def param_names(cls) -> list[str]:
         return [c.name for c in cls.INPUT_COLUMNS]
 
+    def params(self, *values: Any) -> dict[str, Any]:
+        def convert(column: Column, v: Any) -> Any:
+            return v.split(",") if column.comma_sep else v
+
+        return {
+            c.name: convert(c, v)
+            for c, v in zip(self.INPUT_COLUMNS, values)
+            if v is not None
+        }
+
     def call(
         self,
         filter: str | None = None,
@@ -61,8 +69,6 @@ class ExperimentsSearch:
         order_by: str | None = None,
         max_results: int | None = None,
     ) -> Iterable[Any]:
-        order_by = order_by.split(",") if order_by else None
-        values = (filter, view_type, order_by, max_results)
-        params = dict(zip((p.name for p in self.INPUT_COLUMNS), values))
+        params = self.params(filter, view_type, order_by, max_results)
         data = self._api.call(params)
         return self._processor.process(data)

@@ -26,12 +26,14 @@ class Column:
         sql_name: str = "",
         data_type: str = "",
         key: str = "",
+        comma_sep: bool = False
     ):
         self.name = name
         self.sql_name = sql_name or name # name.upper()
         self.size = size
         self.data_type = data_type or "str"
         self.key = key or name
+        self.comma_sep = comma_sep
 
     @property
     def sql(self) -> str:
@@ -50,6 +52,7 @@ class Column:
             and other.size == self.size
             and other.data_type == self.data_type
             and other.key == self.key
+            and other.comma_sep == self.comma_sep
         )
 
     @classmethod
@@ -63,8 +66,16 @@ class Column:
         size: int = 2000000,
         sql_name: str = "",
         key: str = "",
+        comma_sep: bool = False,
     ) -> Column:
-        return cls(name, size=size, sql_name=sql_name, data_type="str", key=key)
+        return cls(
+            name,
+            size=size,
+            sql_name=sql_name,
+            data_type="str",
+            key=key,
+            comma_sep=comma_sep,
+        )
 
     @classmethod
     def decimal(cls, name: str, precision: int = 18, sql_name: str = "") -> Column:
