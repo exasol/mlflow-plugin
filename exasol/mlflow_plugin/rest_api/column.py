@@ -56,7 +56,7 @@ class Column:
         )
 
     @classmethod
-    def timestamp(cls, name: str, sql_name: str) -> Column:
+    def timestamp(cls, name: str, sql_name: str = "") -> Column:
         return cls(name, 20, sql_name=sql_name, data_type="timestamp")
 
     @classmethod

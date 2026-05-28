@@ -12,9 +12,7 @@ from exasol.mlflow_plugin.rest_api.data import (
     Column,
     JsonObject,
 )
-from exasol.mlflow_plugin.rest_api.expanding import (
-    EXPAND_TAGS,
-)
+from exasol.mlflow_plugin.rest_api import expanding
 
 
 class ExperimentsSearch:
@@ -25,14 +23,14 @@ class ExperimentsSearch:
         Column.decimal("max_results"),
     ]
     OUTPUT_COLUMNS = [
-        Column.varchar("experiment_id", sql_name="id"),
+        Column.varchar("experiment_id"),
         Column.varchar("name"),
         Column.varchar("artifact_location"),
         Column.varchar("lifecycle_stage"),
         Column.timestamp("last_update_time", sql_name="updated"),
         Column.timestamp("creation_time", sql_name="created"),
     ]
-    EXPANDERS = [EXPAND_TAGS]
+    EXPANDERS = [expanding.EXPAND_TAGS]
 
     def __init__(self, base_uri: str, auth: tuple[str, str] | None = None):
         """
