@@ -39,10 +39,7 @@ class Deployable:
     @property
     def sql(self) -> str:
         def expander_columns() -> list[Column]:
-            return [
-                c for e in self.api_cls.EXPANDERS
-                for c in e.output_columns
-            ]
+            return [c for e in self.api_cls.EXPANDERS for c in e.output]
 
         def sql(columns: list[Column]) -> str:
             return ",\n  ".join(c.sql for c in columns)
