@@ -13,6 +13,7 @@ def timestamp_to_datetime(seconds_since_epoc: int) -> datetime.datetime:
 
 
 SQL_TYPE = {
+    "bool": "BOOLEAN",
     "int": "DECIMAL",
     "timestamp": "TIMESTAMP",
 }
@@ -29,7 +30,7 @@ class Column:
         comma_sep: bool = False
     ):
         self.name = name
-        self.sql_name = sql_name or name # name.upper()
+        self.sql_name = sql_name or name
         self.size = size
         self.data_type = data_type or "str"
         self.key = key or name
@@ -80,3 +81,7 @@ class Column:
     @classmethod
     def decimal(cls, name: str, precision: int = 18, sql_name: str = "") -> Column:
         return cls(name, size=precision, sql_name=sql_name, data_type="int")
+
+    @classmethod
+    def boolean(cls, name: str, sql_name: str = "") -> Column:
+        return cls(name, size=1, sql_name=sql_name, data_type="bool")

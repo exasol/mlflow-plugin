@@ -13,7 +13,7 @@ class MLflowRestApi:
     def __init__(self, endpoint: str, key: str, auth: tuple[str, str] | None = None):
         self.endpoint = endpoint
         self.key = key
-        self.auth = auth or ("", "")
+        self.auth = auth
 
     def call(self, params: JsonObject) -> Iterable[JsonObject]:
         query: JsonObject = {"max_results": 1000}
