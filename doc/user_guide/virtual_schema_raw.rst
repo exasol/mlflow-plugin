@@ -29,14 +29,6 @@ Instructions
 
 Install the virtual schema, see the Postgres Virtual Schema `User Guide <postgres_virtual_schema_>`_.
 
-* Download Postgres driver and virtual schema jar
-* Upload the jar files to Exasol BucketFS incl. file ``settings.cfg``
-* Create the following objects via Exasol SQL statements:
-
-  * ``ADAPTER SCRIPT``
-  * ``CONNECTION``
-  * ``VIRTUAL SCHEMA``
-
 After that you can inspect the virtual schema in your SQL Editor,
 e.g. DbVisualizer:
 
