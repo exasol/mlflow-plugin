@@ -39,11 +39,18 @@ class Column:
     @property
     def sql(self) -> str:
         type = SQL_TYPE.get(self.data_type, "VARCHAR")
-        size_suffix = f'({self.size})' if self.data_type == "str" else ""
+        size_suffix = f'({self.size})' if self.data_type in ["int", "str"] else ""
         return f'"{self.sql_name}" {type}{size_suffix}'
 
     def process(self, value: Any) -> Any:
         return value if self.data_type != "timestamp" else timestamp_to_datetime(value)
+
+    def __repr__(self) -> str:
+        atts = ", ".join(
+            f"{x}={str(getattr(self, x))}" for x in
+            "name size sql_name size data_type key comma_sep".split()
+        )
+        return f"Column({atts})"
 
     def __eq__(self, other: Any) -> bool:
         return (

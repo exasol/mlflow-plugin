@@ -4,8 +4,8 @@ from exasol.mlflow_plugin.rest_api.data import Column
 
 
 def test_default_values() -> None:
-    column = Column("col_suffix", size=20)
-    assert column == Column("col_suffix", 20, "col_suffix", "")
+    column = Column("col", size=20)
+    assert column == Column("col", 20, sql_name="col", data_type="str", key="col", comma_sep=False)
 
 
 def test_timestamp() -> None:
@@ -13,3 +13,16 @@ def test_timestamp() -> None:
     assert column == Column("col", 20, "TIME", "timestamp")
     expected = datetime.datetime.fromisoformat("2026-05-20 08:32:18")
     assert column.process(1779258738 * 1000) == expected
+    assert column.sql == '"TIME" TIMESTAMP'
+
+
+def test_varchar() -> None:
+    column = Column.varchar("col", sql_name="VVV")
+    assert column == Column("col", 2000000, "VVV", "str")
+    assert column.sql == '"VVV" VARCHAR(2000000)'
+
+
+def test_decimal() -> None:
+    column = Column.decimal("col", precision=12, sql_name="DDD")
+    assert column == Column("col", 12, "DDD", data_type="int")
+    assert column.sql == '"DDD" DECIMAL(12)'
