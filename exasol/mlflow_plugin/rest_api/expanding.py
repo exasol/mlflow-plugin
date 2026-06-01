@@ -10,7 +10,7 @@ def _nested(element: JsonObject, locator: list[str]) -> list[JsonObject]:
     """
     Use the keys in arg ``locator`` to navigate into the specified
     JsonObject and retrieve the nested value. Return the provided default
-    value if any of the keys is not contained in the JsonObject.
+    value if any of the keys is not contained in the surrounding JsonObject.
     """
 
     current = element
