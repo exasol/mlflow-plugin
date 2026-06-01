@@ -59,7 +59,7 @@ class Deployable:
             ) AS
             from exasol.mlflow_plugin import rest_api
 
-            body = rest_api.udf.Body(exa, api_cls=rest_api.{class_name})
+            body = rest_api.UdfBody(exa, api_cls=rest_api.{class_name})
 
             def run(ctx):
                 body.run(ctx)

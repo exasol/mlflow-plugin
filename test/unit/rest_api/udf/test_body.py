@@ -54,7 +54,7 @@ def test_udf_body(exa_mock) -> None:
     ctx.connection_name = "CCC"
 
     # Instantiate and UDF body and call its run() method, just as the UDF would do
-    body = rest_api.udf.Body(exa_mock, endpoint_cls)
+    body = rest_api.UdfBody(exa_mock, endpoint_cls)
     body.run(ctx)
 
     # Verify retrieval of exa connection

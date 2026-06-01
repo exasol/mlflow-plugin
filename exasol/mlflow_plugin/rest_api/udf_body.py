@@ -1,9 +1,7 @@
-from typing import (
-    Any,
-)
+from typing import Any
 
 
-class Body:
+class UdfBody:
     # formerly known as UdfBase
     """
     Adapter from the UDF-specific objects exa and ctx to the Python
