@@ -1,4 +1,3 @@
-import re
 from inspect import cleandoc
 
 from pyexasol import (
@@ -8,9 +7,7 @@ from pyexasol import (
 
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import Column
-from exasol.mlflow_plugin.rest_api.experiments import ExperimentsSearch
-
-CAMEL_TO_SNAKE_CASE = re.compile(r"(?<!^)(?=[A-Z])")
+from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
 
 
 class Deployable:
@@ -22,15 +19,13 @@ class Deployable:
         self,
         language_alias: str,
         db_schema: str,
-        api_cls: type[ExperimentsSearch],
+        endpoint: Endpoint,
         udf_name: str = "",
     ):
         self.language_alias = language_alias
         self.db_schema = db_schema
-        self.api_cls = api_cls
-        self.udf_name = (
-            udf_name or CAMEL_TO_SNAKE_CASE.sub("_", api_cls.__name__).upper()
-        )
+        self.endpoint = endpoint
+        self.udf_name = udf_name or endpoint.var_name
 
     @property
     def quoted_name(self) -> str:
@@ -38,17 +33,14 @@ class Deployable:
 
     @property
     def sql(self) -> str:
-        def expander_columns() -> list[Column]:
-            return [c for e in self.api_cls.EXPANDERS for c in e.output]
-
         def sql(columns: list[Column]) -> str:
             return ",\n  ".join(c.sql for c in columns)
 
         def api_params(columns: list[Column]) -> str:
             return "\n        ".join(f'"{c.name}": ctx.{c.sql_name},' for c in columns)
 
-        input_columns = self.api_cls.INPUT_COLUMNS
-        output_columns = self.api_cls.OUTPUT_COLUMNS + expander_columns()
+        input_columns = self.endpoint.input_columns
+        output_columns = self.endpoint.output_columns + self.endpoint.expander_columns
         return cleandoc("""
             --/
             CREATE OR REPLACE {language_alias} SCALAR SCRIPT {udf_name} (
@@ -59,7 +51,7 @@ class Deployable:
             ) AS
             from exasol.mlflow_plugin import rest_api
 
-            body = rest_api.UdfBody(exa, api_cls=rest_api.{class_name})
+            body = rest_api.UdfBody(exa, endpoint=rest_api.{endpoint_var})
 
             def run(ctx):
                 body.run(ctx)
@@ -67,7 +59,7 @@ class Deployable:
             """).format(
             language_alias=self.language_alias,
             udf_name=self.quoted_name,
-            class_name=self.api_cls.__name__,
+            endpoint_var=self.endpoint.var_name,
             input_columns=sql(input_columns),
             output_columns=sql(output_columns),
             api_params=api_params(input_columns),
@@ -82,9 +74,7 @@ def deploy_all(
     db_schema: str,
     pyexasol_connection: ExaConnection,
 ) -> None:
-    ENDPOINTS = [
-        rest_api.ExperimentsSearch,
-    ]
-    for cls in ENDPOINTS:
-        udf = Deployable(language_alias, db_schema, cls)
+    ENDPOINTS = [rest_api.EXPERIMENTS_SEARCH]
+    for endpoint in ENDPOINTS:
+        udf = Deployable(language_alias, db_schema, endpoint)
         udf.deploy(pyexasol_connection)

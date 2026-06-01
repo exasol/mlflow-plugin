@@ -1,7 +1,7 @@
-from exasol.mlflow_plugin.rest_api.experiments import ExperimentsSearch
+from exasol.mlflow_plugin.rest_api.endpoints.experiments import EXPERIMENTS_SEARCH
 from exasol.mlflow_plugin.rest_api.udf_body import UdfBody
 
 __all__ = [
-    "ExperimentsSearch",
+    "EXPERIMENTS_SEARCH",
     "UdfBody",
 ]

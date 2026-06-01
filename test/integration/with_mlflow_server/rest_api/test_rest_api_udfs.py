@@ -22,8 +22,11 @@ def test_experiments_search(
     deployed_slc, mlflow_exa_connection, db_schema_name, pyexasol_connection
 ) -> None:
     language_alias = deployed_slc
-    cls = rest_api.ExperimentsSearch
-    udf = udf_deployment.Deployable(language_alias, db_schema_name, cls)
+    udf = udf_deployment.Deployable(
+        language_alias,
+        db_schema_name,
+        rest_api.EXPERIMENTS_SEARCH,
+    )
     udf.deploy(pyexasol_connection)
     sql = f"SELECT {udf.quoted_name}('{mlflow_exa_connection}', NULL, NULL, NULL, NULL)"
     actual = pyexasol_connection.execute(sql).fetchall()

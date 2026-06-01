@@ -70,7 +70,7 @@ def language_alias(request, build_slc):
     """See developer guide for details."""
     if override := request.config.getoption("--language-alias"):
         return override
-    return "MLFLOW" if build_slc else "PYTHON3"
+    return "MLFLOW"
 
 
 @pytest.fixture(scope="session")

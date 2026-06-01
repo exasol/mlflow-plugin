@@ -1,8 +1,11 @@
 from typing import Any
 
+from exasol.mlflow_plugin.rest_api.adapter import ApiAdapter
+from exasol.mlflow_plugin.rest_api.data import Column
+from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
+
 
 class UdfBody:
-    # formerly known as UdfBase
     """
     Adapter from the UDF-specific objects exa and ctx to the Python
     classes accessing the MLflow REST API.
@@ -13,23 +16,30 @@ class UdfBody:
     * Pass each row to the UDF context object.
     """
 
-    def __init__(self, exa, api_cls: type[Any]):
-        # typehint could use a list of classes or a common super class.
+    def __init__(self, exa, endpoint: Endpoint):
         """
         mapping: Maps names of UDF args to names of args in endpoint.call()
         """
         self._exa = exa
-        self._api_cls = api_cls
-        # infos = exa.get_connection()
-        # base_url = self.create_url(infos)
-        # self.endpoint = api(base_url)
+        self.endpoint = endpoint
+        self.connection_name = ""
+        self.adapter: ApiAdapter | None = None
+
+    def params(self, ctx) -> dict[str, Any]:
+        def convert(column: Column, v: Any) -> Any:
+            return v.split(",") if column.comma_sep else v
+
+        return {c.name: convert(c, ctx[c.name]) for c in self.endpoint.input_columns}
 
     def run(self, ctx) -> None:
-        # endpoint = ExperimentsSearch("URI", ("admin", "password1234"))
-        # conn.address should contain something like
-        # "http://localhost:5000/api/2.0/mlflow"
-        conn = self._exa.get_connection(ctx.connection_name)
-        endpoint = self._api_cls(conn.address, auth=(conn.user, conn.password))
-        params = {n: ctx[n] for n in self._api_cls.param_names()}
-        for row in endpoint.call(**params):
+        if ctx.connection_name != self.connection_name or self.adapter is None:
+            self.connection_name = ctx.connection_name
+            conn = self._exa.get_connection(ctx.connection_name)
+            auth = (conn.user, conn.password)
+            self.adapter = ApiAdapter(
+                base_uri=conn.address, auth=auth, endpoint=self.endpoint
+            )
+
+        params = self.params(ctx)
+        for row in self.adapter.call(params):
             ctx.emit(*row)
