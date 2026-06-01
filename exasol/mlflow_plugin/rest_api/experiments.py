@@ -1,18 +1,16 @@
 from collections.abc import Iterable
-from inspect import cleandoc
 from typing import (
     Any,
 )
 
 from exasol.mlflow_plugin.rest_api import (
+    expanding,
     processing,
     rest_api,
 )
 from exasol.mlflow_plugin.rest_api.data import (
     Column,
-    JsonObject,
 )
-from exasol.mlflow_plugin.rest_api import expanding
 
 
 class ExperimentsSearch:
@@ -46,7 +44,6 @@ class ExperimentsSearch:
         )
 
     @classmethod
-    @property
     def param_names(cls) -> list[str]:
         return [c.name for c in cls.INPUT_COLUMNS]
 

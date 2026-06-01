@@ -5,7 +5,9 @@ from exasol.mlflow_plugin.rest_api.data import Column
 
 def test_default_values() -> None:
     column = Column("col", size=20)
-    assert column == Column("col", 20, sql_name="col", data_type="str", key="col", comma_sep=False)
+    assert column == Column(
+        "col", 20, sql_name="col", data_type="str", key="col", comma_sep=False
+    )
 
 
 def test_timestamp() -> None:

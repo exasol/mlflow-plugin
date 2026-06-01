@@ -8,11 +8,14 @@ from exasol.mlflow_plugin.rest_api.data import (
 )
 
 
-@pytest.mark.parametrize("element, expected", [
-    pytest.param({"a": 1}, [{}], id="default_value"),
-    pytest.param({"a": 1, "b": {}}, [{}], id="not_found_level_2"),
-    pytest.param({"a": 1, "b": {"c": 2}}, [2], id="found"),
-])
+@pytest.mark.parametrize(
+    "element, expected",
+    [
+        pytest.param({"a": 1}, [{}], id="default_value"),
+        pytest.param({"a": 1, "b": {}}, [{}], id="not_found_level_2"),
+        pytest.param({"a": 1, "b": {"c": 2}}, [2], id="found"),
+    ],
+)
 def test_nested(element, expected) -> None:
     locator = ["b", "c"]
     actual = expanding._nested(element, locator)
@@ -26,7 +29,7 @@ def sample_expander(locator: list[str] | None = None) -> expanding.Expander:
         output=[
             Column("c1", 10),
             Column("c2", 10),
-        ]
+        ],
     )
 
 
@@ -35,10 +38,12 @@ def test_child_not_found(sample_expander) -> None:
     assert actual == [{"c1": None, "c2": None}]
 
 
-def input_data(value: JsonObject) -> None:
+def input_data(value: JsonObject | list[JsonObject]) -> JsonObject:
     return {
         "a": "a value",
-        "b": { "c": value, },
+        "b": {
+            "c": value,
+        },
     }
 
 

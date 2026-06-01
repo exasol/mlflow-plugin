@@ -1,8 +1,4 @@
-from abc import abstractmethod
-from typing import (
-    Iterable,
-    TypeVar,
-)
+from collections.abc import Iterable
 
 from exasol.mlflow_plugin.rest_api.data import (
     Column,

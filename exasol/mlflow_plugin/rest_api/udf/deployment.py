@@ -1,16 +1,15 @@
 import re
 from inspect import cleandoc
-from typing import Type
 
 from pyexasol import (
     ExaConnection,
     ExaStatement,
 )
 
-from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin import rest_api
+from exasol.mlflow_plugin.rest_api.data import Column
 
-CAMEL_TO_SNAKE_CASE =  re.compile(r'(?<!^)(?=[A-Z])')
+CAMEL_TO_SNAKE_CASE = re.compile(r"(?<!^)(?=[A-Z])")
 
 
 class Deployable:
@@ -22,14 +21,14 @@ class Deployable:
         self,
         language_alias: str,
         db_schema: str,
-        api_cls: Type,
+        api_cls: type[rest_api.ExperimentsSearch],
         udf_name: str = "",
     ):
         self.language_alias = language_alias
         self.db_schema = db_schema
         self.api_cls = api_cls
         self.udf_name = (
-            udf_name or CAMEL_TO_SNAKE_CASE.sub('_', api_cls.__name__).upper()
+            udf_name or CAMEL_TO_SNAKE_CASE.sub("_", api_cls.__name__).upper()
         )
 
     @property
@@ -65,13 +64,13 @@ class Deployable:
                 body.run(ctx)
             /
             """).format(
-                language_alias=self.language_alias,
-                udf_name=self.quoted_name,
-                class_name=self.api_cls.__name__,
-                input_columns=sql(input_columns),
-                output_columns=sql(output_columns),
-                api_params=api_params(input_columns),
-            )
+            language_alias=self.language_alias,
+            udf_name=self.quoted_name,
+            class_name=self.api_cls.__name__,
+            input_columns=sql(input_columns),
+            output_columns=sql(output_columns),
+            api_params=api_params(input_columns),
+        )
 
     def deploy(self, pyexasol_connection: ExaConnection) -> ExaStatement:
         return pyexasol_connection.execute(self.sql)

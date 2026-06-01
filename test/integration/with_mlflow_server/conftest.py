@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 import logging
 import os
 import signal
@@ -169,7 +168,7 @@ def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
 
 @pytest.fixture(scope="module")
 def mlflow_exa_connection(
-    mlflow_connection: MlflowConnection,
+    mlflow_connection: MLflowConnection,
     mlflow_exa_connection_name: str,
     pyexasol_connection: pyexasol.ExaConnection,
 ) -> str:

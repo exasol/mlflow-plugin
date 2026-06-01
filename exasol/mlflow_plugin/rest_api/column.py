@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-from datetime import timezone
 from typing import Any
 
 
@@ -27,7 +26,7 @@ class Column:
         sql_name: str = "",
         data_type: str = "",
         key: str = "",
-        comma_sep: bool = False
+        comma_sep: bool = False,
     ):
         self.name = name
         self.sql_name = sql_name or name
@@ -39,7 +38,7 @@ class Column:
     @property
     def sql(self) -> str:
         type = SQL_TYPE.get(self.data_type, "VARCHAR")
-        size_suffix = f'({self.size})' if self.data_type in ["int", "str"] else ""
+        size_suffix = f"({self.size})" if self.data_type in ["int", "str"] else ""
         return f'"{self.sql_name}" {type}{size_suffix}'
 
     def process(self, value: Any) -> Any:
@@ -47,8 +46,8 @@ class Column:
 
     def __repr__(self) -> str:
         atts = ", ".join(
-            f"{x}={str(getattr(self, x))}" for x in
-            "name size sql_name size data_type key comma_sep".split()
+            f"{x}={str(getattr(self, x))}"
+            for x in "name size sql_name size data_type key comma_sep".split()
         )
         return f"Column({atts})"
 
