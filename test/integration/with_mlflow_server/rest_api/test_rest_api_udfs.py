@@ -20,7 +20,7 @@ def rest_api_udfs(language_alias, db_schema_name, pyexasol_connection) -> None:
     )
 
 
-def test_x1(
+def test_experiments_search(
     language_alias, mlflow_exa_connection, db_schema_name, pyexasol_connection
 ) -> None:
     cls = rest_api.ExperimentsSearch
