@@ -9,8 +9,8 @@ from exasol.mlflow_plugin.rest_api.data import (
 def _nested(element: JsonObject, locator: list[str]) -> list[JsonObject]:
     """
     Use the keys in arg ``locator`` to navigate into the specified
-    JsonObject and retrieve the nested value. Return the provided defult value
-    if any of the keys is not contained in the JsonObject.
+    JsonObject and retrieve the nested value. Return the provided default
+    value if any of the keys is not contained in the JsonObject.
     """
 
     current = element
