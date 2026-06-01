@@ -27,7 +27,7 @@ class UdfBody:
 
     def params(self, ctx) -> dict[str, Any]:
         def convert(column: Column, v: Any) -> Any:
-            return v.split(",") if column.comma_sep else v
+            return v if v is None or not column.comma_sep else v.split(",")
 
         return {c.name: convert(c, ctx[c.name]) for c in self.endpoint.input_columns}
 
