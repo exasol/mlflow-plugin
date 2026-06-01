@@ -14,7 +14,7 @@ def test_timestamp() -> None:
     column = Column.timestamp("col", sql_name="TIME")
     assert column == Column("col", 20, "TIME", "timestamp")
     expected = datetime.datetime.fromisoformat("2026-05-20 08:32:18")
-    assert column.process(1779258738 * 1000) == expected
+    assert column.process(expected.timestamp() * 1000) == expected
     assert column.sql == '"TIME" TIMESTAMP'
 
 
