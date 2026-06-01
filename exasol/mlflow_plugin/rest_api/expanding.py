@@ -36,14 +36,14 @@ class Expander:
         self.output = output
         self._default = {o.name: None for o in self.output}
 
-    def flatten_element(self, values: JsonObject) -> JsonObject:
-        if not values:
-            return self._default
-        return {o.name: values[o.key] for o in self.output}
-
     def expand(self, data: Iterable[JsonObject]) -> Iterable[JsonObject]:
+        def flatten_element(values: JsonObject) -> JsonObject:
+            if not values:
+                return self._default
+            return {o.name: values[o.key] for o in self.output}
+
         return (
-            d | self.flatten_element(element)
+            d | flatten_element(element)
             for d in data
             for element in _nested(d, self.locator)
         )
