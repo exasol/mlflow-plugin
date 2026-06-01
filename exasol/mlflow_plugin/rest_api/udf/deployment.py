@@ -6,9 +6,9 @@ from pyexasol import (
     ExaStatement,
 )
 
-from exasol.mlflow_plugin.rest_api.experiments import ExperimentsSearch
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import Column
+from exasol.mlflow_plugin.rest_api.experiments import ExperimentsSearch
 
 CAMEL_TO_SNAKE_CASE = re.compile(r"(?<!^)(?=[A-Z])")
 
