@@ -1,8 +1,7 @@
 Accessing the MLflow Backend Store Via an Exasol Virtual Schema
 ===============================================================
 
-.. _virtual_schema:
-https://docs.exasol.com/db/latest/database_concepts/virtual_schemas.htm
+.. _virtual_schema: https://docs.exasol.com/db/latest/database_concepts/virtual_schemas.htm
 
 `Exasol Virtual Schemas <virtual_schema_>`_ can be used to map external data
 sources to virtual tables that look like any regular Exasol tables and can be
@@ -22,6 +21,9 @@ the MLflow Backend Store:
     permissions.
 
     This approach is therefore not recommended for production environments.
+
+Instructions
+------------
 
 .. _postgres_virtual_schema: https://github.com/exasol/postgresql-virtual-schema/blob/main/doc/user_guide/postgresql_user_guide.md
 
