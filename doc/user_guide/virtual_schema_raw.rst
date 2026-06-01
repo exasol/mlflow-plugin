@@ -7,7 +7,7 @@ Accessing the MLflow Backend Store Via an Exasol Virtual Schema
 sources to virtual tables that look like any regular Exasol tables and can be
 queried as such.
 
-Under some preconditions you can use an Exasol Virtual Schema for accessing
+Under some preconditions you can use a Virtual Schema for accessing
 the MLflow Backend Store:
 
 * You must be able to connect to the database backend used by the MLflow server.
