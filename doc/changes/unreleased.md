@@ -15,3 +15,4 @@
 
 * #48: Relocked vulnerable transitive and dev dependencies
 * #51: Fixed vulnerabilities by updating dependencies
+* #58: Fixed vulnerabilities by updating dependencies
