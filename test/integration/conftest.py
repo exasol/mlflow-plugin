@@ -70,7 +70,7 @@ def language_alias(request, build_slc):
     """See developer guide for details."""
     if override := request.config.getoption("--language-alias"):
         return override
-    return "MLFLOW" if build_slc else "PYTHON3"
+    return "MLFLOW"
 
 
 @pytest.fixture(scope="session")
@@ -80,3 +80,20 @@ def slc_builder(build_slc):
         return
     with slc_build_context() as builder:
         yield builder
+
+
+@pytest.fixture(scope="module")
+def mlflow_connection(mlflow_tracking_uri, pyexasol_connection):
+    """
+    Create an Exasol Connection object containing credentials to access
+    MLflow REST API.
+    """
+    name = "MLFLOW"
+    url = f"{mlflow_tracking_uri}/api/2.0/mlflow"
+    user = "admin"
+    password = "password1234"
+    sql = (
+        f'CREATE OR REPLACE CONNECTION "{name}"'
+        f" TO '{url}' USER '{user}' IDENTIFIED BY '{password}'"
+    )
+    pyexasol_connection.execute(sql)

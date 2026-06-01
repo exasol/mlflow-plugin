@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "exasol-bucketfs (>=2.1.0,<3.0.0)",
-    "mlflow (>=3.8.1, <4)",
+    "mlflow[auth] (>=3.8.1, <4)",
     "mlflow-skinny (<3.12)",
 ]
 
@@ -108,3 +108,7 @@ host.url = "https://sonarcloud.io"
 organization = "exasol"
 exclusions = "exasol/mlflow_plugin/version.py"
 projectName = "mlflow-plugin"
+
+[project.scripts]
+search-experiments = 'exasol.mlflow_plugin.xscripts.rest_api:search_experiments'
+show-udf = 'exasol.mlflow_plugin.xscripts.rest_api:show_udf'
