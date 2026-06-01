@@ -6,6 +6,7 @@ from pyexasol import (
     ExaStatement,
 )
 
+from exasol.mlflow_plugin.rest_api.experiments import ExperimentsSearch
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import Column
 
@@ -21,7 +22,7 @@ class Deployable:
         self,
         language_alias: str,
         db_schema: str,
-        api_cls: type[rest_api.ExperimentsSearch],
+        api_cls: type[ExperimentsSearch],
         udf_name: str = "",
     ):
         self.language_alias = language_alias

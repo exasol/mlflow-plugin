@@ -46,7 +46,8 @@ def test_udf_body(exa_mock) -> None:
     endpoint.call.return_value = simulated_rows
 
     # Simulate endpoint class
-    endpoint_cls = Mock(param_names=params, return_value=endpoint)
+    endpoint_cls = Mock(return_value=endpoint)
+    endpoint_cls.param_names.return_value = params
 
     # Simulate UDF ctx object
     ctx = mock_udf_ctx(params)
