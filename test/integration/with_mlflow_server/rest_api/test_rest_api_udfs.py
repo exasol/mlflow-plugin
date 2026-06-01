@@ -12,13 +12,15 @@ def test_connection(mlflow_exa_connection, pyexasol_connection) -> None:
 
 
 @pytest.fixture(scope="session")
-def rest_api_udfs(language_alias, db_schema_name, pyexasol_connection) -> None:
+def rest_api_udfs(deployed_slc, db_schema_name, pyexasol_connection) -> None:
+    language_alias = deployed_slc
     rest_api.udf.deploy_all(language_alias, db_schema_name, pyexasol_connection)
 
 
 def test_experiments_search(
-    language_alias, mlflow_exa_connection, db_schema_name, pyexasol_connection
+    deployed_slc, mlflow_exa_connection, db_schema_name, pyexasol_connection
 ) -> None:
+    language_alias = deployed_slc
     cls = rest_api.ExperimentsSearch
     udf = rest_api.udf.Deployable(language_alias, db_schema_name, cls)
     udf.deploy(pyexasol_connection)

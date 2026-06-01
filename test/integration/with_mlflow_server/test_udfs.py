@@ -28,7 +28,6 @@ def indent(amount: int, text: str) -> str:
 @pytest.fixture(scope="session")
 def create_udf(
     deployed_slc: str,
-    language_alias: str,
     pyexasol_connection: pyexasol.ExaConnection,
     db_schema_name: str,
 ) -> Callable[[str, str, EnvSpec], Udf]:
@@ -51,6 +50,7 @@ def create_udf(
             """)
         sql = "\n".join(["--/", header, cleandoc(impl), indent(4, footer), "/"])
         print(f"{sql}")
+        language_alias = deployed_slc
         return Udf(
             pyexasol_connection, language_alias, db_schema_name, name, sql, env
         ).create()
@@ -170,7 +170,6 @@ def test_local_path_or_uri(
 @pytest.fixture(scope="session")
 def user_guide_udf(
     deployed_slc: str,
-    language_alias: str,
     pyexasol_connection: pyexasol.ExaConnection,
     db_schema_name: str,
 ) -> Callable[[str, str, str], Udf]:
@@ -197,6 +196,7 @@ def user_guide_udf(
             .replace('"<UDF_NAME>"', "{name!q}")
             .replace("http://localhost:5000", mlflow_tracking_uri)
         )
+        language_alias = deployed_slc
         return Udf(
             pyexasol_connection, language_alias, db_schema_name, name, sql
         ).create()
