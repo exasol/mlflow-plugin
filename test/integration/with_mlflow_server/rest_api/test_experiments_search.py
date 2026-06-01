@@ -49,7 +49,7 @@ def test_other_options(experiments_search):
     """
     params = {
         "filter": "name LIKE 'a-%'",
-        "order_by": ["name"],
+        "order_by": "name",
         "max_results": 1,
     }
     actual = experiments_search.call(**params)

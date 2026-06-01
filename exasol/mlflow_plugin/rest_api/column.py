@@ -37,9 +37,9 @@ class Column:
 
     @property
     def sql(self) -> str:
-        type = SQL_TYPE.get(self.data_type, "VARCHAR")
-        size_suffix = f"({self.size})" if self.data_type in ["int", "str"] else ""
-        return f'"{self.sql_name}" {type}{size_suffix}'
+        sql_type = SQL_TYPE.get(self.data_type, "VARCHAR")
+        size = f"({self.size})" if self.data_type in ["int", "str"] else ""
+        return f'"{self.sql_name}" {sql_type}{size}'
 
     def process(self, value: Any) -> Any:
         return value if self.data_type != "timestamp" else timestamp_to_datetime(value)
