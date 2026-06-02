@@ -20,7 +20,9 @@ class ExaMeta:
     output_columns: list[ExaMetaColumn]
 
 
-def verify_columns(direction: str, actual: list[ExaMetaColumn], expected: list[Column]) -> None:
+def verify_columns(
+    direction: str, actual: list[ExaMetaColumn], expected: list[Column]
+) -> None:
     if len(actual) != len(expected):
         raise UdfParameterException(
             f"UDF is declared with {len(actual)} relevant {direction} columns"

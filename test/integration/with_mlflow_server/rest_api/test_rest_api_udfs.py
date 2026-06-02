@@ -30,5 +30,5 @@ def test_experiments_search(
     udf.deploy(pyexasol_connection)
     sql = f"SELECT {udf.quoted_name}('{mlflow_exa_connection}', NULL, NULL, NULL, NULL)"
     actual = pyexasol_connection.execute(sql).fetchall()
-    print(f'{actual}')
+    print(f"{actual}")
     assert len(actual) > 0
