@@ -20,6 +20,18 @@ class ExaMeta:
     output_columns: list[ExaMetaColumn]
 
 
+# The number of input columns declared for the UDF deviates from the MLflow
+# REST API endpoint.
+#
+# * UDF: 2 columns "abc" VARCHAR(20),
+# * Endpoint: 2 columns "abc" VARCHAR(20),
+
+# UDF parameter "c" doesn't match the MLflow REST API endpoint parameters.
+#
+# * UDF: 2 columns "abc" VARCHAR(20),
+# * Endpoint: 2 columns "abc" VARCHAR(20),
+
+
 def verify_columns(
     direction: str, actual: list[ExaMetaColumn], expected: list[Column]
 ) -> None:
