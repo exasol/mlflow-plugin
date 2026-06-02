@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from exasol.mlflow_plugin.rest_api.data import Column
@@ -20,41 +22,44 @@ class ExaMeta:
     output_columns: list[ExaMetaColumn]
 
 
-# The number of input columns declared for the UDF deviates from the MLflow
-# REST API endpoint.
-#
-# * UDF: 2 columns "abc" VARCHAR(20),
-# * Endpoint: 2 columns "abc" VARCHAR(20),
-
-# UDF parameter "c" doesn't match the MLflow REST API endpoint parameters.
-#
-# * UDF: 2 columns "abc" VARCHAR(20),
-# * Endpoint: 2 columns "abc" VARCHAR(20),
+CONNECTION_NAME_PARAM = Column.varchar("connection_name")
 
 
 def verify_columns(
     direction: str, actual: list[ExaMetaColumn], expected: list[Column]
 ) -> None:
+    if direction == "input":
+        expected = [CONNECTION_NAME_PARAM] + expected
+        comment = " (incl. connection name)"
+    else:
+        comment = ""
+
+    def suffix() -> str:
+        actual_cols = ", ".join(f'"{c.name}" {c.sql_type.split()[0]}' for c in actual)
+        expected_cols = ", ".join(c.sql for c in expected)
+        return (
+            f"* UDF declares {len(actual)} columns: {actual_cols}\n"
+            f"* Endpoint expects {len(expected)} columns: {expected_cols}"
+        )
+
     if len(actual) != len(expected):
         raise UdfParameterException(
-            f"UDF is declared with {len(actual)} relevant {direction} columns"
-            f" while the endpoint expects {len(expected)} {direction} columns."
+            f"The number of {direction} columns declared for the UDF"
+            f" doesn't match the MLflow REST API endpoint{comment}.\n\n"
+            f"{suffix()}"
         )
-    for i, c in enumerate(actual):
-        act = f'"{c.name}" {c.sql_type.split()[0]}'
-        exp = expected[i].sql
-        if act != exp:
+
+    expected_dict = {c.sql_name: c.sql_type for c in expected}
+    for act in actual:
+        exp = expected_dict.get(act.name)
+        if act.sql_type.split()[0] != exp:
             raise UdfParameterException(
-                f"UDF {direction} parameter {act}"
-                f" doesn't match endpoint declaration {exp}."
+                f'UDF parameter "{act.name}"'
+                " doesn't match the MLflow REST API endpoint parameters."
+                f"\n\n{suffix()}"
             )
 
 
 def verify_udf_parameters(exa_meta: ExaMeta, endpoint: Endpoint) -> None:
-    relevant = [c for c in exa_meta.input_columns if c.name != "connection_name"]
-    if len(relevant) != len(exa_meta.input_columns) - 1:
-        raise UdfParameterException(
-            'UDF does not declare input column "connection_name".'
-        )
-    verify_columns("input", relevant, endpoint.input_columns)
+    verify_columns("input", exa_meta.input_columns, endpoint.input_columns)
     verify_columns("output", exa_meta.output_columns, endpoint.total_output_columns)

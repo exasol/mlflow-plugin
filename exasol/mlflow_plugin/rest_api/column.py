@@ -36,15 +36,19 @@ class Column:
         self.comma_sep = comma_sep
 
     @property
-    def sql(self) -> str:
-        sql_type = SQL_TYPE.get(self.data_type, "VARCHAR")
+    def sql_type(self) -> str:
+        prefix = SQL_TYPE.get(self.data_type, "VARCHAR")
         if self.data_type == "str":
-            size = f"({self.size})"
+            suffix = f"({self.size})"
         elif self.data_type == "int":
-            size = f"({self.size},0)"
+            suffix = f"({self.size},0)"
         else:
-            size = ""
-        return f'"{self.sql_name}" {sql_type}{size}'
+            suffix = ""
+        return f"{prefix}{suffix}"
+
+    @property
+    def sql(self) -> str:
+        return f'"{self.sql_name}" {self.sql_type}'
 
     def process(self, value: Any) -> Any:
         return value if self.data_type != "timestamp" else timestamp_to_datetime(value)
