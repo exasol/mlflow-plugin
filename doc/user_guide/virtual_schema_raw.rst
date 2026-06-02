@@ -23,10 +23,10 @@ the MLflow Backend Store:
 
 .. warning::
 
-    Please note that the approach described here bypasses access control and
+    Please note that the approach described here bypasses MLFlow access control and
     permissions.
 
-    This approach is therefore not recommended for production environments.
+    This approach is therefore should be used with caution.
 
 Instructions
 ------------
