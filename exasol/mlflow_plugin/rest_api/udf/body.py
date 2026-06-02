@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Any
 
 from exasol.mlflow_plugin.rest_api.adapter import ApiAdapter

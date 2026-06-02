@@ -43,7 +43,7 @@ class Column:
         elif self.data_type == "int":
             size = f"({self.size},0)"
         else:
-            size =""
+            size = ""
         return f'"{self.sql_name}" {sql_type}{size}'
 
     def process(self, value: Any) -> Any:

@@ -8,7 +8,6 @@ from unittest.mock import (
 import pytest
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api import adapter
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.udf import body as udf_body
 from exasol.mlflow_plugin.rest_api.udf.verification import (
@@ -30,48 +29,51 @@ def mock_udf_ctx(args: dict[str, Any]) -> Mock:
     return ctx
 
 
-@pytest.mark.parametrize("actual, expected", [
-    pytest.param(
-        [ExaMetaColumn("a", "DECIMAL(18,0)"), ExaMetaColumn("b", "DECIMAL(18,0)")],
-        [Column.decimal("a")],
-        id="2_actual_1_expected",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "DECIMAL(18,0)")],
-        [Column.decimal("a"), Column.decimal("b")],
-        id="1_actual_2_expected",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "VARCHAR(200)")],
-        [Column.varchar("b", 200)],
-        id="name_mismatch",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "DECIMAL")],
-        [Column.varchar("a", 200)],
-        id="decimal_varchar",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "VARCHAR(200)")],
-        [Column.decimal("a")],
-        id="varchar_decimal",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "VARCHAR(200)")],
-        [Column.varchar("a", 201)],
-        id="size",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "DECIMAL(18,0)")],
-        [Column.decimal("a", 17)],
-        id="precision",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "DECIMAL(10,2)")],
-        [Column.decimal("a", 10)],
-        id="scale",
-    ),
-])
+@pytest.mark.parametrize(
+    "actual, expected",
+    [
+        pytest.param(
+            [ExaMetaColumn("a", "DECIMAL(18,0)"), ExaMetaColumn("b", "DECIMAL(18,0)")],
+            [Column.decimal("a")],
+            id="2_actual_1_expected",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "DECIMAL(18,0)")],
+            [Column.decimal("a"), Column.decimal("b")],
+            id="1_actual_2_expected",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [Column.varchar("b", 200)],
+            id="name_mismatch",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "DECIMAL")],
+            [Column.varchar("a", 200)],
+            id="decimal_varchar",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [Column.decimal("a")],
+            id="varchar_decimal",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [Column.varchar("a", 201)],
+            id="size",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "DECIMAL(18,0)")],
+            [Column.decimal("a", 17)],
+            id="precision",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "DECIMAL(10,2)")],
+            [Column.decimal("a", 10)],
+            id="scale",
+        ),
+    ],
+)
 def test_verify_input_columns_fails(actual, expected) -> None:
     with pytest.raises(UdfParameterException):
         verify_columns(actual, expected)
@@ -85,23 +87,26 @@ def not_raises(exception):
         raise pytest.fail(f"Did raise {exception}")
 
 
-@pytest.mark.parametrize("actual, expected", [
-    pytest.param(
-        [ExaMetaColumn("a", "DECIMAL(18,0)")],
-        [Column.decimal("a")],
-        id="decimal",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "VARCHAR(200)")],
-        [Column.varchar("a", 200)],
-        id="varchar",
-    ),
-    pytest.param(
-        [ExaMetaColumn("a", "VARCHAR(200)"), ExaMetaColumn("b", "DECIMAL(10,0)")],
-        [Column.varchar("a", 200), Column.decimal("b", 10)],
-        id="2-columns",
-    ),
-])
+@pytest.mark.parametrize(
+    "actual, expected",
+    [
+        pytest.param(
+            [ExaMetaColumn("a", "DECIMAL(18,0)")],
+            [Column.decimal("a")],
+            id="decimal",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [Column.varchar("a", 200)],
+            id="varchar",
+        ),
+        pytest.param(
+            [ExaMetaColumn("a", "VARCHAR(200)"), ExaMetaColumn("b", "DECIMAL(10,0)")],
+            [Column.varchar("a", 200), Column.decimal("b", 10)],
+            id="2-columns",
+        ),
+    ],
+)
 def test_verify_input_columns_succeeds(actual, expected) -> None:
     with not_raises(UdfParameterException):
         verify_columns(actual, expected)
@@ -153,7 +158,9 @@ def test_udf_body(monkeypatch, connection_mock) -> None:
     endpoint = rest_api.EXPERIMENTS_SEARCH
 
     # Mock exa object incl. the UDF's parameter declarations
-    exa_mock = mock_exa_object(connection_mock, endpoint.input_columns, endpoint.output_columns)
+    exa_mock = mock_exa_object(
+        connection_mock, endpoint.input_columns, endpoint.output_columns
+    )
 
     # Instantiate a UDF body and call its run() method, just as the UDF would do
     body = rest_api.UdfBody(exa_mock, endpoint)

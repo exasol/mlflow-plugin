@@ -31,7 +31,7 @@ def verify_columns(actual: list[ExaMetaColumn], expected: list[Column]) -> None:
         exp = expected[i].sql
         if act != exp:
             raise UdfParameterException(
-                f'UDF input parameter {act} doesn\'t match endpoint declaration {exp}.'
+                f"UDF input parameter {act} doesn't match endpoint declaration {exp}."
             )
     # exa.meta.input_columns[]
     # [Col(name='a', length=200, sql_type='VARCHAR(200) UTF8', type=<class 'str'>, precision=None, scale=None)]
