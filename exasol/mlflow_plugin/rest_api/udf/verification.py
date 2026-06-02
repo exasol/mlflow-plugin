@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
@@ -25,14 +26,30 @@ class ExaMeta:
 CONNECTION_NAME_PARAM = Column.varchar("connection_name")
 
 
+class Direction(Enum):
+    INPUT = ("input", " (incl. connection name)", [CONNECTION_NAME_PARAM])
+    OUTPUT = ("output", "", [])
+
+    def __init__(self, label: str, comment: str, extra_columns: list[Column]):
+        self.label = label
+        self.comment = comment
+        self.extra_columns = extra_columns
+
+
 def verify_columns(
-    direction: str, actual: list[ExaMetaColumn], expected: list[Column]
+    direction: Direction, actual: list[ExaMetaColumn], expected: list[Column]
 ) -> None:
-    if direction == "input":
-        expected = [CONNECTION_NAME_PARAM] + expected
-        comment = " (incl. connection name)"
-    else:
-        comment = ""
+    """
+    Verify if the UDF's actual list of columns as provided via exa.meta
+    matches the list of expected columns as defined by the MLflow REST API
+    endpoint.
+
+    For direction "input" an UDF additional parameter connection_name is
+    considered, specifiying the name of the connection for retrieving the REST
+    API base URI and the credentials for authentication.
+    """
+
+    expected = direction.extra_columns + expected
 
     def suffix() -> str:
         actual_cols = ", ".join(f'"{c.name}" {c.sql_type.split()[0]}' for c in actual)
@@ -44,8 +61,8 @@ def verify_columns(
 
     if len(actual) != len(expected):
         raise UdfParameterException(
-            f"The number of {direction} columns declared for the UDF"
-            f" doesn't match the MLflow REST API endpoint{comment}.\n\n"
+            f"The number of {direction.label} columns declared for the UDF"
+            f" doesn't match the MLflow REST API endpoint{direction.comment}.\n\n"
             f"{suffix()}"
         )
 
@@ -61,5 +78,12 @@ def verify_columns(
 
 
 def verify_udf_parameters(exa_meta: ExaMeta, endpoint: Endpoint) -> None:
-    verify_columns("input", exa_meta.input_columns, endpoint.input_columns)
-    verify_columns("output", exa_meta.output_columns, endpoint.total_output_columns)
+    """
+    Raises UdfParameterException if the UDF's column declaration doesn't
+    match the endpoint.
+    """
+
+    verify_columns(Direction.INPUT, exa_meta.input_columns, endpoint.input_columns)
+    verify_columns(
+        Direction.OUTPUT, exa_meta.output_columns, endpoint.total_output_columns
+    )

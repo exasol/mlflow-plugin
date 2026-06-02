@@ -6,6 +6,7 @@ import pytest
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.udf.verification import (
+    Direction,
     ExaMetaColumn,
     UdfParameterException,
     verify_columns,
@@ -68,7 +69,7 @@ def not_raises(exception):
 )
 def test_verify_columns_fails(actual, expected) -> None:
     with pytest.raises(UdfParameterException):
-        verify_columns("input", actual, expected)
+        verify_columns(Direction.INPUT, actual, expected)
 
 
 @pytest.mark.parametrize(
@@ -93,7 +94,7 @@ def test_verify_columns_fails(actual, expected) -> None:
 )
 def test_verify_columns_success(actual, expected) -> None:
     with not_raises(UdfParameterException):
-        verify_columns("output", actual, expected)
+        verify_columns(Direction.OUTPUT, actual, expected)
 
 
 def test_verify_udf_parameters_success():
