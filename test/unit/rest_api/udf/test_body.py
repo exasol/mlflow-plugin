@@ -22,7 +22,6 @@ def mock_udf_ctx(args: dict[str, Any]) -> Mock:
     return ctx
 
 
-
 def test_udf_body(monkeypatch, connection_mock) -> None:
     """
     Verify the generic Body class used by all UDFs for accessing the
