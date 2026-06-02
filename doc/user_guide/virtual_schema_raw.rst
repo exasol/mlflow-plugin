@@ -8,7 +8,6 @@ Accessing the MLflow Backend Store Via an Exasol Virtual Schema
 .. _mysql_virtual_schema:
    https://github.com/exasol/mysql-virtual-schema/blob/main/doc/user_guide/mysql_user_guide.md
 
-
 `Exasol Virtual Schemas <virtual_schema_>`_ can be used to map external data
 sources to virtual tables that look like any regular Exasol tables and can be
 queried as such.
