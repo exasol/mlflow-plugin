@@ -20,3 +20,7 @@ class Endpoint:
     @property
     def expander_columns(self) -> list[Column]:
         return [c for e in self.expanders for c in e.output]
+
+    @property
+    def total_output_columns(self) -> list[Column]:
+        return self.output_columns + self.expander_columns

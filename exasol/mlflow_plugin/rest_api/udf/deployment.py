@@ -40,7 +40,7 @@ class Deployable:
             return "\n        ".join(f'"{c.name}": ctx.{c.sql_name},' for c in columns)
 
         input_columns = self.endpoint.input_columns
-        output_columns = self.endpoint.output_columns + self.endpoint.expander_columns
+        output_columns = self.endpoint.total_output_columns
         return cleandoc("""
             --/
             CREATE OR REPLACE {language_alias} SCALAR SCRIPT {udf_name} (

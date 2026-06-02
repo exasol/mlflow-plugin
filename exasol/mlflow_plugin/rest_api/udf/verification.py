@@ -20,28 +20,27 @@ class ExaMeta:
     output_columns: list[ExaMetaColumn]
 
 
-def verify_columns(actual: list[ExaMetaColumn], expected: list[Column]) -> None:
+def verify_columns(direction: str, actual: list[ExaMetaColumn], expected: list[Column]) -> None:
     if len(actual) != len(expected):
         raise UdfParameterException(
-            f"UDF is declared with {len(actual)} relevant input columns"
-            f" while the endpoint expects {len(expected)} input columns."
+            f"UDF is declared with {len(actual)} relevant {direction} columns"
+            f" while the endpoint expects {len(expected)} {direction} columns."
         )
     for i, c in enumerate(actual):
         act = f'"{c.name}" {c.sql_type.split()[0]}'
         exp = expected[i].sql
         if act != exp:
             raise UdfParameterException(
-                f"UDF input parameter {act} doesn't match endpoint declaration {exp}."
+                f"UDF {direction} parameter {act}"
+                f" doesn't match endpoint declaration {exp}."
             )
-    # exa.meta.input_columns[]
-    # [Col(name='a', length=200, sql_type='VARCHAR(200) UTF8', type=<class 'str'>, precision=None, scale=None)]
 
 
-def verify_udf_parameters(exa: ExaMeta, endpoint: Endpoint) -> None:
-    relevant = [c for c in exa.input_columns if c.name != "connection_name"]
-    if len(relevant) != len(exa.input_columns) - 1:
+def verify_udf_parameters(exa_meta: ExaMeta, endpoint: Endpoint) -> None:
+    relevant = [c for c in exa_meta.input_columns if c.name != "connection_name"]
+    if len(relevant) != len(exa_meta.input_columns) - 1:
         raise UdfParameterException(
             'UDF does not declare input column "connection_name".'
         )
-    verify_columns(relevant, endpoint.input_columns)
-    verify_columns(exa.output_columns, endpoint.output_columns)
+    verify_columns("input", relevant, endpoint.input_columns)
+    verify_columns("output", exa_meta.output_columns, endpoint.total_output_columns)

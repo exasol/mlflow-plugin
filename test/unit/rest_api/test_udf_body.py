@@ -76,7 +76,7 @@ def mock_udf_ctx(args: dict[str, Any]) -> Mock:
 )
 def test_verify_input_columns_fails(actual, expected) -> None:
     with pytest.raises(UdfParameterException):
-        verify_columns(actual, expected)
+        verify_columns("input", actual, expected)
 
 
 @contextlib.contextmanager
@@ -109,7 +109,7 @@ def not_raises(exception):
 )
 def test_verify_input_columns_succeeds(actual, expected) -> None:
     with not_raises(UdfParameterException):
-        verify_columns(actual, expected)
+        verify_columns("output", actual, expected)
 
 
 def mock_exa_object(
@@ -159,7 +159,7 @@ def test_udf_body(monkeypatch, connection_mock) -> None:
 
     # Mock exa object incl. the UDF's parameter declarations
     exa_mock = mock_exa_object(
-        connection_mock, endpoint.input_columns, endpoint.output_columns
+        connection_mock, endpoint.input_columns, endpoint.total_output_columns
     )
 
     # Instantiate a UDF body and call its run() method, just as the UDF would do
