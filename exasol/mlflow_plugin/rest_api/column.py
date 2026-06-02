@@ -38,7 +38,7 @@ class Column:
     @property
     def sql_type(self) -> str:
         prefix = SQL_TYPE.get(self.data_type, "VARCHAR")
-        if self.data_type == "str":
+        if self.data_type in ["str", "timestamp"]:
             suffix = f"({self.size})"
         elif self.data_type == "int":
             suffix = f"({self.size},0)"
@@ -73,7 +73,7 @@ class Column:
 
     @classmethod
     def timestamp(cls, name: str, sql_name: str = "") -> Column:
-        return cls(name, 20, sql_name=sql_name, data_type="timestamp")
+        return cls(name, 3, sql_name=sql_name, data_type="timestamp")
 
     @classmethod
     def varchar(
