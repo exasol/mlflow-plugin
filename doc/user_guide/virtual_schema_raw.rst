@@ -2,6 +2,12 @@ Accessing the MLflow Backend Store Via an Exasol Virtual Schema
 ===============================================================
 
 .. _virtual_schema: https://docs.exasol.com/db/latest/database_concepts/virtual_schemas.htm
+.. _vs_dialects: https://github.com/exasol/virtual-schemas/blob/main/doc/user_guide/dialects.md
+.. _postgres_virtual_schema:
+   https://github.com/exasol/postgresql-virtual-schema/blob/main/doc/user_guide/postgresql_user_guide.md
+.. _mysql_virtual_schema:
+   https://github.com/exasol/mysql-virtual-schema/blob/main/doc/user_guide/mysql_user_guide.md
+
 
 `Exasol Virtual Schemas <virtual_schema_>`_ can be used to map external data
 sources to virtual tables that look like any regular Exasol tables and can be
@@ -13,7 +19,8 @@ the MLflow Backend Store:
 * You must be able to connect to the database backend used by the MLflow server.
 * You must have appropriate credentials for accessing the database.
 * MLflow must use a database backend for which a Virtual Schema implementation
-  is available, e.g. PostgreSQL or MySQL, but not sqlite.
+  is available, e.g. PostgreSQL or MySQL, but not sqlite. See the list of
+  supported `Virtual Schema dialects <vs_dialects_>`_.
 
 .. warning::
 
@@ -25,9 +32,10 @@ the MLflow Backend Store:
 Instructions
 ------------
 
-.. _postgres_virtual_schema: https://github.com/exasol/postgresql-virtual-schema/blob/main/doc/user_guide/postgresql_user_guide.md
+Install the virtual schema, see the resp. User Guide for
 
-Install the virtual schema, see the Postgres Virtual Schema `User Guide <postgres_virtual_schema_>`_.
+* `Postgres Virtual Schema <postgres_virtual_schema_>`_.
+* `MySQL Virtual Schema <mysql_virtual_schema_>`_.
 
 After that you can inspect the virtual schema in your SQL Editor,
 e.g. DbVisualizer:
