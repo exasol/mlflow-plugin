@@ -10,6 +10,7 @@
 ## Documentation
 
 * #43: Added overview images to the User Guide
+* #59: Added documentation for Virtual Schema Access to the MLflow database
 
 ## Security
 
