@@ -108,7 +108,3 @@ host.url = "https://sonarcloud.io"
 organization = "exasol"
 exclusions = "exasol/mlflow_plugin/version.py"
 projectName = "mlflow-plugin"
-
-[project.scripts]
-search-experiments = 'exasol.mlflow_plugin.xscripts.rest_api:search_experiments'
-show-udf = 'exasol.mlflow_plugin.xscripts.rest_api:show_udf'
