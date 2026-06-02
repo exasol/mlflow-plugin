@@ -10,7 +10,14 @@ TIMEOUT_IN_SECONDS = 5
 
 
 class MLflowRestApi:
-    def __init__(self, endpoint: str, key: str, auth: tuple[str, str] | None = None):
+    def __init__(
+        self,
+        method: str,
+        endpoint: str,
+        key: str,
+        auth: tuple[str, str] | None,
+    ):
+        self.method = method
         self.endpoint = endpoint
         self.key = key
         self.auth = auth
@@ -21,7 +28,8 @@ class MLflowRestApi:
         page_token = ""  # nosec: B105 - this is not an actual token
         while page_token is not None:
             query = query | {"page_token": page_token}
-            raw_response = requests.post(
+            raw_response = requests.request(
+                self.method,
                 self.endpoint,
                 json=query,
                 timeout=TIMEOUT_IN_SECONDS,

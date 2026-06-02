@@ -1,7 +1,7 @@
 import pytest
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api import udf_deployment
+import exasol.mlflow_plugin.rest_api.udf.deployment as udf_deployment
 
 
 def test_connection(mlflow_exa_connection, pyexasol_connection) -> None:

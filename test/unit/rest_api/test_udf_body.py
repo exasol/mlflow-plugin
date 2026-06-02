@@ -1,3 +1,4 @@
+import contextlib
 from typing import Any
 from unittest.mock import (
     Mock,
@@ -7,18 +8,20 @@ from unittest.mock import (
 import pytest
 
 from exasol.mlflow_plugin import rest_api
+from exasol.mlflow_plugin.rest_api import adapter
+from exasol.mlflow_plugin.rest_api.data import Column
+from exasol.mlflow_plugin.rest_api.udf import body as udf_body
+from exasol.mlflow_plugin.rest_api.udf.verification import (
+    ExaMeta,
+    ExaMetaColumn,
+    UdfParameterException,
+    verify_columns,
+)
 
 
 @pytest.fixture
 def connection_mock():
     return Mock(address="address", user="user", password="password")
-
-
-@pytest.fixture
-def exa_mock(connection_mock):
-    mock = Mock()
-    mock.get_connection.return_value = connection_mock
-    return mock
 
 
 def mock_udf_ctx(args: dict[str, Any]) -> Mock:
@@ -27,7 +30,103 @@ def mock_udf_ctx(args: dict[str, Any]) -> Mock:
     return ctx
 
 
-def test_udf_body(monkeypatch, exa_mock) -> None:
+@pytest.mark.parametrize("actual, expected", [
+    pytest.param(
+        [ExaMetaColumn("a", "DECIMAL(18,0)"), ExaMetaColumn("b", "DECIMAL(18,0)")],
+        [Column.decimal("a")],
+        id="2_actual_1_expected",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "DECIMAL(18,0)")],
+        [Column.decimal("a"), Column.decimal("b")],
+        id="1_actual_2_expected",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "VARCHAR(200)")],
+        [Column.varchar("b", 200)],
+        id="name_mismatch",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "DECIMAL")],
+        [Column.varchar("a", 200)],
+        id="decimal_varchar",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "VARCHAR(200)")],
+        [Column.decimal("a")],
+        id="varchar_decimal",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "VARCHAR(200)")],
+        [Column.varchar("a", 201)],
+        id="size",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "DECIMAL(18,0)")],
+        [Column.decimal("a", 17)],
+        id="precision",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "DECIMAL(10,2)")],
+        [Column.decimal("a", 10)],
+        id="scale",
+    ),
+])
+def test_verify_input_columns_fails(actual, expected) -> None:
+    with pytest.raises(UdfParameterException):
+        verify_columns(actual, expected)
+
+
+@contextlib.contextmanager
+def not_raises(exception):
+    try:
+        yield
+    except exception:
+        raise pytest.fail(f"Did raise {exception}")
+
+
+@pytest.mark.parametrize("actual, expected", [
+    pytest.param(
+        [ExaMetaColumn("a", "DECIMAL(18,0)")],
+        [Column.decimal("a")],
+        id="decimal",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "VARCHAR(200)")],
+        [Column.varchar("a", 200)],
+        id="varchar",
+    ),
+    pytest.param(
+        [ExaMetaColumn("a", "VARCHAR(200)"), ExaMetaColumn("b", "DECIMAL(10,0)")],
+        [Column.varchar("a", 200), Column.decimal("b", 10)],
+        id="2-columns",
+    ),
+])
+def test_verify_input_columns_succeeds(actual, expected) -> None:
+    with not_raises(UdfParameterException):
+        verify_columns(actual, expected)
+
+
+def mock_exa_object(
+    connection: Mock,
+    input_columns: list[Column],
+    output_columns: list[Column],
+) -> Mock:
+    def exa_meta_columns(columns: list[Column]) -> list[ExaMetaColumn]:
+        return [ExaMetaColumn(c.sql_name, c.sql.split()[1]) for c in columns]
+
+    mock = Mock()
+    mock.get_connection.return_value = connection
+
+    connection_param = Column.varchar("connection_name")
+    em_input = exa_meta_columns([connection_param] + input_columns)
+    em_output = exa_meta_columns(output_columns)
+    mock.meta = ExaMeta(em_input, em_output)
+
+    return mock
+
+
+def test_udf_body(monkeypatch, connection_mock) -> None:
     """
     Verify the generic Body class used by all UDFs for accessing the
     MLflow REST API.
@@ -45,14 +144,18 @@ def test_udf_body(monkeypatch, exa_mock) -> None:
     simulated_rows = [["a", "b"], ["c", "d"]]
     api_adapter.call.return_value = simulated_rows
     adapter_cls = Mock(return_value=api_adapter)
-    monkeypatch.setattr(rest_api.udf_body, "ApiAdapter", adapter_cls)
+    monkeypatch.setattr(udf_body, "ApiAdapter", adapter_cls)
 
     # Simulate UDF ctx object
     ctx = mock_udf_ctx(params)
     ctx.connection_name = "CCC"
 
-    # Instantiate a UDF body and call its run() method, just as the UDF would do
     endpoint = rest_api.EXPERIMENTS_SEARCH
+
+    # Mock exa object incl. the UDF's parameter declarations
+    exa_mock = mock_exa_object(connection_mock, endpoint.input_columns, endpoint.output_columns)
+
+    # Instantiate a UDF body and call its run() method, just as the UDF would do
     body = rest_api.UdfBody(exa_mock, endpoint)
     body.run(ctx)
 

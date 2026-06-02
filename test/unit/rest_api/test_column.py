@@ -27,4 +27,4 @@ def test_varchar() -> None:
 def test_decimal() -> None:
     column = Column.decimal("col", precision=12, sql_name="DDD")
     assert column == Column("col", 12, "DDD", data_type="int")
-    assert column.sql == '"DDD" DECIMAL(12)'
+    assert column.sql == '"DDD" DECIMAL(12,0)'

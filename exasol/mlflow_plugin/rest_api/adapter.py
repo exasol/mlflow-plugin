@@ -15,6 +15,7 @@ class ApiAdapter:
         endpoint: Endpoint,
     ):
         self._api = MLflowRestApi(
+            endpoint.method,
             f"{base_uri}/{endpoint.url_suffix}",
             key=endpoint.output_key,
             auth=auth,

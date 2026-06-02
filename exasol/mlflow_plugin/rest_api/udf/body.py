@@ -1,8 +1,10 @@
+from dataclasses import dataclass
 from typing import Any
 
 from exasol.mlflow_plugin.rest_api.adapter import ApiAdapter
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
+from exasol.mlflow_plugin.rest_api.udf.verification import verify_udf_parameters
 
 
 class UdfBody:
@@ -20,6 +22,7 @@ class UdfBody:
         """
         mapping: Maps names of UDF args to names of args in endpoint.call()
         """
+        verify_udf_parameters(exa.meta, endpoint)
         self._exa = exa
         self.endpoint = endpoint
         self.connection_name = ""

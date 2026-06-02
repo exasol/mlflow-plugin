@@ -38,7 +38,12 @@ class Column:
     @property
     def sql(self) -> str:
         sql_type = SQL_TYPE.get(self.data_type, "VARCHAR")
-        size = f"({self.size})" if self.data_type in ["int", "str"] else ""
+        if self.data_type == "str":
+            size = f"({self.size})"
+        elif self.data_type == "int":
+            size = f"({self.size},0)"
+        else:
+            size =""
         return f'"{self.sql_name}" {sql_type}{size}'
 
     def process(self, value: Any) -> Any:
