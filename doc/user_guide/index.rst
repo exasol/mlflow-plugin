@@ -34,3 +34,4 @@ Contents
    slc
    udfs
    virtual_schema_raw
+   ai_gateway
