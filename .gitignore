@@ -154,6 +154,7 @@ itde/
 
 # MLflow Model Registry
 /mlflow.db
+/basic_auth.db
 /mlartifacts
 
 # SLC building

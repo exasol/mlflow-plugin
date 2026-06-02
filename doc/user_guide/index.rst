@@ -33,3 +33,4 @@ Contents
    plugin_availability
    slc
    udfs
+   virtual_schema_raw
