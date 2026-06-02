@@ -27,8 +27,8 @@ CONNECTION_NAME_PARAM = Column.varchar("connection_name")
 
 
 class Direction(Enum):
-    INPUT = ("input", " (incl. connection name)", [CONNECTION_NAME_PARAM])
-    OUTPUT = ("output", "", [])
+    INPUT = ("input", " (incl. connection name)", [CONNECTION_NAME_PARAM])  # type: ignore
+    OUTPUT = ("output", "", [])  # type: ignore
 
     def __init__(self, label: str, comment: str, extra_columns: list[Column]):
         self.label = label
@@ -44,7 +44,7 @@ def verify_columns(
     matches the list of expected columns as defined by the MLflow REST API
     endpoint.
 
-    For direction "input" an UDF additional parameter connection_name is
+    For Direction.INPUT an UDF additional parameter connection_name is
     considered, specifiying the name of the connection for retrieving the REST
     API base URI and the credentials for authentication.
     """

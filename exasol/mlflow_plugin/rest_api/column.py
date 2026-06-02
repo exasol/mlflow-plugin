@@ -76,6 +76,14 @@ class Column:
         return cls(name, 3, sql_name=sql_name, data_type="timestamp")
 
     @classmethod
+    def decimal(cls, name: str, precision: int = 18, sql_name: str = "") -> Column:
+        return cls(name, size=precision, sql_name=sql_name, data_type="int")
+
+    @classmethod
+    def boolean(cls, name: str, sql_name: str = "") -> Column:
+        return cls(name, size=1, sql_name=sql_name, data_type="bool")
+
+    @classmethod
     def varchar(
         cls,
         name: str,
@@ -92,11 +100,3 @@ class Column:
             key=key,
             comma_sep=comma_sep,
         )
-
-    @classmethod
-    def decimal(cls, name: str, precision: int = 18, sql_name: str = "") -> Column:
-        return cls(name, size=precision, sql_name=sql_name, data_type="int")
-
-    @classmethod
-    def boolean(cls, name: str, sql_name: str = "") -> Column:
-        return cls(name, size=1, sql_name=sql_name, data_type="bool")

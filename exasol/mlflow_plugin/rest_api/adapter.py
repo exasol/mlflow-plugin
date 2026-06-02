@@ -8,6 +8,12 @@ from exasol.mlflow_plugin.rest_api.rest_api import MLflowRestApi
 
 
 class ApiAdapter:
+    """
+    Combines basic information like base URI and authentication
+    credentials together with endpoint-specific information like method and
+    URL suffix and enables calling the endpoint in a generic way.
+    """
+
     def __init__(
         self,
         base_uri: str,
