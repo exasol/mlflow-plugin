@@ -38,10 +38,14 @@ selected model ``qwen3.5:0.8b``, which is about 1 GB in size:
 Accessing Ollama From MLflow
 ----------------------------
 
-1. Open the browser and navigate to your MLflow server, e.g. http://localhost:5000
-2. In the left side menu select "AI Gateway"
+.. |pic1| image:: img/ai-gateway/1-select-gateway.png
 
-.. image:: img/ai-gateway/1-select-gateway.png
++--------+---------------------------------------------------------+
++--------+---------------------------------------------------------+
+| |pic1| | 1. Open the browser and navigate to your MLflow server, |
+|        |    e.g. http://localhost:5000                           |
+|        | 2. In the left side menu select "AI Gateway"            |
++--------+---------------------------------------------------------+
 
 Creating an API Key
 -------------------
