@@ -24,7 +24,14 @@ class PostProcessor:
         self.expanders = expanders or []
         self.columns = columns + [c for e in self.expanders for c in e.output]
 
-    def process(self, data: Iterable[JsonObject]) -> Iterable[list[Any]]:
+    def process(self, stream: Iterable[JsonObject]) -> Iterable[list[Any]]:
+        def col_value(row: JsonObject, column: Column) -> Any:
+            value = row.get(column.name)
+            return column.process(value)
+
+        def row(row: JsonObject) -> list[Any]:
+            return [col_value(row, c) for c in self.columns]
+
         for expander in self.expanders:
-            data = expander.expand(data)
-        return ([c.process(el.get(c.name)) for c in self.columns] for el in data)
+            stream = expander.expand(stream)
+        return (row(data) for data in stream)
