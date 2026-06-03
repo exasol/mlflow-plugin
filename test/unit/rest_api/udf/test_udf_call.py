@@ -8,7 +8,7 @@ from unittest.mock import (
 import pytest
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api.udf import body as udf_body
+import exasol.mlflow_plugin.rest_api.udf.call as udf_call
 
 
 @pytest.fixture
@@ -22,9 +22,9 @@ def mock_udf_ctx(args: dict[str, Any]) -> Mock:
     return ctx
 
 
-def test_udf_body(monkeypatch, connection_mock) -> None:
+def test_udf_call(monkeypatch, connection_mock) -> None:
     """
-    Verify the generic Body class used by all UDFs for accessing the
+    Verify the generic UdfCall class used by all UDFs for accessing the
     MLflow REST API.
     """
 
@@ -40,7 +40,7 @@ def test_udf_body(monkeypatch, connection_mock) -> None:
     simulated_rows = [["a", "b"], ["c", "d"]]
     api_adapter.call.return_value = simulated_rows
     adapter_cls = Mock(return_value=api_adapter)
-    monkeypatch.setattr(udf_body, "ApiAdapter", adapter_cls)
+    monkeypatch.setattr(udf_call, "ApiAdapter", adapter_cls)
 
     # Simulate UDF ctx object
     ctx = mock_udf_ctx(params)
@@ -51,9 +51,9 @@ def test_udf_body(monkeypatch, connection_mock) -> None:
     # Mock exa object incl. the UDF's parameter declarations
     exa_mock = mock_exa_object(endpoint)
 
-    # Instantiate a UDF body and call its run() method, just as the UDF would do
-    body = rest_api.UdfBody(exa_mock, endpoint)
-    body.run(ctx)
+    # Instantiate a UdfCall and call its run() method, just as the UDF would do
+    testee = rest_api.UdfCall(exa_mock, endpoint)
+    testee.run(ctx)
 
     # Verify retrieval of exa connection
     assert exa_mock.get_connection.call_args == call(ctx.connection_name)

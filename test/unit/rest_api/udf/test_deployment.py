@@ -40,10 +40,10 @@ def test_sql_rendering(endpoint) -> None:
     ) AS
     from exasol.mlflow_plugin import rest_api
 
-    body = rest_api.UdfBody(exa, endpoint=rest_api.EEE)
+    udf_call = rest_api.UdfCall(exa, endpoint=rest_api.EEE)
 
     def run(ctx):
-        body.run(ctx)
+        udf_call.run(ctx)
     /
     """)
     assert deployable.sql == expected

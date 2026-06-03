@@ -48,10 +48,10 @@ class Deployable:
             ) AS
             from exasol.mlflow_plugin import rest_api
 
-            body = rest_api.UdfBody(exa, endpoint=rest_api.{endpoint_var})
+            udf_call = rest_api.UdfCall(exa, endpoint=rest_api.{endpoint_var})
 
             def run(ctx):
-                body.run(ctx)
+                udf_call.run(ctx)
             /
             """).format(
             language_alias=self.language_alias,

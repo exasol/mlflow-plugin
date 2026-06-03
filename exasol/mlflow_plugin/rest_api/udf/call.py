@@ -6,10 +6,10 @@ from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
 from exasol.mlflow_plugin.rest_api.udf.verification import verify_udf_parameters
 
 
-class UdfBody:
+class UdfCall:
     """
-    Adapter from the UDF-specific objects exa and ctx to the Python
-    classes accessing the MLflow REST API.
+    Handles the UDF-specific objects exa and ctx and calls the ApiAdapter
+    accessing the MLflow REST API.
 
     * Retrieve base URL and credentials from Connection object.
     * Instantiate the specified class for accessing the resp. REST endpoint.
