@@ -13,13 +13,10 @@ def timestamp_to_datetime(seconds_since_epoc: int) -> datetime.datetime:
     milliseconds since the UNIX, see
     https://mlflow.org/docs/latest/api_reference/rest-api.html.
 
-    The Unix epoc is defined to use UTC. Still, we remove the timezone info to
+    The Unix epoc is defined to use UTC. Still, we omit the timezone info to
     avoid the database to fail with a parsing error on suffix "+00:00".
     """
-    return datetime.datetime.fromtimestamp(
-        seconds_since_epoc / 1000,
-        tz=timezone.utc,
-    ).replace(tzinfo=None)
+    return datetime.datetime.utcfromtimestamp(seconds_since_epoc / 1000)
 
 
 SQL_TYPE = {
