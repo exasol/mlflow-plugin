@@ -9,6 +9,7 @@ from urllib.parse import (
     urlunparse,
 )
 
+import pyexasol
 import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
@@ -101,7 +102,6 @@ def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
         user="admin",
         password="password1234",
     )
-
 
 
 @pytest.fixture(scope="module")

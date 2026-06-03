@@ -8,18 +8,15 @@ import sys
 import threading
 import time
 from collections.abc import Generator
-from dataclasses import dataclass
 from datetime import (
     datetime,
     timedelta,
 )
-from inspect import cleandoc
 from subprocess import PIPE
 from typing import IO
 from urllib.parse import urlsplit
 
 import mlflow
-import pyexasol
 import pytest
 import sklearn
 from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
