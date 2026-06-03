@@ -27,6 +27,21 @@ CONNECTION_NAME_PARAM = Column.varchar("connection_name")
 
 
 class Direction(Enum):
+    """
+    This enum represents the direction of columns to verify: Either INPUT
+    or OUTPUT.
+
+    Each enum entry contains a label, a comment, and a list of extra columns.
+
+    The label and comment are used when creating the error message in case the
+    verification fails.
+
+    The extra_column CONNECTION_NAME_PARAM is added for Direction.INPUT to
+    accept an additional input parameter that is not declared by the endpoint
+    but required to ispecifiy the name of the connection for retrieving the
+    REST API base URI and the credentials for authentication.
+    """
+
     INPUT = ("input", " (incl. connection name)", [CONNECTION_NAME_PARAM])  # type: ignore
     OUTPUT = ("output", "", [])  # type: ignore
 
@@ -43,10 +58,6 @@ def verify_columns(
     Verify if the UDF's actual list of columns as provided via exa.meta
     matches the list of expected columns as defined by the MLflow REST API
     endpoint.
-
-    For Direction.INPUT an UDF additional parameter connection_name is
-    considered, specifiying the name of the connection for retrieving the REST
-    API base URI and the credentials for authentication.
     """
 
     expected = direction.extra_columns + expected
