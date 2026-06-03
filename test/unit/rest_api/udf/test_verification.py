@@ -26,42 +26,42 @@ def not_raises(exception):
     "actual, expected",
     [
         pytest.param(
-            [ExaMetaColumn("a", "DECIMAL(18,0)"), ExaMetaColumn("b", "DECIMAL(18,0)")],
+            [ExaMetaColumn.decimal("a"), ExaMetaColumn.decimal("b")],
             [Column.decimal("a")],
             id="2_actual_1_expected",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "DECIMAL(18,0)")],
+            [ExaMetaColumn.decimal("a")],
             [Column.decimal("a"), Column.decimal("b")],
             id="1_actual_2_expected",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [ExaMetaColumn.varchar("a", 200)],
             [Column.varchar("b", 200)],
             id="name_mismatch",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "DECIMAL")],
+            [ExaMetaColumn.decimal("a")],
             [Column.varchar("a", 200)],
             id="decimal_varchar",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [ExaMetaColumn.varchar("a", 200)],
             [Column.decimal("a")],
             id="varchar_decimal",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [ExaMetaColumn.varchar("a", 200)],
             [Column.varchar("a", 201)],
             id="size",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "DECIMAL(18,0)")],
+            [ExaMetaColumn.decimal("a", 18)],
             [Column.decimal("a", 17)],
             id="precision",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "DECIMAL(10,2)")],
+            [ExaMetaColumn.decimal("a", 10, 2)],
             [Column.decimal("a", 10)],
             id="scale",
         ),
@@ -76,17 +76,17 @@ def test_verify_columns_fails(actual, expected) -> None:
     "actual, expected",
     [
         pytest.param(
-            [ExaMetaColumn("a", "DECIMAL(18,0)")],
+            [ExaMetaColumn.decimal("a")],
             [Column.decimal("a")],
             id="decimal",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "VARCHAR(200)")],
+            [ExaMetaColumn.varchar("a", 200)],
             [Column.varchar("a", 200)],
             id="varchar",
         ),
         pytest.param(
-            [ExaMetaColumn("a", "VARCHAR(200)"), ExaMetaColumn("b", "DECIMAL(10,0)")],
+            [ExaMetaColumn.varchar("a", 200), ExaMetaColumn.decimal("b", 10)],
             [Column.varchar("a", 200), Column.decimal("b", 10)],
             id="2-columns",
         ),

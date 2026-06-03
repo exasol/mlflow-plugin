@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 
 from exasol.mlflow_plugin.rest_api.data import Column
@@ -15,6 +16,26 @@ class UdfParameterException(Exception):
 class ExaMetaColumn:
     name: str
     sql_type: str
+    type: type
+    length: int
+    precision: int
+    scale: int
+
+    @classmethod
+    def varchar(cls, name: str, length: int = 2000000) -> ExaMetaColumn:
+        return cls(name, f"VARCHAR({length})", str, length, 0, 0)
+
+    @classmethod
+    def timestamp(cls, name: str) -> ExaMetaColumn:
+        return cls(name, "TIMESTAMP(3)", datetime, 0, 0, 0)
+
+    @classmethod
+    def decimal(cls, name: str, precision: int = 18, scale: int = 0) -> ExaMetaColumn:
+        return cls(name, f"DECIMAL({precision},{scale})", int, 0, precision, scale)
+
+    @classmethod
+    def boolean(cls, name: str) -> ExaMetaColumn:
+        return cls(name, f"BOOLEAN({precision},{scale})", bool, 0, 0, 0)
 
 
 @dataclass
@@ -65,7 +86,7 @@ def data_type_match(exa: ExaMetaColumn, col: Column | None) -> bool:
     if col is None or exa.type != col.data_type:
         return False
 
-    if exa.type in [datetime.timestamp, bool]:
+    if exa.type in [datetime, bool]:
         return True
     if exa.type == str:
         return exa.length == col.size
@@ -100,7 +121,7 @@ def verify_columns(
             f"{suffix()}"
         )
 
-    expected_dict = {c.sql_name: c.sql_type for c in expected}
+    expected_dict = {c.sql_name: c for c in expected}
     for act in actual:
         exp = expected_dict.get(act.name)
         if not data_type_match(act, exp):

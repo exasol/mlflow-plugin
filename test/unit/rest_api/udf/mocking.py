@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import Mock
 
 from exasol.mlflow_plugin import rest_api
@@ -9,9 +10,22 @@ from exasol.mlflow_plugin.rest_api.udf.verification import (
 )
 
 
+def exa_meta_column(column: Column) -> ExaMetaColumn:
+    name = column.sql_name
+    if column.data_type == str:
+        return ExaMetaColumn.varchar(name, column.size)
+    if column.data_type == int:
+        return ExaMetaColumn.decimal(name, column.size, 0)
+    if column.data_type == datetime:
+        return ExaMetaColumn.timestamp(name)
+    if column.data_type == bool:
+        return ExaMetaColumn.boolean(name)
+    raise RuntimeError(f"Unexpected data_type: {column}")
+
+
 def mock_exa_object(endpoint: rest_api.Endpoint) -> Mock:
     def exa_meta_columns(columns: list[Column]) -> list[ExaMetaColumn]:
-        return [ExaMetaColumn(c.sql_name, c.sql.split()[1]) for c in columns]
+        return [exa_meta_column(c) for c in columns]
 
     mock = Mock()
     connection = Mock(address="address", user="user", password="password")

@@ -57,6 +57,6 @@ def test_other_options(experiments_search):
         "order_by": ["name"],
         "max_results": 1,
     }
-    actual = experiments_search.retrieve(params)
+    actual = experiments_search.call(params)
     names = [el[1] for el in actual]
     assert names == ["a-1", "a-2"]
