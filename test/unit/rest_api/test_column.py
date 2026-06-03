@@ -13,7 +13,7 @@ def test_default_values() -> None:
 def test_timestamp() -> None:
     column = Column.timestamp("col", sql_name="TIME")
     assert column == Column("col", 3, "TIME", "timestamp")
-    expected = datetime.datetime.fromisoformat("2026-05-20 08:32:18")
+    expected = datetime.datetime.fromisoformat("2026-05-20 08:32:18+00:00")
     assert column.process(expected.timestamp() * 1000) == expected
     assert column.sql == '"TIME" TIMESTAMP(3)'
 

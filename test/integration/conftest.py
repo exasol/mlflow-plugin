@@ -66,11 +66,9 @@ def build_slc(use_onprem, use_saas, request) -> bool:
 
 
 @pytest.fixture(scope="session")
-def language_alias(request, build_slc):
+def language_alias(request):
     """See developer guide for details."""
-    if override := request.config.getoption("--language-alias"):
-        return override
-    return "MLFLOW"
+    return request.config.getoption("--language-alias") or "MLFLOW"
 
 
 @pytest.fixture(scope="session")

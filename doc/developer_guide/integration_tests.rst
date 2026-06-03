@@ -52,11 +52,8 @@ Reuse SLC
 ---------
 
 For skipping building and deploying the SLC you can add option
-``--skip-slc``. This will also cause the test fixture ``language_alias`` to
-return ``PYTHON3``.
-
-If you have installed the SLC already you can reuse it by adding pytest CLI
-option ``--language-alias MLFLOW``.
+``--skip-slc``. If you have installed the SLC already you can reuse it by
+adding pytest CLI option ``--language-alias MLFLOW``.
 
 Reusing the MLflow Server
 -------------------------

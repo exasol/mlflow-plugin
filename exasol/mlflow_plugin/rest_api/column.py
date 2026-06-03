@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+from datetime import timezone
 from typing import Any
 
 
@@ -8,7 +9,10 @@ def timestamp_to_datetime(seconds_since_epoc: int) -> datetime.datetime:
     """
     Convert MLflow timestamp to datetime.
     """
-    return datetime.datetime.fromtimestamp(seconds_since_epoc / 1000)
+    return datetime.datetime.fromtimestamp(
+        seconds_since_epoc / 1000,
+        tz=timezone.utc,
+    )
 
 
 SQL_TYPE = {
