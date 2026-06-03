@@ -2,7 +2,7 @@ import mlflow
 import pytest
 
 from exasol.mlflow_plugin.rest_api import EXPERIMENTS_SEARCH
-from exasol.mlflow_plugin.rest_api.adapter import ApiAdapter
+from exasol.mlflow_plugin.rest_api.streaming import DataStream
 
 TAGGED_EXPERIMENT = "zzz"
 SAMPLE_TAGS = [("T1", "V1"), ("T2", "V2")]
@@ -27,8 +27,8 @@ def sample_data(request, mlflow_server):
 
 
 @pytest.fixture
-def experiments_search(mlflow_server, sample_data) -> ApiAdapter:
-    return ApiAdapter(
+def experiments_search(mlflow_server, sample_data) -> DataStream:
+    return DataStream(
         base_uri=f"{mlflow_server}/api/2.0/mlflow",
         auth=("admin", "password1234"),
         endpoint=EXPERIMENTS_SEARCH,

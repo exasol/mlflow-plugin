@@ -7,11 +7,11 @@ from exasol.mlflow_plugin.rest_api.processing import PostProcessor
 from exasol.mlflow_plugin.rest_api.rest_api import MLflowRestApi
 
 
-class ApiAdapter:
+class DataStream:
     """
     Combines basic information like base URI and authentication
     credentials together with endpoint-specific information like method and
-    URL suffix and enables calling the endpoint in a generic way.
+    URL suffix and enables retrieving a data stream from the endpoint.
     """
 
     def __init__(
@@ -30,6 +30,6 @@ class ApiAdapter:
             columns=endpoint.output_columns, expanders=endpoint.expanders
         )
 
-    def call(self, params: JsonObject) -> Iterable[list[Any]]:
+    def retrieve(self, params: JsonObject) -> Iterable[list[Any]]:
         data = self._api.call(params)
         return self._processor.process(data)

@@ -7,8 +7,8 @@ from unittest.mock import (
 
 import pytest
 
-from exasol.mlflow_plugin import rest_api
 import exasol.mlflow_plugin.rest_api.udf.call as udf_call
+from exasol.mlflow_plugin import rest_api
 
 
 @pytest.fixture
@@ -35,12 +35,12 @@ def test_udf_call(monkeypatch, connection_mock) -> None:
         "max_results": 20,
     }
 
-    # Simulate adapter class
-    api_adapter = Mock()
+    # Simulate data_stream class
+    data_stream = Mock()
     simulated_rows = [["a", "b"], ["c", "d"]]
-    api_adapter.call.return_value = simulated_rows
-    adapter_cls = Mock(return_value=api_adapter)
-    monkeypatch.setattr(udf_call, "ApiAdapter", adapter_cls)
+    data_stream.retrieve.return_value = simulated_rows
+    data_stream_cls = Mock(return_value=data_stream)
+    monkeypatch.setattr(udf_call, "DataStream", data_stream_cls)
 
     # Simulate UDF ctx object
     ctx = mock_udf_ctx(params)
@@ -59,7 +59,7 @@ def test_udf_call(monkeypatch, connection_mock) -> None:
     assert exa_mock.get_connection.call_args == call(ctx.connection_name)
 
     # Verify constructor
-    assert adapter_cls.call_args == call(
+    assert data_stream_cls.call_args == call(
         base_uri="address",
         auth=("user", "password"),
         endpoint=endpoint,
@@ -67,7 +67,7 @@ def test_udf_call(monkeypatch, connection_mock) -> None:
 
     # Verify endpoint call
     expected_params = params | {"order_by": ["name", "experiment_id"]}
-    assert api_adapter.call.call_args == call(expected_params)
+    assert data_stream.retrieve.call_args == call(expected_params)
 
     # Verify emitted data
     assert ctx.emit.call_args_list == [call(*cols) for cols in simulated_rows]

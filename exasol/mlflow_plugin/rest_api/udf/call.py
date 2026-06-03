@@ -1,14 +1,14 @@
 from typing import Any
 
-from exasol.mlflow_plugin.rest_api.adapter import ApiAdapter
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
+from exasol.mlflow_plugin.rest_api.streaming import DataStream
 from exasol.mlflow_plugin.rest_api.udf.verification import verify_udf_parameters
 
 
 class UdfCall:
     """
-    Handles the UDF-specific objects exa and ctx and calls the ApiAdapter
+    Handles the UDF-specific objects exa and ctx and calls the DataStream
     accessing the MLflow REST API.
 
     * Retrieve base URL and credentials from Connection object.
@@ -25,7 +25,7 @@ class UdfCall:
         self._exa = exa
         self.endpoint = endpoint
         self.connection_name = ""
-        self.adapter: ApiAdapter | None = None
+        self.data_stream: DataStream | None = None
 
     def params(self, ctx) -> dict[str, Any]:
         def convert(column: Column, v: Any) -> Any:
@@ -34,14 +34,14 @@ class UdfCall:
         return {c.name: convert(c, ctx[c.name]) for c in self.endpoint.input_columns}
 
     def run(self, ctx) -> None:
-        if ctx.connection_name != self.connection_name or self.adapter is None:
+        if ctx.connection_name != self.connection_name or self.data_stream is None:
             self.connection_name = ctx.connection_name
             conn = self._exa.get_connection(ctx.connection_name)
             auth = (conn.user, conn.password)
-            self.adapter = ApiAdapter(
+            self.data_stream = DataStream(
                 base_uri=conn.address, auth=auth, endpoint=self.endpoint
             )
 
         params = self.params(ctx)
-        for row in self.adapter.call(params):
+        for row in self.data_stream.retrieve(params):
             ctx.emit(*row)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-from datetime import timezone
 from typing import Any
 
 
