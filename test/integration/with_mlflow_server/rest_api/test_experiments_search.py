@@ -36,14 +36,14 @@ def experiments_search(mlflow_server, sample_data) -> DataStream:
 
 
 def test_deleted(experiments_search):
-    actual = experiments_search.call({"view_type": "DELETED_ONLY"})
+    actual = experiments_search.retrieve({"view_type": "DELETED_ONLY"})
     count_deleted = sum(1 for a in actual if a[3] == "deleted")
     assert count_deleted > 0
 
 
 def test_tags(experiments_search):
     filter = f"name = '{TAGGED_EXPERIMENT}'"
-    actual = experiments_search.call({"filter": filter})
+    actual = experiments_search.retrieve({"filter": filter})
     tags = [tuple(el[-2:]) for el in actual]
     assert tags == SAMPLE_TAGS
 
@@ -57,6 +57,6 @@ def test_other_options(experiments_search):
         "order_by": ["name"],
         "max_results": 1,
     }
-    actual = experiments_search.call(params)
+    actual = experiments_search.retrieve(params)
     names = [el[1] for el in actual]
     assert names == ["a-1", "a-2"]
