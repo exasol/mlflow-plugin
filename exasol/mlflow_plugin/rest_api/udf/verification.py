@@ -22,8 +22,8 @@ class ExaMetaColumn:
     scale: int
 
     @classmethod
-    def varchar(cls, name: str, length: int = 2000000) -> ExaMetaColumn:
-        return cls(name, f"VARCHAR({length})", str, length, 0, 0)
+    def boolean(cls, name: str) -> ExaMetaColumn:
+        return cls(name, "BOOLEAN", bool, 0, 0, 0)
 
     @classmethod
     def timestamp(cls, name: str) -> ExaMetaColumn:
@@ -34,8 +34,8 @@ class ExaMetaColumn:
         return cls(name, f"DECIMAL({precision},{scale})", int, 0, precision, scale)
 
     @classmethod
-    def boolean(cls, name: str) -> ExaMetaColumn:
-        return cls(name, f"BOOLEAN({precision},{scale})", bool, 0, 0, 0)
+    def varchar(cls, name: str, length: int = 2000000) -> ExaMetaColumn:
+        return cls(name, f"VARCHAR({length})", str, length, 0, 0)
 
 
 @dataclass
