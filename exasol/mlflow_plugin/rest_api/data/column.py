@@ -16,8 +16,13 @@ def timestamp_to_datetime(seconds_since_epoc: int) -> datetime:
 
     The Unix epoc is defined to use UTC. Still, we omit the timezone info to
     avoid the database to fail with a parsing error on suffix "+00:00".
+
+    Sonar warning python:S6903 is therefore ignored:
+
+    Using timezone-aware "datetime" objects should be preferred over using
+    "datetime.datetime.utcnow" and "datetime.datetime.utcfromtimestamp"
     """
-    return datetime.utcfromtimestamp(seconds_since_epoc / 1000)
+    return datetime.utcfromtimestamp(seconds_since_epoc / 1000)  # NOSONAR
 
 
 SQL_TYPE = {

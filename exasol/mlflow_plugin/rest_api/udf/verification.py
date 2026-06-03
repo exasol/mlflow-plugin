@@ -9,7 +9,7 @@ from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
 
 
 class UdfParameterException(Exception):
-    """UDF input parameters don't match the endpoint's input parameters"""
+    """UDF parameter desclaration doesn't match the endpoint columns"""
 
 
 @dataclass
