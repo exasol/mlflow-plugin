@@ -156,7 +156,6 @@ itde/
 /mlflow.db
 /basic_auth.db
 /mlartifacts
-/basic_auth.db
 
 # SLC building
 /.slc

@@ -8,11 +8,18 @@ from typing import Any
 def timestamp_to_datetime(seconds_since_epoc: int) -> datetime.datetime:
     """
     Convert MLflow timestamp to datetime.
+
+    Please note: The MLflow REST API returns timestamps as INT64, representing
+    milliseconds since the UNIX, see
+    https://mlflow.org/docs/latest/api_reference/rest-api.html.
+
+    The Unix epoc is defined to use UTC. Still, we remove the timezone info to
+    avoid the database to fail with a parsing error on suffix "+00:00".
     """
     return datetime.datetime.fromtimestamp(
         seconds_since_epoc / 1000,
         tz=timezone.utc,
-    )
+    ).replace(tzinfo=None)
 
 
 SQL_TYPE = {
@@ -60,7 +67,7 @@ class Column:
     def __repr__(self) -> str:
         atts = ", ".join(
             f"{x}={str(getattr(self, x))}"
-            for x in "name size sql_name size data_type key comma_sep".split()
+            for x in "name size sql_name data_type key comma_sep".split()
         )
         return f"Column({atts})"
 

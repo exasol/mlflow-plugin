@@ -145,49 +145,6 @@ def mlflow_tracking_uri(
     return mlflow_server
 
 
-@dataclass(frozen=True)
-class MLflowConnection:
-    url: str
-    user: str
-    password: str
-
-
-@pytest.fixture(scope="module")
-def mlflow_exa_connection_name() -> str:
-    return "MLFLOW"
-
-
-@pytest.fixture(scope="module")
-def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
-    return MLflowConnection(
-        url=f"{mlflow_tracking_uri}/api/2.0/mlflow",
-        user="admin",
-        password="password1234",
-    )
-
-
-@pytest.fixture(scope="module")
-def mlflow_exa_connection(
-    mlflow_connection: MLflowConnection,
-    mlflow_exa_connection_name: str,
-    pyexasol_connection: pyexasol.ExaConnection,
-) -> str:
-    """
-    Create an Exasol Connection object containing credentials to access
-    MLflow REST API.
-    """
-    name = mlflow_exa_connection_name
-
-    sql = cleandoc(f"""
-        CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
-            TO '{mlflow_connection.url}'
-            USER '{mlflow_connection.user}'
-            IDENTIFIED BY '{mlflow_connection.password}'
-    """)
-    pyexasol_connection.execute(sql)
-    return mlflow_exa_connection_name
-
-
 @pytest.fixture(scope="module")
 def bfs_experiment(connector: Connector) -> str:
     name = "BFS-Experiment"

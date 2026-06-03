@@ -36,9 +36,6 @@ class Deployable:
         def sql(columns: list[Column]) -> str:
             return ",\n  ".join(c.sql for c in columns)
 
-        def api_params(columns: list[Column]) -> str:
-            return "\n        ".join(f'"{c.name}": ctx.{c.sql_name},' for c in columns)
-
         input_columns = self.endpoint.input_columns
         output_columns = self.endpoint.total_output_columns
         return cleandoc("""
@@ -59,10 +56,9 @@ class Deployable:
             """).format(
             language_alias=self.language_alias,
             udf_name=self.quoted_name,
-            endpoint_var=self.endpoint.var_name,
             input_columns=sql(input_columns),
             output_columns=sql(output_columns),
-            api_params=api_params(input_columns),
+            endpoint_var=self.endpoint.var_name,
         )
 
     def deploy(self, pyexasol_connection: ExaConnection) -> ExaStatement:

@@ -1,7 +1,6 @@
 import pytest
 
 from exasol.mlflow_plugin.rest_api import expanding
-from exasol.mlflow_plugin.rest_api.column import Column
 from exasol.mlflow_plugin.rest_api.data import (
     Column,
     JsonObject,

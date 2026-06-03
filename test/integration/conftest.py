@@ -1,5 +1,7 @@
 import os
 from collections.abc import Generator
+from dataclasses import dataclass
+from inspect import cleandoc
 from typing import Any
 from unittest import mock
 from urllib.parse import (
@@ -81,17 +83,44 @@ def slc_builder(build_slc):
 
 
 @pytest.fixture(scope="module")
-def mlflow_connection(mlflow_tracking_uri, pyexasol_connection):
+def mlflow_exa_connection_name() -> str:
+    return "MLFLOW"
+
+
+@dataclass(frozen=True)
+class MLflowConnection:
+    url: str
+    user: str
+    password: str
+
+
+@pytest.fixture(scope="module")
+def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
+    return MLflowConnection(
+        url=f"{mlflow_tracking_uri}/api/2.0/mlflow",
+        user="admin",
+        password="password1234",
+    )
+
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection(
+    mlflow_connection: MLflowConnection,
+    mlflow_exa_connection_name: str,
+    pyexasol_connection: pyexasol.ExaConnection,
+) -> str:
     """
     Create an Exasol Connection object containing credentials to access
     MLflow REST API.
     """
-    name = "MLFLOW"
-    url = f"{mlflow_tracking_uri}/api/2.0/mlflow"
-    user = "admin"
-    password = "password1234"
-    sql = (
-        f'CREATE OR REPLACE CONNECTION "{name}"'
-        f" TO '{url}' USER '{user}' IDENTIFIED BY '{password}'"
-    )
+    name = mlflow_exa_connection_name
+
+    sql = cleandoc(f"""
+        CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
+            TO '{mlflow_connection.url}'
+            USER '{mlflow_connection.user}'
+            IDENTIFIED BY '{mlflow_connection.password}'
+    """)
     pyexasol_connection.execute(sql)
+    return mlflow_exa_connection_name
