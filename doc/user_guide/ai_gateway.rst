@@ -40,12 +40,13 @@ Accessing Ollama From MLflow
 
 .. |pic1| image:: img/ai-gateway/1-select-gateway.png
 
-+--------+---------------------------------------------------------+
-+--------+---------------------------------------------------------+
-| |pic1| | 1. Open the browser and navigate to your MLflow server, |
-|        |    e.g. http://localhost:5000                           |
-|        | 2. In the left side menu select "AI Gateway"            |
-+--------+---------------------------------------------------------+
++-------------+---------------------------------------------------------+
+| Screenshot  | Instructions                                            |
++=============+=========================================================+
+| |pic1|      | 1. Open the browser and navigate to your MLflow server, |
+|             |    e.g. http://localhost:5000                           |
+|             | 2. In the left side menu select "AI Gateway"            |
++-------------+---------------------------------------------------------+
 
 Creating an API Key
 -------------------
@@ -77,7 +78,7 @@ Creating an Endpoint
 --------------------
 
 1. In the upper right corner click button "+ Create endpoint"
-2. Enter name, e,g, "ollama"
+2. Enter name, e.g. "ollama"
 3. For the model select provider "Ollama"
 4. Select model, in "Use a custom model name" enter ``qwen3.5:0.8b``
 5. Select "Use existing API key"
@@ -104,6 +105,8 @@ Verify your Endpoint
 
 .. image:: img/ai-gateway/5-sample-request.png
 
+.. _invoke_ai_gateway:
+
 Invoking an AI Gateway From Python
 ----------------------------------
 
@@ -121,7 +124,7 @@ Python actually only sends requests to the REST API via python library
     import json
     import requests
 
-    def send_request_to_ai_gateway(gateway_name: str = "ollama2") -> None:
+    def send_request_to_ai_gateway(gateway_name: str = "ollama") -> None:
         url = f"http://localhost:5000/gateway/{gateway_name}/mlflow/invocations"
         question = "What is the capital of Germany? (Keep it short)"
         jreq = {
@@ -132,9 +135,6 @@ Python actually only sends requests to the REST API via python library
         response = requests.post(url, json=jreq)
         data = response.json()
         print(json.dumps(data, indent=2))
-
-.. skipped
-   Sample result: [query-answer.json](/home/chku/doc/AI/MLflow/P3-AI-Gateway/query-answer.json)
 
 Logging and Usage Data
 ----------------------
@@ -155,5 +155,13 @@ The secret for accessing the Model Inference Provider (e.g. Ollama) is
 contained in the API Key in MLflow but for production environments MLflow
 authentication is strongly recommended.
 
-In this case the MLflow authentication token needs to be provided to a UDF
-accessing MLflow AI Gateways.
+In this case the UDF needs authenticate to the MLflow REST API, and the
+example :ref:`invoke_ai_gateway` may look like
+
+.. code-block:: shell
+
+    response = requests.post(url, json=jreq, auth=("user", "password"))
+
+Of course you should not reveal the credentials in your code but either use
+environment variables or an Exasol Connection Object to store them savely and
+retrieve them in your UDF.
