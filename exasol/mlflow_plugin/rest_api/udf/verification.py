@@ -72,10 +72,10 @@ class Direction(Enum):
         self.extra_columns = extra_columns
 
 
-def data_type_match(exa: ExaMetaColumn, col: Column | None) -> bool:
+def matches(exa: ExaMetaColumn, col: Column | None) -> bool:
     """
-    Check if the data type of the specified ExaMetaColumn and the Column
-    match.
+    Check if the specified ExaMetaColumn matches the Column as used for
+    this REST API implementation.
 
     See
     * https://docs.exasol.com/db/latest/database_concepts/udf_scripts/python3.htm#Input/ou
@@ -124,7 +124,7 @@ def verify_columns(
     expected_dict = {c.sql_name: c for c in expected}
     for act in actual:
         exp = expected_dict.get(act.name)
-        if not data_type_match(act, exp):
+        if not matches(act, exp):
             raise UdfParameterException(
                 f'UDF parameter "{act.name}"'
                 " doesn't match the MLflow REST API endpoint parameters."
