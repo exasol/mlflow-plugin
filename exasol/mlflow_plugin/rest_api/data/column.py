@@ -38,7 +38,6 @@ class Column:
         name: str,
         size: int,
         sql_name: str = "",
-        # data_type: str = "",
         data_type: type = str,
         key: str = "",
         comma_sep: bool = False,
