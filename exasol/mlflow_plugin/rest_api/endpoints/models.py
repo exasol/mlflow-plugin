@@ -9,9 +9,6 @@ REGISTERED_MODEL_COLUMNS = [
     Column.timestamp("last_updated_timestamp", sql_name="updated"),
     Column.varchar("user_id"),
     Column.varchar("description"),
-    # Column.varchar("latest_versions"),
-    # Column.varchar("tags"),
-    # Column.varchar("aliases"),
     Column.varchar("deployment_job_id"),
     Column.varchar("deployment_job_state"),
 ]
