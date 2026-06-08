@@ -1,10 +1,5 @@
 import os
 from dataclasses import dataclass
-from datetime import (
-    datetime,
-    timezone,
-)
-from typing import Callable
 
 import mlflow
 import pytest
@@ -29,6 +24,7 @@ def monkeymodule():
     """
     # See https://stackoverflow.com/questions/53963822
     from _pytest.monkeypatch import MonkeyPatch
+
     mpatch = MonkeyPatch()
     yield mpatch
     mpatch.undo()
@@ -75,13 +71,16 @@ def test_runs_search(mlflow_server, sample_data):
     assert sample_data.run_name in (r[2] for r in rows)
 
 
-@pytest.mark.parametrize("endpoint, params", [
-    (rest_api.REGISTERED_MODELS_SEARCH, {"filter": "name like 'sample_%'"}),
-    (rest_api.REGISTERED_MODELS_GET_LATEST_VERSIONS, {}),
-    (rest_api.REGISTERED_MODEL_GET, {}),
-    (rest_api.MODEL_VERSIONS_SEARCH, {"filter": "name like 'sample_%'"}),
-    (rest_api.MODEL_VERSIONS_GET, {"version": "1"}),
-])
+@pytest.mark.parametrize(
+    "endpoint, params",
+    [
+        (rest_api.REGISTERED_MODELS_SEARCH, {"filter": "name like 'sample_%'"}),
+        (rest_api.REGISTERED_MODELS_GET_LATEST_VERSIONS, {}),
+        (rest_api.REGISTERED_MODEL_GET, {}),
+        (rest_api.MODEL_VERSIONS_SEARCH, {"filter": "name like 'sample_%'"}),
+        (rest_api.MODEL_VERSIONS_GET, {"version": "1"}),
+    ],
+)
 def test_registered_models_and_model_versions(
     mlflow_server, sample_data, endpoint, params
 ):

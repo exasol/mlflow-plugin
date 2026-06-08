@@ -16,13 +16,13 @@ MODEL_VERSION_COLUMNS = [
     Column.varchar("status"),
     Column.varchar("status_message"),
     # Column.varchar("tags"),
-        Column.varchar("run_link"),
-        Column.varchar("aliases"),
-        Column.varchar("model_id"),
-        # Column.varchar("model_params"),
-        # Column.varchar("model_metrics"),
-        # Column.varchar("deployment_job_state"),
-    ]
+    Column.varchar("run_link"),
+    Column.varchar("aliases"),
+    Column.varchar("model_id"),
+    # Column.varchar("model_params"),
+    # Column.varchar("model_metrics"),
+    # Column.varchar("deployment_job_state"),
+]
 
 MODEL_VERSIONS_GET = Endpoint(
     var_name="MODEL_VERSIONS_GET",

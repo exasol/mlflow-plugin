@@ -1,6 +1,6 @@
-from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
+from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 
 EXPERIMENTS_SEARCH = Endpoint(
     var_name="EXPERIMENTS_SEARCH",

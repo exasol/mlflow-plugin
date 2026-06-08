@@ -1,7 +1,7 @@
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
-from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 from exasol.mlflow_plugin.rest_api.endpoints.input_columns import SEARCH_COLUMNS
+from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 
 REGISTERED_MODEL_COLUMNS = [
     Column.varchar("name"),
@@ -12,8 +12,8 @@ REGISTERED_MODEL_COLUMNS = [
     # Column.varchar("latest_versions"),
     # Column.varchar("tags"),
     # Column.varchar("aliases"),
-        Column.varchar("deployment_job_id"),
-        Column.varchar("deployment_job_state"),
+    Column.varchar("deployment_job_id"),
+    Column.varchar("deployment_job_state"),
 ]
 
 REGISTERED_MODEL_GET = Endpoint(
@@ -37,4 +37,3 @@ REGISTERED_MODELS_SEARCH = Endpoint(
     output_columns=REGISTERED_MODEL_COLUMNS,
     expanders=[EXPAND_TAGS],
 )
-

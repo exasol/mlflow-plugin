@@ -37,7 +37,6 @@ GATEWAY_ENDPOINTS_LIST = Endpoint(
         # Column.varchar("fallback_config"),
         Column.varchar("experiment_id"),
         Column.boolean("usage_tracking"),
-
     ],
     expanders=[EXPAND_FALLBACK_CONFIG, EXPAND_TAGS],
     url_prefix="api/3.0/mlflow",
