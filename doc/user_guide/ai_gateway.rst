@@ -1,8 +1,11 @@
-Accessing MLflow AI Gateways
-============================
+Accessing the MLflow AI Gateway
+===============================
+
+MLflow AI Gateway provides a centralized, auditable way to connect to various
+LLM APIs.
 
 The following figure shows the basic system setup for accessing an MLflow AI
-Gateway from within a UDF:
+Gateway endpoint from within a UDF:
 
 .. image:: img/ai-gateway/system-setup.svg
     :scale: 140 %
