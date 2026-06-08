@@ -32,12 +32,12 @@ Python example actually only uses the REST API via python library `requests
     import requests
 
     def send_request_to_ai_gateway(
-        gateway: str,
+        endpoint: str,
         mlflow_tracking_uri: str = "http://localhost:5000",
         auth: tuple[str, str] | None = None,
         question: str = "",
     ) -> dict:
-        url = f"{mlflow_tracking_uri}/gateway/{gateway}/mlflow/invocations"
+        url = f"{mlflow_tracking_uri}/gateway/{endpoint}/mlflow/invocations"
         jreq = {
             "messages": [{ "role": "user", "content": question}],
             "max_tokens": 400,
@@ -70,8 +70,7 @@ for other authentication variants.
     CREATE OR REPLACE CONNECTION "MLFLOW"
         TO '<mlflow_tracking_uri>'
         USER '<user_name>'
-        IDENTIFIED BY '<password>'
-        GATEWAY '<ai_gateway_name>';
+        IDENTIFIED BY '<password>';
 
 .. _exa_connection: https://docs.exasol.com/db/latest/sql/create_connection.htm
 .. _mlflow_auth:
@@ -88,6 +87,7 @@ from the connection object and call the function
 
     --/
     CREATE OR REPLACE PYTHON3 SCALAR SCRIPT ASK_AI (
+        endpoint VARCHAR(2000000),
         question VARCHAR(2000000)
     )
     EMITS (
@@ -99,7 +99,7 @@ from the connection object and call the function
     def run(ctx):
         conn = exa.get_connection("MLFLOW")
         resp = send_request_to_ai_gateway(
-            conn.gateway,
+            ctx.endpoint,
             conn.address,
             auth=(conn.user, conn.password),
             question=ctx.question,
