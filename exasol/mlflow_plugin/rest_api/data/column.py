@@ -12,15 +12,15 @@ def timestamp_to_datetime(seconds_since_epoc: int) -> datetime:
 
     Please note: The MLflow REST API returns timestamps as INT64, representing
     milliseconds since the UNIX, see
-    https://mlflow.org/docs/latest/api_reference/rest-api.html.
+    https://mlflow.org/docs/latest/api_reference/rest-api.html
+
+    UDFs require time zone naive timestamps, i.e. representing a UTC value but
+    without explicit time zone annotation, such as suffix "+00:00" or "Z".
 
     The Unix epoch is defined to use UTC. Still, we omit the timezone info to
     avoid the database to fail with a parsing error on suffix "+00:00".
 
-    Sonar warning python:S6903 is therefore ignored:
-
-    Using timezone-aware "datetime" objects should be preferred over using
-    "datetime.datetime.utcnow" and "datetime.datetime.utcfromtimestamp"
+    Sonar warning python:S6903 is therefore ignored.
     """
     return datetime.utcfromtimestamp(seconds_since_epoc / 1000)  # NOSONAR
 
