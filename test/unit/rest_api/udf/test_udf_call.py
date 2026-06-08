@@ -40,10 +40,10 @@ def ctx_mock(sample_params) -> Mock:
     return ctx
 
 
-@pytest.mark.parametrize("user", [
-    {}, {"auth-type": "unsupported"}
-])
-def test_unsupported_authentication(monkeypatch, sample_endpoint, ctx_mock, user) -> None:
+@pytest.mark.parametrize("user", [{}, {"auth-type": "unsupported"}])
+def test_unsupported_authentication(
+    monkeypatch, sample_endpoint, ctx_mock, user
+) -> None:
     """
     Argument ``user`` contains the simulated value of the attribute
     ``user`` of an Exasol Connection.

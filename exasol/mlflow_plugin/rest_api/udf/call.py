@@ -46,15 +46,16 @@ class UdfCall:
         Currently only basic authentication is supported -- a tuple of
         strings, containing the username and the password.
         """
+
         def jloads(value: str) -> JsonObject:
             return json.loads(value) if value else {}
 
         data = jloads(user) | jloads(password)
         auth_type = data.get("auth-type")
         if auth_type == "basic":
-            return (data.get("user"), data.get("password"))
+            return (str(data.get("user")), str(data.get("password")))
         raise NotImplementedError(
-            f'MLflow auth-type {repr(auth_type)} is not supported, yet.'
+            f"MLflow auth-type {repr(auth_type)} is not supported, yet."
         )
 
     def run(self, ctx) -> None:
