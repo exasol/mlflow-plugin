@@ -36,10 +36,10 @@ def sample_data(monkeymodule, request, mlflow_server) -> SampleData:
         return SampleData()
     monkeymodule.setitem(os.environ, "MLFLOW_TRACKING_USERNAME", "admin")
     monkeymodule.setitem(os.environ, "MLFLOW_TRACKING_PASSWORD", "password1234")
-    experiment_id = mlflow.create_experiment("exp5")
+    exp = mlflow.set_experiment("exp5")
     # Create a run
     run_name = "sample_run"
-    mlflow.start_run(experiment_id=experiment_id, run_name=run_name)
+    mlflow.start_run(experiment_id=exp.experiment_id, run_name=run_name)
     mlflow.end_run()
     # create a model and register it
     registered_model_name = "sample_registered_model"
@@ -50,7 +50,7 @@ def sample_data(monkeymodule, request, mlflow_server) -> SampleData:
     )
 
     return SampleData(
-        experiment_id,
+        exp.experiment_id,
         run_name,
         registered_model_name,
     )
