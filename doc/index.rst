@@ -1,32 +1,24 @@
-.. _about_mlflow:
+Exasol MLflow Plugin
+====================
 
-About MLflow
-------------
-
-`MLflow <mlflow_>`_ is the largest open source AI engineering platform for agents, LLMs,
-and ML models. MLflow enables teams of all sizes to debug, evaluate, monitor,
-and optimize production-quality AI applications while controlling costs and
-managing access to models and data.
-
-.. _mlflow: https://mlflow.org/
-
-For machine learning (ML) model development, MLflow provides experiment
-tracking, model evaluation capabilities, a production model registry, and
-model deployment tools.
-
-MLflow's comprehensive feature set for agents and LLM applications includes
-production-grade observability, evaluation, prompt management, prompt
-optimization, an AI Gateway for managing costs and model access, and
-more. Learn more at MLflow for LLMs and Agents.
-
-
-Documentation of  Exasol MLflow Plugin
---------------------------------------
+The Exasol MLflow Plugin supports using MLflow with Exasol.
 
 .. grid:: 1 1 3 2
     :gutter: 2
     :padding: 0
     :class-container: surface
+
+    .. grid-item-card:: :octicon:`book` About MLflow
+        :link: about_mlflow
+        :link-type: ref
+
+        About MLflow
+
+    .. grid-item-card:: :octicon:`rocket` Features
+        :link: features
+        :link-type: ref
+
+        Features of this plugin
 
     .. grid-item-card:: :octicon:`person` User Guide
         :link: user_guide
@@ -50,6 +42,8 @@ Documentation of  Exasol MLflow Plugin
    :maxdepth: 1
    :hidden:
 
+   about_mlflow
+   features/index
    user_guide/index
    developer_guide/index
    api
