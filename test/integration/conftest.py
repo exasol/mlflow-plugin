@@ -98,7 +98,7 @@ class MLflowConnection:
 @pytest.fixture(scope="module")
 def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
     return MLflowConnection(
-        url=f"{mlflow_tracking_uri}/api/2.0/mlflow",
+        url=mlflow_tracking_uri,
         user="admin",
         password="password1234",
     )

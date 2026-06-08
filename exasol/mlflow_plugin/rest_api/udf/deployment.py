@@ -70,7 +70,19 @@ def deploy_all(
     db_schema: str,
     pyexasol_connection: ExaConnection,
 ) -> None:
-    ENDPOINTS = [rest_api.EXPERIMENTS_SEARCH]
+    ENDPOINTS = [
+        rest_api.ARTIFACTS_LIST,
+        rest_api.EXPERIMENTS_SEARCH,
+        rest_api.GATEWAY_ENDPOINTS_LIST,
+        rest_api.GATEWAY_MODEL_DEFINITIONS_LIST,
+        rest_api.MODEL_VERSIONS_GET,
+        rest_api.MODEL_VERSIONS_GET_DOWNLOAD_URI,
+        rest_api.MODEL_VERSIONS_SEARCH,
+        rest_api.REGISTERED_MODEL_GET,
+        rest_api.REGISTERED_MODELS_SEARCH,
+        rest_api.REGISTERED_MODELS_GET_LATEST_VERSIONS,
+        rest_api.RUNS_SEARCH,
+    ]
     for endpoint in ENDPOINTS:
         udf = Deployable(language_alias, db_schema, endpoint)
         udf.deploy(pyexasol_connection)

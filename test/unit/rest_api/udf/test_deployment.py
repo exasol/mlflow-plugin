@@ -54,5 +54,5 @@ def test_deploy_all():
     mock = Mock()
     deploy_all(*args, pyexasol_connection=mock)
 
-    udf = Deployable(*args, rest_api.EXPERIMENTS_SEARCH)
+    udf = Deployable(*args, rest_api.RUNS_SEARCH)
     assert mock.execute.call_args == call(udf.sql)

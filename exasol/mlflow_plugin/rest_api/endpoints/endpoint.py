@@ -16,6 +16,11 @@ class Endpoint:
     input_columns: list[Column]
     output_columns: list[Column]
     expanders: list[Expander] = field(default_factory=list)
+    url_prefix: str = "api/2.0/mlflow"
+
+    @property
+    def url(self) -> str:
+        return f"{self.url_prefix}/{self.url_suffix}"
 
     @property
     def expander_columns(self) -> list[Column]:

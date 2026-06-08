@@ -1,6 +1,4 @@
-from exasol.mlflow_plugin.rest_api import (
-    expanding,
-)
+from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
 
@@ -22,6 +20,7 @@ EXPERIMENTS_SEARCH = Endpoint(
         Column.varchar("lifecycle_stage"),
         Column.timestamp("last_update_time", sql_name="updated"),
         Column.timestamp("creation_time", sql_name="created"),
+        Column.varchar("effective_trace_archival_retention"),
     ],
-    expanders=[expanding.EXPAND_TAGS],
+    expanders=[EXPAND_TAGS],
 )

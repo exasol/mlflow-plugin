@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 from collections.abc import Iterable
 
@@ -7,6 +8,23 @@ from exasol.mlflow_plugin.rest_api.data import JsonObject
 
 LOG = logging.getLogger(__name__)
 TIMEOUT_IN_SECONDS = 5
+
+
+class RestApiError(Exception):
+    """A call to MLflow REST API returned a status_code other than 200"""
+
+    def __init__(
+        self,
+        method: str,
+        endpoint: str,
+        query: JsonObject,
+        response: requests.Response,
+    ):
+        super().__init__(
+            f"{method.upper()} request to endpoint {endpoint}"
+            f" with query {query} returned"
+            f" status code {response.status_code}: {response.reason}."
+        )
 
 
 class MLflowRestApi:
@@ -35,7 +53,10 @@ class MLflowRestApi:
                 timeout=TIMEOUT_IN_SECONDS,
                 auth=self.auth,
             )
+            if raw_response.status_code != 200:
+                raise RestApiError(self.method, self.endpoint, query, raw_response)
             resp = raw_response.json()
-            yield from resp.get(self.key, [])
+            content = resp.get(self.key, []) if self.key else resp
+            yield from [content] if isinstance(content, dict) else content
             page_token = resp.get("next_page_token")
             LOG.debug("retrieving page %s", page_token)

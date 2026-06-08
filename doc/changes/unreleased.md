@@ -6,6 +6,7 @@
 
 * #53: Added REST API calls for experiments/search (Layer 1)
 * #56: Created a UDF for the REST API endpoint `experiments/search`
+* #68: Added remaining endpoints of MLflow REST API
 
 ## Documentation
 
