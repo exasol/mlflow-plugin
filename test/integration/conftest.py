@@ -119,8 +119,8 @@ def mlflow_exa_connection(
     sql = cleandoc(f"""
         CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
             TO '{mlflow_connection.url}'
-            USER '{mlflow_connection.user}'
-            IDENTIFIED BY '{mlflow_connection.password}'
+            USER '{{"auth-type": "basic", "user": "{mlflow_connection.user}"}}'
+            IDENTIFIED BY '{{"password": "{mlflow_connection.password}"}}'
     """)
     pyexasol_connection.execute(sql)
     return mlflow_exa_connection_name

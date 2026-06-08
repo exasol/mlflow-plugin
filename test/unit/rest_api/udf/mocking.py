@@ -1,8 +1,12 @@
+import json
 from datetime import datetime
 from unittest.mock import Mock
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api.data import Column
+from exasol.mlflow_plugin.rest_api.data import (
+    Column,
+    JsonObject,
+)
 from exasol.mlflow_plugin.rest_api.udf.verification import (
     CONNECTION_NAME_PARAM,
     ExaMeta,
@@ -23,12 +27,24 @@ def exa_meta_column(column: Column) -> ExaMetaColumn:
     raise RuntimeError(f"Unexpected data_type: {column}")
 
 
-def mock_exa_object(endpoint: rest_api.Endpoint) -> Mock:
+DEFAULT_USER = {"auth-type": "basic", "user": "user"}
+DEFAULT_PASSWORD = {"password": "password"}
+
+
+def mock_exa_object(
+    endpoint: rest_api.Endpoint,
+    user: JsonObject = DEFAULT_USER,
+    password: JsonObject = DEFAULT_PASSWORD,
+) -> Mock:
     def exa_meta_columns(columns: list[Column]) -> list[ExaMetaColumn]:
         return [exa_meta_column(c) for c in columns]
 
     mock = Mock()
-    connection = Mock(address="address", user="user", password="password")
+    connection = Mock(
+        address="address",
+        user=json.dumps(user),
+        password=json.dumps(password),
+    )
     mock.get_connection.return_value = connection
 
     em_input = exa_meta_columns([CONNECTION_NAME_PARAM] + endpoint.input_columns)

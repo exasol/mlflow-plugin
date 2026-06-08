@@ -9,11 +9,7 @@ import pytest
 
 import exasol.mlflow_plugin.rest_api.udf.call as udf_call
 from exasol.mlflow_plugin import rest_api
-
-
-@pytest.fixture
-def connection_mock():
-    return Mock(address="address", user="user", password="password")
+from exasol.mlflow_plugin.rest_api.data import JsonObject
 
 
 def mock_udf_ctx(args: dict[str, Any]) -> Mock:
@@ -22,18 +18,47 @@ def mock_udf_ctx(args: dict[str, Any]) -> Mock:
     return ctx
 
 
-def test_udf_call(monkeypatch, connection_mock) -> None:
-    """
-    Verify the generic UdfCall class used by all UDFs for accessing the
-    MLflow REST API.
-    """
+@pytest.fixture
+def sample_endpoint() -> rest_api.Endpoint:
+    return rest_api.EXPERIMENTS_SEARCH
 
-    params = {
+
+@pytest.fixture
+def sample_params() -> JsonObject:
+    return {
         "filter": "filter",
         "view_type": "DELETED",
         "order_by": "name,experiment_id",
         "max_results": 20,
     }
+
+
+@pytest.fixture
+def ctx_mock(sample_params) -> Mock:
+    ctx = mock_udf_ctx(sample_params)
+    ctx.connection_name = "CCC"
+    return ctx
+
+
+@pytest.mark.parametrize("user", [
+    {}, {"auth-type": "unsupported"}
+])
+def test_unsupported_authentication(monkeypatch, sample_endpoint, ctx_mock, user) -> None:
+    """
+    Argument ``user`` contains the simulated value of the attribute
+    ``user`` of an Exasol Connection.
+    """
+    exa = mock_exa_object(sample_endpoint, user=user)
+    testee = rest_api.UdfCall(exa, sample_endpoint)
+    with pytest.raises(NotImplementedError):
+        testee.run(ctx_mock)
+
+
+def test_udf_call(monkeypatch, ctx_mock, sample_params, sample_endpoint) -> None:
+    """
+    Verify the generic UdfCall class used by all UDFs for accessing the
+    MLflow REST API.
+    """
 
     # Simulate data_stream class
     data_stream = Mock()
@@ -42,32 +67,26 @@ def test_udf_call(monkeypatch, connection_mock) -> None:
     data_stream_cls = Mock(return_value=data_stream)
     monkeypatch.setattr(udf_call, "DataStream", data_stream_cls)
 
-    # Simulate UDF ctx object
-    ctx = mock_udf_ctx(params)
-    ctx.connection_name = "CCC"
-
-    endpoint = rest_api.EXPERIMENTS_SEARCH
-
     # Mock exa object incl. the UDF's parameter declarations
-    exa_mock = mock_exa_object(endpoint)
+    exa_mock = mock_exa_object(sample_endpoint)
 
     # Instantiate a UdfCall and call its run() method, just as the UDF would do
-    testee = rest_api.UdfCall(exa_mock, endpoint)
-    testee.run(ctx)
+    testee = rest_api.UdfCall(exa_mock, sample_endpoint)
+    testee.run(ctx_mock)
 
     # Verify retrieval of exa connection
-    assert exa_mock.get_connection.call_args == call(ctx.connection_name)
+    assert exa_mock.get_connection.call_args == call(ctx_mock.connection_name)
 
     # Verify constructor
     assert data_stream_cls.call_args == call(
         base_uri="address",
         auth=("user", "password"),
-        endpoint=endpoint,
+        endpoint=sample_endpoint,
     )
 
     # Verify endpoint call
-    expected_params = params | {"order_by": ["name", "experiment_id"]}
+    expected_params = sample_params | {"order_by": ["name", "experiment_id"]}
     assert data_stream.retrieve.call_args == call(expected_params)
 
     # Verify emitted data
-    assert ctx.emit.call_args_list == [call(*cols) for cols in simulated_rows]
+    assert ctx_mock.emit.call_args_list == [call(*cols) for cols in simulated_rows]

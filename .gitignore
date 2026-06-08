@@ -163,3 +163,7 @@ itde/
 
 # Drawio Image backups
 .$*.bkp
+
+# Codex
+/.codex
+/.serena
