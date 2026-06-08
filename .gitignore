@@ -156,9 +156,14 @@ itde/
 /mlflow.db
 /basic_auth.db
 /mlartifacts
+/exasol/mlflow_plugin/_experiments
 
 # SLC building
 /.slc
 
 # Drawio Image backups
 .$*.bkp
+
+# Codex
+/.codex
+/.serena

@@ -1,5 +1,7 @@
 import os
 from collections.abc import Generator
+from dataclasses import dataclass
+from inspect import cleandoc
 from typing import Any
 from unittest import mock
 from urllib.parse import (
@@ -7,6 +9,7 @@ from urllib.parse import (
     urlunparse,
 )
 
+import pyexasol
 import pytest
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
@@ -66,11 +69,9 @@ def build_slc(use_onprem, use_saas, request) -> bool:
 
 
 @pytest.fixture(scope="session")
-def language_alias(request, build_slc):
+def language_alias(request):
     """See developer guide for details."""
-    if override := request.config.getoption("--language-alias"):
-        return override
-    return "MLFLOW" if build_slc else "PYTHON3"
+    return request.config.getoption("--language-alias") or "MLFLOW"
 
 
 @pytest.fixture(scope="session")
@@ -80,3 +81,46 @@ def slc_builder(build_slc):
         return
     with slc_build_context() as builder:
         yield builder
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection_name() -> str:
+    return "MLFLOW"
+
+
+@dataclass(frozen=True)
+class MLflowConnection:
+    url: str
+    user: str
+    password: str
+
+
+@pytest.fixture(scope="module")
+def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
+    return MLflowConnection(
+        url=f"{mlflow_tracking_uri}/api/2.0/mlflow",
+        user="admin",
+        password="password1234",
+    )
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection(
+    mlflow_connection: MLflowConnection,
+    mlflow_exa_connection_name: str,
+    pyexasol_connection: pyexasol.ExaConnection,
+) -> str:
+    """
+    Create an Exasol Connection object containing credentials to access
+    MLflow REST API.
+    """
+    name = mlflow_exa_connection_name
+
+    sql = cleandoc(f"""
+        CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
+            TO '{mlflow_connection.url}'
+            USER '{{"auth-type": "basic", "user": "{mlflow_connection.user}"}}'
+            IDENTIFIED BY '{{"password": "{mlflow_connection.password}"}}'
+    """)
+    pyexasol_connection.execute(sql)
+    return mlflow_exa_connection_name

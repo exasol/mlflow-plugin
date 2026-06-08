@@ -168,3 +168,8 @@ def non_bucketfs_model(mlflow_server) -> str:
     model = sklearn.linear_model.LogisticRegression()
     info = mlflow.sklearn.log_model(model, name="Non-BucketFS-Model")
     return info.artifact_path
+
+
+@pytest.fixture(scope="session")
+def db_schema_name() -> str:
+    return "ITEST_MLFLOW"

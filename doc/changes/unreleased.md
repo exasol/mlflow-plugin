@@ -5,6 +5,7 @@
 ## Features
 
 * #53: Added REST API calls for experiments/search (Layer 1)
+* #56: Created a UDF for the REST API endpoint `experiments/search`
 
 ## Documentation
 

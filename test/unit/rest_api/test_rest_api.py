@@ -16,7 +16,7 @@ ANSWERS = [
 
 @pytest.fixture
 def endpoint() -> rest_api.MLflowRestApi:
-    return rest_api.MLflowRestApi("endpoint", KEY)
+    return rest_api.MLflowRestApi("post", "endpoint", KEY, None)
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def mock_requests(monkeypatch) -> Callable[[str, list[JsonObject]], Mock]:
 
 
 def test_paging(endpoint, mock_requests) -> None:
-    mock = mock_requests("post", ANSWERS)
+    mock = mock_requests("request", ANSWERS)
     actual = list(endpoint.call({}))
     assert mock.call_count == 2
     assert actual == list("abcd")
