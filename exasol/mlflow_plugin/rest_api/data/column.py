@@ -14,7 +14,7 @@ def timestamp_to_datetime(seconds_since_epoc: int) -> datetime:
     milliseconds since the UNIX, see
     https://mlflow.org/docs/latest/api_reference/rest-api.html.
 
-    The Unix epoc is defined to use UTC. Still, we omit the timezone info to
+    The Unix epoch is defined to use UTC. Still, we omit the timezone info to
     avoid the database to fail with a parsing error on suffix "+00:00".
 
     Sonar warning python:S6903 is therefore ignored:
