@@ -12,8 +12,8 @@ server or when creating an MLflow *experiment*.
     :scale: 130 %
 
 
-As Default Artifact Repository
-------------------------------
+As Default Artifact Store
+-------------------------
 
 The following command line starts an MLflow server with the BucketFS as the
 default artifact store:
