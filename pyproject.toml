@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "exasol-bucketfs (>=2.1.0,<3.0.0)",
-    "mlflow (>=3.8.1, <4)",
+    "mlflow[auth] (>=3.8.1, <4)",
     "mlflow-skinny (<3.12)",
 ]
 

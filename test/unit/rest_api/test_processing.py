@@ -1,5 +1,7 @@
-from exasol.mlflow_plugin.rest_api.column import Column
-from exasol.mlflow_plugin.rest_api.data import JsonObject
+from exasol.mlflow_plugin.rest_api.data import (
+    Column,
+    JsonObject,
+)
 from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 from exasol.mlflow_plugin.rest_api.processing import PostProcessor
 
