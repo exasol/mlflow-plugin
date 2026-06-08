@@ -39,4 +39,4 @@ Install the virtual schema, see the resp. User Guide for
 After that you can inspect the virtual schema in your SQL Editor,
 e.g. DbVisualizer:
 
-.. image:: img/virtual-schema.png
+.. image:: virtual-schema.png

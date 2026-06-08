@@ -7,7 +7,7 @@ LLM APIs.
 The following figure shows the basic system setup for accessing an MLflow AI
 Gateway endpoint from within a UDF:
 
-.. image:: img/ai-gateway/system-setup.svg
+.. image:: system-setup.svg
     :scale: 140 %
 
 In order to use such a setup, you need to

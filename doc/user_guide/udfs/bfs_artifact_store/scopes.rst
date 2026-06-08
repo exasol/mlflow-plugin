@@ -1,16 +1,5 @@
 .. _starting the MLflow server:
 
-Using the BucketFS Artifact Store
-=================================
-
-See the `MLflow documentation
-<https://mlflow.org/docs/latest/self-hosting/architecture/artifact-store/#setting-a-default-artifact-location-for-logging>`_
-for specifying the BucketFS Artifact Store either when starting the MLflow
-server or when creating an MLflow *experiment*.
-
-.. image:: img/enabling-bucketfs-artifact-store.svg
-    :scale: 130 %
-
 
 As Default Artifact Store
 -------------------------
@@ -38,8 +27,8 @@ In the Scope of an Individual MLflow Experiment
 If you cannot change the startup options of your MLflow server, then you still
 can use the BucketFS Artifact Store for individual MLflow *experiments*.
 
-:ref:`create_mlflow_experiment` describes how to create an MLflow experiment
-via UI, CLI, and API.
+:ref:`bucketfs_experiment` describes how to store MLflow experiment artifacts
+in BucketFS.
 
 As soon as such an experiment exists, you can use it via MLflow API function
 ``set_experiment()`` providing the name or the ID of the experiment as

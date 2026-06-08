@@ -37,7 +37,7 @@ accessing the MLflow REST API from Exasol.
         Frequently asked questions.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :hidden:
 
    features/index

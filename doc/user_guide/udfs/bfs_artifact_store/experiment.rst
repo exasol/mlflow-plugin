@@ -1,7 +1,7 @@
-.. _create_mlflow_experiment:
+.. _bucketfs_experiment:
 
-Creating an MLflow Experiment
-=============================
+Storing MLFlow Experiment Artifacts in BucketFS
+===============================================
 
 MLflow allows creating experiments via UI, CLI, and API.
 
@@ -17,7 +17,7 @@ Via UI
 Open the UI of your Mlflow server, click "Experiments" in the left hand menu,
 and blue button "Create" on the upper right:
 
-.. image:: img/create-experiment-ui.png
+.. image:: create-experiment-ui.png
     :scale: 40 %
     :class: with-border
 
