@@ -40,8 +40,9 @@ file system, that can be passed to one of the ``load_model()`` functions of
 the MLflow API, e.g. ``mlflow.models.Model.load()`` or
 ``mlflow.sklearn.load_model()``.
 
-Otherwise the function will return the original URI without changes, for
-loading the model via the MLflow server which can be significantly slower.
+Otherwise the function will return the original URI without changes.  In this
+case, the model will be loaded via the MLflow server which can be
+significantly slower.
 
 Function ``load_model_with_fallback()``
 +++++++++++++++++++++++++++++++++++++++
