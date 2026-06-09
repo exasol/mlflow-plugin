@@ -4,8 +4,8 @@ Creating and Running UDFs
 Creating the UDF
 ++++++++++++++++
 
-After having built, deployed, and activated your SLC, you can use Exasol SQL
-to define a UDF like this:
+After having :ref:`built, deployed, and activated your SLC <install_slc>`, you
+can use Exasol SQL to define a UDF like this:
 
 .. literalinclude:: ../../../test/integration/with_mlflow_server/test_udfs.py
   :caption: Sample UDF loading an MLflow model using function

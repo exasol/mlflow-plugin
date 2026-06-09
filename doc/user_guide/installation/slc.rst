@@ -1,3 +1,5 @@
+.. _install_slc:
+
 Using a Script Language Container
 =================================
 
