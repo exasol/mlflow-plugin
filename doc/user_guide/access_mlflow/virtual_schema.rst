@@ -1,5 +1,5 @@
-Accessing the MLflow Backend Store Via an Exasol Virtual Schema
-===============================================================
+Backend Store Via Virtual Schema
+================================
 
 .. _virtual_schema: https://docs.exasol.com/db/latest/database_concepts/virtual_schemas.htm
 .. _vs_dialects: https://github.com/exasol/virtual-schemas/blob/main/doc/user_guide/dialects.md
@@ -26,7 +26,7 @@ the MLflow Backend Store:
     Please note that the approach described here bypasses MLflow access
     control and permissions.
 
-    This approach is therefore should be used with caution.
+    This approach should, therefore, be used with caution.
 
 Instructions
 ------------
@@ -39,4 +39,4 @@ Install the virtual schema, see the resp. User Guide for
 After that you can inspect the virtual schema in your SQL Editor,
 e.g. DbVisualizer:
 
-.. image:: img/virtual-schema.png
+.. image:: virtual-schema.png
