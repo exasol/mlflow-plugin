@@ -26,7 +26,7 @@ the MLflow Backend Store:
     Please note that the approach described here bypasses MLflow access
     control and permissions.
 
-    This approach should therefore be used with caution.
+    This approach should, therefore, be used with caution.
 
 Instructions
 ------------

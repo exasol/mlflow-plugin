@@ -28,7 +28,7 @@ following table:
 
 When you cannot guarantee the model to be accessible in the local file system
 of the UDF, some **utility functions** will help you to automatically choose
-the fastest loading option, see the examples in the following sections for
+the fastest loading option. See the examples in the following sections for
 details.
 
 MLflow Tracking URI

@@ -53,7 +53,7 @@ Python example actually only uses the REST API via python library `requests
    https://mlflow.org/docs/latest/genai/governance/ai-gateway/endpoints/query-endpoints/#mlflow-invocations-api
 .. _requests: https://pypi.org/project/requests/
 
-Accessing an AI Gateway Endpoints From Within a UDF
+Accessing AI Gateway Endpoints From Within a UDF
 ---------------------------------------------------
 
 Creating an Exasol Connection

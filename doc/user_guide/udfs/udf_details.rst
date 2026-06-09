@@ -21,7 +21,7 @@ to define a UDF like this:
 Running the UDF
 +++++++++++++++
 
-Now you can run the UDF via the following SQL statement
+Now, you can run the UDF via the following SQL statement
 
 .. code-block:: sql
 
