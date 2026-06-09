@@ -3,7 +3,7 @@
 BucketFS Artifact Store
 =======================
 
-This MLflow Plugin allows using the **Exasol Bucket File System** (BucketFS)
+Exasol MLflow Plugin allows using the **Exasol Bucket File System** (BucketFS)
 as an *MLflow Artifact Store*.
 
 `BucketFS

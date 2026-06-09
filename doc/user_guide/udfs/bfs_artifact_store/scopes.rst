@@ -1,6 +1,5 @@
 .. _starting the MLflow server:
 
-
 As Default Artifact Store
 -------------------------
 

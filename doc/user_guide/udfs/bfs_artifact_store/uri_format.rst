@@ -3,7 +3,8 @@
 URI Format of Artifact URIs
 ===========================
 
-The plugin requires that artifact URIs be specified in the following format:
+Using the BucketFS as artifact store requires artifact URIs to be specified in
+the following format:
 
 .. code-block:: shell
 

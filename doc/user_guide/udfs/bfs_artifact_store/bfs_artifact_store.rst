@@ -11,8 +11,12 @@ server or when creating an MLflow *experiment*.
     :scale: 130 %
 
 .. toctree::
+   :maxdepth: 2
+
    scopes
    experiment
    uri_format
    plugin_availability
+
+
 

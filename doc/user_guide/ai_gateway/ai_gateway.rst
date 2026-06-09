@@ -22,8 +22,8 @@ In order to use such a setup, you need to
 
 .. _access_ai_gateway:
 
-Accessing an AI Gateway From Python
------------------------------------
+Accessing an AI Gateway Endpoint From Python
+--------------------------------------------
 
 The MLflow documentation on `MLflow Invocations API
 <mlflow-invocations-api_>`_ contains examples for cURL and Python, while the
@@ -53,8 +53,8 @@ Python example actually only uses the REST API via python library `requests
    https://mlflow.org/docs/latest/genai/governance/ai-gateway/endpoints/query-endpoints/#mlflow-invocations-api
 .. _requests: https://pypi.org/project/requests/
 
-Accessing an AI Gateway From Within a UDF
------------------------------------------
+Accessing an AI Gateway Endpoints From Within a UDF
+---------------------------------------------------
 
 Creating an Exasol Connection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

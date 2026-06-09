@@ -1,5 +1,5 @@
-Accesssing Models in UDFs
-=========================
+Accessing Models in UDFs
+========================
 
 Using the Exasol MLflow Plugin significantly speeds up loading MLflow models
 in Exasol `UDFs
