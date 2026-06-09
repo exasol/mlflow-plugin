@@ -1,2 +1,4 @@
-Accessing the MLflow REST API
-=============================
+.. _rest_api:
+
+REST API UDFs
+=============

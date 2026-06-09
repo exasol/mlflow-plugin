@@ -1,5 +1,5 @@
-Accessing the MLflow Backend Store Via an Exasol Virtual Schema
-===============================================================
+Backend Store Via Virtual Schema
+================================
 
 .. _virtual_schema: https://docs.exasol.com/db/latest/database_concepts/virtual_schemas.htm
 .. _vs_dialects: https://github.com/exasol/virtual-schemas/blob/main/doc/user_guide/dialects.md
