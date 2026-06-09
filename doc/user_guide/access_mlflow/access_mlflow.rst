@@ -1,8 +1,7 @@
 Accessing the MLflow Server
 ===========================
 
-MLflow has various components, stores, and APIs.  The Exasol MLflow Plugin
-allows to access two of them.
+The MLflow server stores information about experiments, runs, models, endpoints, etc. This section describes two methods how to access these information.
 
 .. list-table::
     :header-rows: 1
@@ -10,7 +9,7 @@ allows to access two of them.
     * - MLflow Component
       - Supported Access
     * - MLflow REST API
-      - From within UDFs presenting the results as SQL tables.
+      - Via UDFs
     * - MLflow Backend Tracking Store
       - Via an Exasol Virtual Schema
 

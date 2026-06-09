@@ -1,7 +1,7 @@
 Using a Script Language Container
 =================================
 
-Loading MLflow models in a UDF requires the installation of the Exasol MLflow
+Loading MLflow models in a UDF or using the REST API UDFs requires the installation of the Exasol MLflow
 Plugin and its dependencies into the Exasol Database.  This is done by
 creating a dedicated `Script Language Container (SLC)
 <https://github.com/exasol/script-languages-release>`_ for running the UDF.
