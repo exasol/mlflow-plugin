@@ -11,6 +11,7 @@
 
 * #43: Added overview images to the User Guide
 * #59: Added documentation for Virtual Schema Access to the MLflow database
+* #61: Added documentation for accessing MLflow AI Gateways from UDFs
 
 ## Security
 
