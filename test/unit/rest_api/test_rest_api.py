@@ -25,6 +25,7 @@ def mock_requests(monkeypatch) -> Callable[[str, list[JsonObject]], Mock]:
         def response(value):
             response = Mock()
             response.json.return_value = value
+            response.status_code = 200
             return response
 
         post = Mock()

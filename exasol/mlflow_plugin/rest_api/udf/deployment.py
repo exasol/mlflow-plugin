@@ -66,7 +66,17 @@ class Deployable:
 
 
 ALL_ENDPOINTS = [
+    rest_api.ARTIFACTS_LIST,
     rest_api.EXPERIMENTS_SEARCH,
+    rest_api.GATEWAY_ENDPOINTS_LIST,
+    rest_api.GATEWAY_MODEL_DEFINITIONS_LIST,
+    rest_api.MODEL_VERSIONS_GET,
+    rest_api.MODEL_VERSIONS_GET_DOWNLOAD_URI,
+    rest_api.MODEL_VERSIONS_SEARCH,
+    rest_api.REGISTERED_MODEL_GET,
+    rest_api.REGISTERED_MODELS_SEARCH,
+    rest_api.REGISTERED_MODELS_GET_LATEST_VERSIONS,
+    rest_api.RUNS_SEARCH,
 ]
 
 

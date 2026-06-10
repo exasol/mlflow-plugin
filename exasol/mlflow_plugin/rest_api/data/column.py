@@ -65,7 +65,9 @@ class Column:
         return f'"{self.sql_name}" {self.sql_type}'
 
     def process(self, value: Any) -> Any:
-        return value if self.data_type != datetime else timestamp_to_datetime(value)
+        if value and self.data_type == datetime:
+            return timestamp_to_datetime(value)
+        return value
 
     def __repr__(self) -> str:
         atts = ", ".join(
@@ -94,8 +96,14 @@ class Column:
         return cls(name, 3, sql_name=sql_name, data_type=datetime)
 
     @classmethod
-    def decimal(cls, name: str, precision: int = 18, sql_name: str = "") -> Column:
-        return cls(name, size=precision, sql_name=sql_name, data_type=int)
+    def decimal(
+        cls,
+        name: str,
+        precision: int = 18,
+        sql_name: str = "",
+        key: str = "",
+    ) -> Column:
+        return cls(name, size=precision, sql_name=sql_name, data_type=int, key=key)
 
     @classmethod
     def varchar(

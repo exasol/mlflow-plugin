@@ -12,11 +12,14 @@ from datetime import (
     datetime,
     timedelta,
 )
+from inspect import cleandoc
 from subprocess import PIPE
+from test.integration.with_mlflow_server.mlflow_connection import MLflowConnection
 from typing import IO
 from urllib.parse import urlsplit
 
 import mlflow
+import pyexasol
 import pytest
 import sklearn
 from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
@@ -173,3 +176,39 @@ def non_bucketfs_model(mlflow_server) -> str:
 @pytest.fixture(scope="session")
 def db_schema_name() -> str:
     return "ITEST_MLFLOW"
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection_name() -> str:
+    return "MLFLOW"
+
+
+@pytest.fixture(scope="module")
+def mlflow_connection(mlflow_tracking_uri) -> MLflowConnection:
+    return MLflowConnection(
+        url=mlflow_tracking_uri,
+        user="admin",
+        password="password1234",
+    )
+
+
+@pytest.fixture(scope="module")
+def mlflow_exa_connection(
+    mlflow_connection: MLflowConnection,
+    mlflow_exa_connection_name: str,
+    pyexasol_connection: pyexasol.ExaConnection,
+) -> str:
+    """
+    Create an Exasol Connection object containing credentials to access
+    MLflow REST API.
+    """
+    name = mlflow_exa_connection_name
+
+    sql = cleandoc(f"""
+        CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
+            TO '{mlflow_connection.url}'
+            USER '{{"auth-type": "basic", "user": "{mlflow_connection.user}"}}'
+            IDENTIFIED BY '{{"password": "{mlflow_connection.password}"}}'
+    """)
+    pyexasol_connection.execute(sql)
+    return mlflow_exa_connection_name

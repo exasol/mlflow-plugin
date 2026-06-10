@@ -22,7 +22,7 @@ class DataStream:
     ):
         self._api = MLflowRestApi(
             endpoint.method,
-            f"{base_uri}/{endpoint.url_suffix}",
+            f"{base_uri}/{endpoint.url}",
             key=endpoint.output_key,
             auth=auth,
         )
