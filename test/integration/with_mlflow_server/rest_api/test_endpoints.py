@@ -1,19 +1,13 @@
 import os
 from dataclasses import dataclass
-from test.integration.with_mlflow_server.mlflow_connection import MLflowConnection
 from test.integration.with_mlflow_server.rest_api.gateway_rest_api import GatewayRestApi
-from typing import Callable
 
 import mlflow
 import pytest
-import requests
-from _pytest.monkeypatch import MonkeyPatch
 from sklearn.linear_model import LogisticRegression
 
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api import Endpoint
-from exasol.mlflow_plugin.rest_api.data import JsonObject
-from exasol.mlflow_plugin.rest_api.rest_api import RestApiError
 from exasol.mlflow_plugin.rest_api.streaming import DataStream
 
 
