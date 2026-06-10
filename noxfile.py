@@ -55,9 +55,10 @@ def docs_update_udfs(session: nox.Session):
         for ep in ALL_ENDPOINTS:
             args = ", ".join(col.name for col in ep.input_columns)
             input_columns = [(c.sql_name, c.sql_type) for c in ep.input_columns]
-            output_columns = [(c.sql_name, c.sql_type) for c in ep.output_columns]
+            output_columns = [(c.sql_name, c.sql_type) for c in ep.total_output_columns]
             result = template.render(
                 udf_name=ep.var_name,
+                underline="-" * (len(ep.var_name) + 8),
                 udf_args=args,
                 endpoint=ep.url_suffix,
                 anchor=ANCHORS[ep.url_suffix],
