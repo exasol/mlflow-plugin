@@ -27,10 +27,10 @@ def sample_data(request, mlflow_server):
 
 
 @pytest.fixture
-def experiments_search(mlflow_server, sample_data) -> DataStream:
+def experiments_search(mlflow_connection, sample_data) -> DataStream:
     return DataStream(
-        base_uri=mlflow_server,
-        auth=("admin", "password1234"),
+        base_uri=mlflow_connection.url,
+        auth=mlflow_connection.auth,
         endpoint=EXPERIMENTS_SEARCH,
     )
 

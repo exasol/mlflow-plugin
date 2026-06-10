@@ -21,10 +21,12 @@ class RestApiError(Exception):
         query: JsonObject,
         response: requests.Response,
     ):
+        jd = response.json()
         super().__init__(
             f"{method.upper()} request to endpoint {endpoint}"
             f" with query {query} returned"
             f" status code {response.status_code}: {response.reason}."
+            f' Error: {jd.get("error_code")}: {jd.get("message")}.'
         )
 
 
