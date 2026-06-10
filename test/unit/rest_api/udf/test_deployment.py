@@ -9,6 +9,7 @@ import pytest
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.udf.deployment import (
+    ALL_ENDPOINTS,
     Deployable,
     deploy_all,
 )
@@ -54,5 +55,6 @@ def test_deploy_all():
     mock = Mock()
     deploy_all(*args, pyexasol_connection=mock)
 
-    udf = Deployable(*args, rest_api.EXPERIMENTS_SEARCH)
-    assert mock.execute.call_args == call(udf.sql)
+    udfs = (Deployable(*args, e) for e in ALL_ENDPOINTS)
+    calls = [call(u.sql) for u in udfs]
+    assert mock.execute.call_args_list == calls
