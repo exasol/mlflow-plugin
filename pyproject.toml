@@ -41,6 +41,7 @@ dev = [
     "exasol-python-extension-common>= 0.12.1",
     "pytest-exasol-slc>= 0.4.3",
     # pyexasol = "^2.0.0, <3" # requires pec to update dependency first
+    "jinja2 (>=3.1.6,<4.0.0)"
 ]
 
 [tool.poetry.requires-plugins]

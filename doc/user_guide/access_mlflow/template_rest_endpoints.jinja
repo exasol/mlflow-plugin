@@ -1,0 +1,41 @@
+UDF ``{{udf_name}}``
+--------------------------
+
+Calls MLflow REST API endpoint `{{endpoint}} <https://mlflow.org/docs/latest/api_reference/rest-api.html#{{anchor}}>`_.
+
+Sample Call
+^^^^^^^^^^^
+
+.. code-block:: sql
+
+    SELECT {{udf_name}}(
+        connection_name, {{udf_args}}
+    );
+
+Input Columns
+^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50
+
+   * - Name
+     - SQL Type
+   {%- for item in input_columns %}
+   * - ``{{item[0]}}``
+     - ``{{item[1]}}``
+   {%- endfor %}
+
+Output Columns
+^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50
+
+   * - Name
+     - SQL Type
+   {%- for item in output_columns %}
+   * - ``{{item[0]}}``
+     - ``{{item[1]}}``
+   {%- endfor %}

@@ -65,12 +65,16 @@ class Deployable:
         return pyexasol_connection.execute(self.sql)
 
 
+ALL_ENDPOINTS = [
+    rest_api.EXPERIMENTS_SEARCH,
+]
+
+
 def deploy_all(
     language_alias: str,
     db_schema: str,
     pyexasol_connection: ExaConnection,
 ) -> None:
-    ENDPOINTS = [rest_api.EXPERIMENTS_SEARCH]
-    for endpoint in ENDPOINTS:
+    for endpoint in ALL_ENDPOINTS:
         udf = Deployable(language_alias, db_schema, endpoint)
         udf.deploy(pyexasol_connection)
