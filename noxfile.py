@@ -6,15 +6,12 @@ from exasol.toolbox.nox.tasks import *
 
 from exasol.mlflow_plugin.rest_api.udf.deployment import (
     ALL_ENDPOINTS,
-    Deployable,
 )
 from exasol.mlflow_plugin.slc import slc_build_context
 
 # default actions to be run if nothing is explicitly specified with the -s option
 nox.options.sessions = ["format:fix"]
 
-from inspect import cleandoc
-from pathlib import Path
 
 from noxconfig import PROJECT_CONFIG
 
@@ -27,6 +24,7 @@ def slc_export(session: nox.Session):
     export_path = PROJECT_CONFIG.root_path / ".slc"
     with slc_build_context() as builder:
         builder.export(export_path)
+
 
 ANCHORS = {
     "experiments/search": "search-experiments",
@@ -41,6 +39,7 @@ ANCHORS = {
     "gateway/model-definitions/list": "list-gateway-model-definitions",
     "artifacts": "mlflowartifactsmlflowartifactsservicelistartifacts",
 }
+
 
 @nox.session(name="docs:udfs", python=False)
 def docs_update_udfs(session: nox.Session):
