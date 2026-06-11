@@ -14,6 +14,7 @@
 * #59: Added documentation for Virtual Schema Access to the MLflow database
 * #61: Added documentation for accessing MLflow AI Gateway endpoints from UDFs
 * #70: Reorganized documentation structure
+* #72: Added documentation for the REST API UDFs
 
 ## Security
 

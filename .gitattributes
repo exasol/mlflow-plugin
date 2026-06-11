@@ -15,3 +15,4 @@ doc/changes/changelog.md                   linguist-generated
 /.github/workflows/periodic-validation.yml linguist-generated
 /.github/workflows/pr-merge.yml            linguist-generated
 /.github/workflows/report.yml              linguist-generated
+/doc/user_guide/access_mlflow/rest_endpoints.rst linguist-generated
