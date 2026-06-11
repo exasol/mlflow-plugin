@@ -1,7 +1,7 @@
 Accessing the MLflow Server
 ===========================
 
-The MLflow server stores information about experiments, runs, models, endpoints, etc. This section describes two methods how to access these information.
+The MLflow server stores information about experiments, runs, models, endpoints, etc. This section describes two ways to access this information.
 
 .. list-table::
     :header-rows: 1
@@ -13,7 +13,7 @@ The MLflow server stores information about experiments, runs, models, endpoints,
     * - MLflow Backend Tracking Store
       - Via an Exasol Virtual Schema
 
-Read about the details in the following sections
+Read the details in the following sections.
 
 .. toctree::
 

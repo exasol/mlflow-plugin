@@ -27,8 +27,8 @@ Accessing an AI Gateway Endpoint From Python
 
 The MLflow documentation on `MLflow Invocations API
 <mlflow-invocations-api_>`_ contains examples for cURL and Python, while the
-Python example actually only uses the REST API via python library `requests
-<requests_>`_.
+Python example actually only uses the REST API via the Python library
+`requests <requests_>`_.
 
 .. code-block:: python
 
@@ -59,13 +59,13 @@ Accessing AI Gateway Endpoints From Within a UDF
 Creating an Exasol Connection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For accessing an MLflow AI Gateway endpoint from within a UDF you should store
-the MLflow tracking URI in an `Exasol Connection <exa_connection_>`_. The
+To access an MLflow AI Gateway endpoint from within a UDF, store the MLflow
+tracking URI in an `Exasol Connection <exa_connection_>`_. The
 Connection can also hold the authentication credentials for the MLflow server
 which is usually required and recommended for production setups.
 
-Here is an example for creating such a *Connection* for a basic authentication
-with user name and password, see the `MLflow documentation <mlflow_auth_>`_
+Here is an example for creating such a *Connection* for basic authentication
+with username and password. See the `MLflow documentation <mlflow_auth_>`_
 for other authentication variants.
 
 .. code-block:: SQL
@@ -118,7 +118,7 @@ from the connection object and call the function
     SELECT ASK_AI('What is the capital of Germany? (Keep it short)');
 
 
-For more details please see Exasol's documentation on `Python UDFs
+For more details, please see Exasol's documentation on `Python UDFs
 <python_udfs_>`_ and `UDFs in general <udfs_>`_.
 
 .. _udfs:

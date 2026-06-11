@@ -2,7 +2,7 @@ Exasol MLflow Plugin
 ====================
 
 The Exasol MLflow Plugin supports using the open source AI engineering
-platform `MLFlow <https://mlflow.org>`_ with Exasol.
+platform `MLflow <https://mlflow.org>`_ with Exasol.
 
 This plugin enables using the Exasol BucketFS as *MLflow Artifact Store* and
 accessing the MLflow REST API from Exasol.
@@ -22,13 +22,13 @@ accessing the MLflow REST API from Exasol.
         :link: user_guide
         :link-type: ref
 
-        Resource for users to understand how to utilize this project and its features.
+        Resource for users to understand how to use this project and its features.
 
     .. grid-item-card:: :octicon:`tools` Developer Guide
         :link: developer_guide
         :link-type: ref
 
-        Instructions and best practices to help developers contributing to the project and setting up their development environment.
+        Instructions and best practices to help developers contribute to the project and set up their development environment.
 
     .. grid-item-card:: :octicon:`question` FAQ
         :link: faq
