@@ -1,6 +1,6 @@
 [project]
 name = "exasol-mlflow-plugin"
-version = "1.1.0"
+version = "1.2.0"
 description = "Plugin for MLflow supporting artifact repository Exasol BucketFS"
 authors = [{ name = "Exasol AG", email = "christoph.kuhnke@exasol.com" }]
 requires-python = ">=3.10,<3.14"
