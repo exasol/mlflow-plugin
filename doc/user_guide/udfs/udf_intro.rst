@@ -19,7 +19,7 @@ following table:
    * - Speed
      - **Fastest option**
      - Significantly slower
-   * - Supported Artifacts Stores
+   * - Supported Artifact Stores
      - Only BucketFS
      - Arbitrary, incl. BucketFS
    * - Setting the MLflow Tracking URI
@@ -34,10 +34,10 @@ details.
 MLflow Tracking URI
 -------------------
 
-In all cases (potentially) accessing the MLflow server, the UDF needs to set
-the MLflow Tracking URI. This can be done, by:
+In all cases where the UDF may access the MLflow server, it needs to set the
+MLflow Tracking URI. This can be done by:
 
-* Setting environment variable ``MLFLOW_TRACKING_URI`` or
+* Setting the environment variable ``MLFLOW_TRACKING_URI`` or
 * Calling ``mlflow.set_tracking_uri()`` within the UDF implementation.
 
 Depending on the environment your Exasol instance is running in, the

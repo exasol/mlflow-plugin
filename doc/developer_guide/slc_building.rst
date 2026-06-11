@@ -3,7 +3,7 @@ Building the SLC Image
 
 The following command builds an SLC image containing the implementation of the
 Exasol MLflow Plugin and all its dependencies and stores the image in
-directory ``.slc``.
+the directory ``.slc``.
 
 .. code-block:: shell
 
@@ -18,7 +18,7 @@ You can use ``curl`` and follow the instructions on `docs.exasol.com
 for uploading the SLC to the BucketFS and activating the script language with
 a language alias.
 
-However, it is much simpler, running an :ref:`integration test
+However, it is much simpler to run an :ref:`integration test
 <slc_interaction>`. You can check the activated scripts in system table
 `EXA_PARAMETERS <https://docs.exasol.com/db/latest/sql/alter_session.htm>`_:
 

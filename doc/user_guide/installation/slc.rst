@@ -14,7 +14,7 @@ SLC. See also
 
 * The MLflow documentation on `dependencies in general
   <mlflow_dependencies_general_>`_
-* An overview about `MLflow optional dependencies
+* An overview of `MLflow optional dependencies
   <mlflow_extras_overview_>`_ (aka. "Extras")
 * The entire `list of MLflow extras <mlflow_extra-ml-requirements_>`_
 
