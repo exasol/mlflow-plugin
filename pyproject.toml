@@ -36,7 +36,7 @@ packages = [
 
 [dependency-groups]
 dev = [
-    "exasol-toolbox>=6",
+    "exasol-toolbox>=8.2.0,<9",
     "pytest-exasol-backend>=1.2.4, <2.0.0",
     "exasol-python-extension-common>= 0.12.1",
     "pytest-exasol-slc>= 0.4.3",
@@ -107,5 +107,4 @@ unfixable = []
 projectKey = "com.exasol:mlflow-plugin"
 host.url = "https://sonarcloud.io"
 organization = "exasol"
-exclusions = "exasol/mlflow_plugin/version.py"
 projectName = "mlflow-plugin"

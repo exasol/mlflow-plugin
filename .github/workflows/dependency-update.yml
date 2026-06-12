@@ -1,3 +1,5 @@
+# Generated and maintained by the exasol-toolbox.
+# Last generated with exasol-toolbox version 8.2.0.
 name: Dependency Update
 
 on:
@@ -19,15 +21,17 @@ jobs:
         id: check-out-repository
         uses: actions/checkout@v6
         with:
+          persist-credentials: true
           fetch-depth: 0
 
       - name: Fail if not running on the default branch
         id: check-branch
         if: github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: actions/github-script@v8
-        with:
-          script: |
-            core.setFailed('Not running on the default branch. github.ref is ${{ github.ref }}')
+        env:
+          CURRENT_BRANCH: ${{ github.ref }}
+        run: |
+          echo "Not running on the default branch. Current ref is: $CURRENT_BRANCH"
+          exit 1
 
       - name: Set up Python & Poetry Environment
         id: set-up-python-and-poetry-environment
@@ -39,7 +43,14 @@ jobs:
       - name: Audit Dependencies
         id: audit-dependencies
         run: |
-          poetry run -- nox -s dependency:audit | tee vulnerabilities.json
+          set -o pipefail
+          poetry self add poetry-plugin-export
+          # Pipeline purpose:
+          # - `2>&1`: merge stdout and stderr into one stream.
+          # - `tee /dev/stderr`: mirror the combined output back to stderr so it stays visible in the logs.
+          # - `sed -n '/^\[/,$p'`: keep only the JSON payload and write it to vulnerabilities.json.
+          # With `set -o pipefail`, any failure in the pipeline still fails this step and turns the workflow red.
+          poetry run -- nox -s dependency:audit 2>&1 | tee /dev/stderr | sed -n '/^\[/,$p' > vulnerabilities.json
           LENGTH=$(jq 'length' vulnerabilities.json)
           echo "count=$LENGTH" >> "$GITHUB_OUTPUT"
 
