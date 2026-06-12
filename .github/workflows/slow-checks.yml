@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: SCM Checkout
         uses: actions/checkout@v6
-        persist-credentials: false
+        with:
+          persist-credentials: false
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.0
