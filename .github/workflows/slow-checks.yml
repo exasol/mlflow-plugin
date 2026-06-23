@@ -17,21 +17,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@v1.3.0
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          large-packages: true
-          docker-images: true
-          swap-storage: false
+      - name: Free Disk Space
+        run: |
+         sudo rm -rf /usr/local/lib/android
+         sudo rm -rf /usr/share/dotnet
 
       - name: Allow unprivileged user namespaces
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v8
+        uses: exasol/python-toolbox/.github/actions/python-environment@v10
         with:
           python-version: "3.10"
           poetry-version: "2.3.0"
