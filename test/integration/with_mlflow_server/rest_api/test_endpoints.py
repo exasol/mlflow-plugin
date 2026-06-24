@@ -139,7 +139,7 @@ def test_model_versions_get_download_uri_and_artifacts(mlflow_connection, sample
     path = uri.replace("mlflow-artifacts:/", "")
     params = {"path": path}
     rows = stream.retrieve(params)
-    assert "model.pkl" in (r[0] for r in rows)
+    assert "model.skops" in (r[0] for r in rows)
 
 
 def test_list_gateway_model_definitions(sample_data, mlflow_connection) -> None:
