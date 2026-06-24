@@ -51,7 +51,7 @@ def test_log_model(connector, logged_sample_model):
     expected = {
         "conda.yaml",
         "python_env.yaml",
-        "model.pkl",
+        "model.skops",
         "MLmodel",
         "requirements.txt",
     }

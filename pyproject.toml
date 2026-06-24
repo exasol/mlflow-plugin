@@ -20,7 +20,7 @@ classifiers = [
 dependencies = [
     "exasol-bucketfs (>=2.1.0,<3.0.0)",
     "mlflow[auth] (>=3.8.1, <4)",
-    "mlflow-skinny (<3.12)",
+    "mlflow-skinny (>=3.12,<4)",
 ]
 
 [tool.poetry]
@@ -36,7 +36,7 @@ packages = [
 
 [dependency-groups]
 dev = [
-    "exasol-toolbox>=8.2.0,<9",
+    "exasol-toolbox>=10.0.0,<11",
     "pytest-exasol-backend>=1.2.4, <2.0.0",
     "exasol-python-extension-common>= 0.12.1",
     "pytest-exasol-slc>= 0.4.3",
