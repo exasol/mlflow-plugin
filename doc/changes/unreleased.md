@@ -2,6 +2,10 @@
 
 ## Summary
 
+## Features
+
+* #84: Render `Column` as Json as required for Virtual Schema API
+
 ## Refactoring
 
 * #77: Updated workflows to `exasol-toolbox` 8.2.0
