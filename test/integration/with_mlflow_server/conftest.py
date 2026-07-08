@@ -174,8 +174,8 @@ def non_bucketfs_model(mlflow_server) -> str:
 
 
 @pytest.fixture(scope="session")
-def db_schema_name() -> str:
-    return "ITEST_MLFLOW"
+def db_schema_name(request) -> str:
+    return request.config.getoption("--db-schema") or "ITEST_MLFLOW"
 
 
 @pytest.fixture(scope="module")
