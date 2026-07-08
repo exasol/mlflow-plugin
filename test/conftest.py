@@ -16,7 +16,13 @@ def pytest_addoption(parser):
         "--language-alias",
         type=str,
         help=(
-            "Can be set to override the default. The default is MLFLOW or "
-            "PYTHON3 when CLI option --skip-slc is specified."
+            "Can be set to override the default. The default is MLFLOW."
+        ),
+    )
+    parser.addoption(
+        "--db-schema",
+        type=str,
+        help=(
+            "Can be set to override the default. The default is ITEST_MLFLOW."
         ),
     )
