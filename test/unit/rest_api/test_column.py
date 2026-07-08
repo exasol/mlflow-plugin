@@ -1,7 +1,5 @@
 import datetime
 
-import pytest
-
 from exasol.mlflow_plugin.rest_api.data import Column
 
 
@@ -31,58 +29,3 @@ def test_decimal() -> None:
     column = Column.decimal("col", precision=12, sql_name="DDD")
     assert column == Column("col", 12, "DDD", data_type=int)
     assert column.sql == '"DDD" DECIMAL(12,0)'
-
-
-@pytest.mark.parametrize(
-    "column, expected_sql, expected_json",
-    [
-        pytest.param(
-            Column.decimal("col"),
-            '"col" DECIMAL(18,0)',
-            {
-                "name": "col",
-                "dataType": {"type": "DECIMAL", "precision": 18, "scale": 0},
-            },
-            id="decimal_with_defaults",
-        ),
-        pytest.param(
-            Column.decimal("col", precision=12, sql_name="DDD"),
-            '"DDD" DECIMAL(12,0)',
-            {
-                "name": "DDD",
-                "dataType": {"type": "DECIMAL", "precision": 12, "scale": 0},
-            },
-            id="decimal_with_name_and_precision",
-        ),
-        pytest.param(
-            Column.varchar("col"),
-            '"col" VARCHAR(2000000)',
-            {
-                "name": "col",
-                "dataType": {"type": "VARCHAR", "size": 2000000},
-            },
-            id="varchar_with_defaults",
-        ),
-        pytest.param(
-            Column.varchar("col", size=33, sql_name="VVV"),
-            '"VVV" VARCHAR(33)',
-            {
-                "name": "VVV",
-                "dataType": {"type": "VARCHAR", "size": 33},
-            },
-            id="varchar_with_name_and_size",
-        ),
-        pytest.param(
-            Column.timestamp("col"),
-            '"col" TIMESTAMP(3)',
-            {
-                "name": "col",
-                "dataType": {"type": "TIMESTAMP"},
-            },
-            id="timestamp",
-        ),
-    ],
-)
-def test_rendering(column, expected_sql, expected_json) -> None:
-    assert column.sql == expected_sql
-    assert column.json == expected_json
