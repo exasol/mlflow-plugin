@@ -4,9 +4,7 @@ import nox
 # imports all nox task provided by the toolbox
 from exasol.toolbox.nox.tasks import *
 
-from exasol.mlflow_plugin.rest_api.udf.deployment import (
-    ALL_ENDPOINTS,
-)
+from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.slc import slc_build_context
 
 # default actions to be run if nothing is explicitly specified with the -s option
@@ -51,7 +49,7 @@ def docs_update_udfs(session: nox.Session):
     tmpl_str = (path / "template_rest_endpoints.jinja").read_text()
     template = env.from_string(tmpl_str)
     with (path / "rest_endpoints.rst").open("w") as f:
-        for ep in ALL_ENDPOINTS:
+        for ep in rest_api.ALL_ENDPOINTS:
             args = ", ".join(col.name for col in ep.input_columns)
             input_columns = [(c.sql_name, c.sql_type) for c in ep.input_columns]
             output_columns = [(c.sql_name, c.sql_type) for c in ep.total_output_columns]
