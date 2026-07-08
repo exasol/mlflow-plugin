@@ -34,55 +34,55 @@ def test_decimal() -> None:
 
 
 @pytest.mark.parametrize(
-    "column, expected_json, expected_sql",
+    "column, expected_sql, expected_json",
     [
         pytest.param(
             Column.decimal("col"),
+            '"col" DECIMAL(18,0)',
             {
                 "name": "col",
                 "dataType": {"type": "DECIMAL", "precision": 18, "scale": 0},
             },
-            '"col" DECIMAL(18,0)',
             id="decimal_with_defaults",
         ),
         pytest.param(
             Column.decimal("col", precision=12, sql_name="DDD"),
+            '"DDD" DECIMAL(12,0)',
             {
                 "name": "DDD",
                 "dataType": {"type": "DECIMAL", "precision": 12, "scale": 0},
             },
-            '"DDD" DECIMAL(12,0)',
             id="decimal_with_name_and_precision",
         ),
         pytest.param(
             Column.varchar("col"),
+            '"col" VARCHAR(2000000)',
             {
                 "name": "col",
                 "dataType": {"type": "VARCHAR", "size": 2000000},
             },
-            '"col" VARCHAR(2000000)',
             id="varchar_with_defaults",
         ),
         pytest.param(
             Column.varchar("col", size=33, sql_name="VVV"),
+            '"VVV" VARCHAR(33)',
             {
                 "name": "VVV",
                 "dataType": {"type": "VARCHAR", "size": 33},
             },
-            '"VVV" VARCHAR(33)',
             id="varchar_with_name_and_size",
         ),
         pytest.param(
             Column.timestamp("col"),
+            '"col" TIMESTAMP(3)',
             {
                 "name": "col",
                 "dataType": {"type": "TIMESTAMP"},
             },
-            '"col" TIMESTAMP(3)',
             id="timestamp",
         ),
     ],
 )
-def test_rendering(column, expected_json, expected_sql) -> None:
-    assert column.json == expected_json
+def test_rendering(column, expected_sql, expected_json) -> None:
     assert column.sql == expected_sql
+    assert column.json == expected_json
