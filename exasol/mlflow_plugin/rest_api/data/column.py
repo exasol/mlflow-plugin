@@ -5,7 +5,6 @@ from datetime import (
 )
 from typing import Any
 
-
 JsonObject = dict[str, Any]
 
 
