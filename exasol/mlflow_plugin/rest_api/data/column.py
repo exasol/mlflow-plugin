@@ -5,6 +5,8 @@ from datetime import (
 )
 from typing import Any
 
+JsonObject = dict[str, Any]
+
 
 def timestamp_to_datetime(seconds_since_epoc: int) -> datetime:
     """
@@ -32,6 +34,13 @@ SQL_TYPE = {
 }
 
 
+class DEFAULTS:
+    DECIMAL_PRECISION = 18
+    DECIMAL_SCALE = 0
+    TIMESTAMP_SIZE = 3
+    VARCHAR_SIZE = 2000000
+
+
 class Column:
     def __init__(
         self,
@@ -50,15 +59,43 @@ class Column:
         self.comma_sep = comma_sep
 
     @property
+    def _sql_data_type(self) -> str:
+        return SQL_TYPE.get(self.data_type, "VARCHAR")
+
+    @property
+    def _json_data_type(self) -> JsonObject:
+        def data_type():
+            yield "type", self._sql_data_type
+            if self.data_type == int:
+                yield "precision", self.size
+                yield "scale", DEFAULTS.DECIMAL_SCALE
+            if self.data_type == str:
+                yield "size", self.size
+
+        return dict(data_type())
+
+    @property
+    def json(self) -> JsonObject:
+        """
+        Returns a JsonObject describing the column as required for Virtual
+        Schema API.
+        """
+        return {"name": self.sql_name, "dataType": self._json_data_type}
+
+    @property
     def sql_type(self) -> str:
-        prefix = SQL_TYPE.get(self.data_type, "VARCHAR")
-        if self.data_type in [str, datetime]:
-            suffix = f"({self.size})"
-        elif self.data_type == int:
-            suffix = f"({self.size},0)"
-        else:
-            suffix = ""
-        return f"{prefix}{suffix}"
+        def suffix() -> str:
+            jdt = self._json_data_type
+            if size := jdt.get("size"):
+                return f"({size})"
+            if self.data_type == datetime:
+                return f"({DEFAULTS.TIMESTAMP_SIZE})"
+            if precision := jdt.get("precision"):
+                scale = jdt.get("scale", DEFAULTS.DECIMAL_SCALE)
+                return f"({precision},{scale})"
+            return ""
+
+        return f"{self._sql_data_type}{suffix()}"
 
     @property
     def sql(self) -> str:
@@ -93,13 +130,13 @@ class Column:
 
     @classmethod
     def timestamp(cls, name: str, sql_name: str = "") -> Column:
-        return cls(name, 3, sql_name=sql_name, data_type=datetime)
+        return cls(name, DEFAULTS.TIMESTAMP_SIZE, sql_name=sql_name, data_type=datetime)
 
     @classmethod
     def decimal(
         cls,
         name: str,
-        precision: int = 18,
+        precision: int = DEFAULTS.DECIMAL_PRECISION,
         sql_name: str = "",
         key: str = "",
     ) -> Column:
@@ -109,7 +146,7 @@ class Column:
     def varchar(
         cls,
         name: str,
-        size: int = 2000000,
+        size: int = DEFAULTS.VARCHAR_SIZE,
         sql_name: str = "",
         key: str = "",
         comma_sep: bool = False,
