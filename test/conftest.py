@@ -15,14 +15,10 @@ def pytest_addoption(parser):
     parser.addoption(
         "--language-alias",
         type=str,
-        help=(
-            "Can be set to override the default. The default is MLFLOW."
-        ),
+        help=("Can be set to override the default. The default is MLFLOW."),
     )
     parser.addoption(
         "--db-schema",
         type=str,
-        help=(
-            "Can be set to override the default. The default is ITEST_MLFLOW."
-        ),
+        help=("Can be set to override the default. The default is ITEST_MLFLOW."),
     )
