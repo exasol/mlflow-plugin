@@ -69,6 +69,10 @@ class Column:
 
     @property
     def json(self) -> JsonObject:
+        """
+        Returns a JsonObject describing the column as required for Virtual
+        Schema API.
+        """
         return {"name": self.sql_name, "dataType": self._json_data_type}
 
     @property
