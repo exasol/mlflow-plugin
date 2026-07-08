@@ -18,8 +18,23 @@ from exasol.mlflow_plugin.rest_api.endpoints.models import (
 from exasol.mlflow_plugin.rest_api.endpoints.runs import RUNS_SEARCH
 from exasol.mlflow_plugin.rest_api.udf.call import UdfCall
 
+ALL_ENDPOINTS = [
+    ARTIFACTS_LIST,
+    EXPERIMENTS_SEARCH,
+    GATEWAY_ENDPOINTS_LIST,
+    GATEWAY_MODEL_DEFINITIONS_LIST,
+    MODEL_VERSIONS_GET,
+    MODEL_VERSIONS_GET_DOWNLOAD_URI,
+    MODEL_VERSIONS_SEARCH,
+    REGISTERED_MODEL_GET,
+    REGISTERED_MODELS_SEARCH,
+    REGISTERED_MODELS_GET_LATEST_VERSIONS,
+    RUNS_SEARCH,
+]
+
 __all__ = [
     "Endpoint",
+    "ALL_ENDPOINTS",
     "ARTIFACTS_LIST",
     "EXPERIMENTS_SEARCH",
     "GATEWAY_ENDPOINTS_LIST",
