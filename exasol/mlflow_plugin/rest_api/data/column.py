@@ -50,6 +50,7 @@ class Column:
         data_type: type = str,
         key: str = "",
         comma_sep: bool = False,
+        comment: str = "",
     ):
         self.name = name
         self.sql_name = sql_name or name
@@ -57,6 +58,7 @@ class Column:
         self.data_type = data_type
         self.key = key or name
         self.comma_sep = comma_sep
+        self.comment = comment
 
     @property
     def _sql_data_type(self) -> str:
@@ -150,6 +152,7 @@ class Column:
         sql_name: str = "",
         key: str = "",
         comma_sep: bool = False,
+        comment: str = "",
     ) -> Column:
         return cls(
             name,
@@ -158,4 +161,5 @@ class Column:
             data_type=str,
             key=key,
             comma_sep=comma_sep,
+            comment=comment,
         )
