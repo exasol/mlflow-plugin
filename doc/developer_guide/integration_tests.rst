@@ -45,6 +45,7 @@ executed.
 The tests define the alias by means of Pytest fixture ``language_alias``:
 
 .. literalinclude:: ../../test/integration/conftest.py
+  :caption: test/integration/conftest.py
   :pyobject: language_alias
 
 
@@ -90,3 +91,19 @@ Here is a complete example:
       --bucketfs-password "$BUCKETFS_PASSWORD" \
       --mlflow-server http://$(vmip):5000 --language-alias MLFLOW \
       test/integration/with_mlflow_server/test_udfs.py
+
+Keeping the Database Schema
+---------------------------
+
+Usually the integration tests will remove the database schema defined in
+Pytest fixture ``db_schema_name``:
+
+.. literalinclude:: ../../test/integration/with_mlflow_server/conftest.py
+  :pyobject: db_schema_name
+  :caption: test/integration/with_mlflow_server/conftest.py
+
+However, if you create the schema before running the integration tests, then
+the related fixtures will keep it.
+
+This enables you to inspect all the artifacts created by the tests incl. the
+UDFs.
