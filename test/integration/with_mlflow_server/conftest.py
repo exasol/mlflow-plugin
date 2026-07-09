@@ -173,11 +173,6 @@ def non_bucketfs_model(mlflow_server) -> str:
     return info.artifact_path
 
 
-@pytest.fixture(scope="session")
-def db_schema_name(request) -> str:
-    return request.config.getoption("--db-schema") or "ITEST_MLFLOW"
-
-
 @pytest.fixture(scope="module")
 def mlflow_exa_connection_name() -> str:
     return "MLFLOW"

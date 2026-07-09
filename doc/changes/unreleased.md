@@ -5,6 +5,7 @@
 ## Features
 
 * #84: Render `Column` as Json as required for Virtual Schema API
+* #91: Added basic functions for Virtual Schema management
 
 ## Refactoring
 
