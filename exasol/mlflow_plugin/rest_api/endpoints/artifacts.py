@@ -7,7 +7,7 @@ ARTIFACTS_LIST = Endpoint(
     url_suffix="artifacts",
     output_key="files",
     input_columns=[
-        Column.varchar("path"),
+        Column.varchar("path", comment="recommended"),
     ],
     output_columns=[
         Column.varchar("path"),

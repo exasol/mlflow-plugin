@@ -7,6 +7,10 @@
 * #84: Render `Column` as Json as required for Virtual Schema API
 * #90: Configured names of Virtual Schema tables
 
+## Documentation
+
+* #88: Added information about which UDF input parameters are mandatory
+
 ## Refactoring
 
 * #77: Updated workflows to `exasol-toolbox` 8.2.0
