@@ -16,10 +16,10 @@ Calls MLflow REST API endpoint `{{endpoint}} <https://mlflow.org/docs/latest/api
    * - Input Column
      - SQL Type
      - Comment
-   {%- for item in input_columns %}
-   * - ``{{item[0]}}``
-     - ``{{item[1]}}``
-     - {{item[2]}}
+   {%- for name, sql_type, comment in input_columns %}
+   * - ``{{name}}``
+     - ``{{sql_type}}``
+     - {{comment}}
    {%- endfor %}
 
 
@@ -29,8 +29,8 @@ Calls MLflow REST API endpoint `{{endpoint}} <https://mlflow.org/docs/latest/api
 
    * - Output Column
      - SQL Type
-   {%- for item in output_columns %}
-   * - ``{{item[0]}}``
-     - ``{{item[1]}}``
+   {%- for name, sql_type in output_columns %}
+   * - ``{{name}}``
+     - ``{{sql_type}}``
    {%- endfor %}
 
