@@ -51,7 +51,9 @@ def docs_update_udfs(session: nox.Session):
     with (path / "rest_endpoints.rst").open("w") as f:
         for ep in rest_api.ALL_ENDPOINTS:
             args = ", ".join(col.name for col in ep.input_columns)
-            input_columns = [(c.sql_name, c.sql_type) for c in ep.input_columns]
+            input_columns = [
+                (c.sql_name, c.sql_type, c.comment) for c in ep.input_columns
+            ]
             output_columns = [(c.sql_name, c.sql_type) for c in ep.total_output_columns]
             result = template.render(
                 udf_name=ep.var_name,

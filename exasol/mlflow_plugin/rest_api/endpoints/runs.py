@@ -30,11 +30,12 @@ EXPAND_DATA_TAGS = Expander(
 
 RUNS_SEARCH = Endpoint(
     var_name="RUNS_SEARCH",
+    virtual_schema_table="RUNS",
     method="post",
     url_suffix="runs/search",
     output_key="runs",
     input_columns=[
-        Column.varchar("experiment_ids", comma_sep=True),
+        Column.varchar("experiment_ids", comma_sep=True, comment="recommended"),
         Column.varchar("filter"),
         Column.varchar("run_view_type"),
         Column.varchar("order_by", comma_sep=True),

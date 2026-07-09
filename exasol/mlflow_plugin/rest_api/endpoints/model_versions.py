@@ -20,34 +20,36 @@ MODEL_VERSION_COLUMNS = [
     Column.varchar("model_id"),
 ]
 
+MODEL_VERSION_INPUT_COLUMNS = [
+    Column.varchar("name", comment="mandatory"),
+    Column.varchar("version", comment="mandatory"),
+]
+
 MODEL_VERSIONS_GET = Endpoint(
     var_name="MODEL_VERSIONS_GET",
+    virtual_schema_table=None,
     method="get",
     url_suffix="model-versions/get",
     output_key="model_version",
-    input_columns=[
-        Column.varchar("name"),
-        Column.varchar("version"),
-    ],
+    input_columns=MODEL_VERSION_INPUT_COLUMNS,
     output_columns=MODEL_VERSION_COLUMNS,
     expanders=[EXPAND_TAGS],
 )
 
 MODEL_VERSIONS_GET_DOWNLOAD_URI = Endpoint(
     var_name="MODEL_VERSIONS_GET_DOWNLOAD_URI",
+    virtual_schema_table=None,
     method="get",
     url_suffix="model-versions/get-download-uri",
     output_key="",
-    input_columns=[
-        Column.varchar("name"),
-        Column.varchar("version"),
-    ],
+    input_columns=MODEL_VERSION_INPUT_COLUMNS,
     output_columns=[Column.varchar("artifact_uri")],
     expanders=[],
 )
 
 MODEL_VERSIONS_SEARCH = Endpoint(
     var_name="MODEL_VERSIONS_SEARCH",
+    virtual_schema_table="MODEL_VERSIONS",
     method="get",
     url_suffix="model-versions/search",
     output_key="model_versions",
@@ -58,11 +60,12 @@ MODEL_VERSIONS_SEARCH = Endpoint(
 
 REGISTERED_MODELS_GET_LATEST_VERSIONS = Endpoint(
     var_name="REGISTERED_MODELS_GET_LATEST_VERSIONS",
+    virtual_schema_table="REGISTERED_MODELS_LATEST_VERSIONS",
     method="post",
     url_suffix="registered-models/get-latest-versions",
     output_key="model_versions",
     input_columns=[
-        Column.varchar("name"),
+        Column.varchar("name", comment="mandatory"),
         Column.varchar("stages", comma_sep=True),
     ],
     output_columns=MODEL_VERSION_COLUMNS,

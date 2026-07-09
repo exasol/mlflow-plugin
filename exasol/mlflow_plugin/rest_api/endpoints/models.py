@@ -15,11 +15,12 @@ REGISTERED_MODEL_COLUMNS = [
 
 REGISTERED_MODEL_GET = Endpoint(
     var_name="REGISTERED_MODEL_GET",
+    virtual_schema_table=None,
     method="get",
     url_suffix="registered-models/get",
     output_key="registered_model",
     input_columns=[
-        Column.varchar("name"),
+        Column.varchar("name", comment="mandatory"),
     ],
     output_columns=REGISTERED_MODEL_COLUMNS,
     expanders=[EXPAND_TAGS],
@@ -27,6 +28,7 @@ REGISTERED_MODEL_GET = Endpoint(
 
 REGISTERED_MODELS_SEARCH = Endpoint(
     var_name="REGISTERED_MODELS_SEARCH",
+    virtual_schema_table="REGISTERED_MODELS",
     method="get",
     url_suffix="registered-models/search",
     output_key="registered_models",
