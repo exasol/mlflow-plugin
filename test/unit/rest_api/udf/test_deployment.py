@@ -18,6 +18,7 @@ from exasol.mlflow_plugin.rest_api.udf.deployment import (
 def endpoint() -> rest_api.Endpoint:
     return rest_api.Endpoint(
         var_name="EEE",
+        virtual_schema_table=None,
         method="post",
         url_suffix="e/s",
         output_key="kkk",

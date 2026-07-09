@@ -1,4 +1,3 @@
-import re
 from dataclasses import (
     dataclass,
     field,
@@ -7,12 +6,11 @@ from dataclasses import (
 from exasol.mlflow_plugin.rest_api.data import Column
 from exasol.mlflow_plugin.rest_api.expanding import Expander
 
-VIRTUAL_SCHEMA_TABLE_PATTERN = re.compile(r"(_LIST|_SEARCH|S_GET|_GET)$")
-
 
 @dataclass
 class Endpoint:
     var_name: str
+    virtual_schema_table: str | None
     method: str
     url_suffix: str
     output_key: str
@@ -20,10 +18,6 @@ class Endpoint:
     output_columns: list[Column]
     expanders: list[Expander] = field(default_factory=list)
     url_prefix: str = "api/2.0/mlflow"
-
-    @property
-    def virtual_schema_table(self) -> str:
-        return VIRTUAL_SCHEMA_TABLE_PATTERN.sub("", self.var_name)
 
     @property
     def url(self) -> str:
