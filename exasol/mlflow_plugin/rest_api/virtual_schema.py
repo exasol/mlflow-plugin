@@ -43,7 +43,6 @@ class VirtualSchema:
 
     def create(self, con: pyexasol.ExaConnection) -> pyexasol.ExaStatement:
         self.adapter.create(con)
-        self.drop(con)
         return con.execute(
             f'CREATE VIRTUAL SCHEMA "{self.name}"' f" USING {self.adapter.quoted}"
         )

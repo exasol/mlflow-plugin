@@ -18,6 +18,7 @@ def test_adapter(db_schema_name, pyexasol_connection) -> None:
         db_schema_name, "VS_ADAPTER", adapter_impl, language_alias="PYTHON3"
     )
     vs = VirtualSchema("MLFLOW_VS", adapter)
+    vs.drop(con)
     pipe = udf_debug.LogPipe()
     expected = ["Adapter call: createVirtualSchema", "Adapter call: dropVirtualSchema"]
     with udf_debug.UdfOutputLogger(query=con.execute, print_func=pipe.input):
