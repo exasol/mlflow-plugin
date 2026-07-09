@@ -34,7 +34,7 @@ RUNS_SEARCH = Endpoint(
     url_suffix="runs/search",
     output_key="runs",
     input_columns=[
-        Column.varchar("experiment_ids", comma_sep=True),
+        Column.varchar("experiment_ids", comma_sep=True, comment="recommended"),
         Column.varchar("filter"),
         Column.varchar("run_view_type"),
         Column.varchar("order_by", comma_sep=True),

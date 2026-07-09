@@ -19,7 +19,7 @@ REGISTERED_MODEL_GET = Endpoint(
     url_suffix="registered-models/get",
     output_key="registered_model",
     input_columns=[
-        Column.varchar("name"),
+        Column.varchar("name", comment="mandatory"),
     ],
     output_columns=REGISTERED_MODEL_COLUMNS,
     expanders=[EXPAND_TAGS],
