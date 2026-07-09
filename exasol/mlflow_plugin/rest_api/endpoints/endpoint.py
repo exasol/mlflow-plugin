@@ -10,6 +10,7 @@ from exasol.mlflow_plugin.rest_api.expanding import Expander
 @dataclass
 class Endpoint:
     var_name: str
+    virtual_schema_table: str | None
     method: str
     url_suffix: str
     output_key: str
