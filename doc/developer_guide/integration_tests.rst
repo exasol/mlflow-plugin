@@ -98,9 +98,9 @@ Database Schema
 Pytest fixture ``db_schema_name`` defines the default database schema for the
 integration tests:
 
-.. literalinclude:: ../../test/integration/with_mlflow_server/conftest.py
+.. literalinclude:: ../../test/integration/conftest.py
   :pyobject: db_schema_name
-  :caption: test/integration/with_mlflow_server/conftest.py
+  :caption: test/integration/conftest.py
 
 You can specify an individual database schema with Pytest
 CLI option ``--db-schema``:

@@ -28,6 +28,11 @@ def replace_scheme(url: str) -> str:
     return urlunparse((scheme,) + parsed[1:])
 
 
+@pytest.fixture(scope="session")
+def db_schema_name(request) -> str:
+    return request.config.getoption("--db-schema") or "ITEST_MLFLOW"
+
+
 @pytest.fixture(scope="module")
 def connector(backend_aware_bucketfs_params) -> Generator[Connector, None, None]:
     p = DotAccess(backend_aware_bucketfs_params)
