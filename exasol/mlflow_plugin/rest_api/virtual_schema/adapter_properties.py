@@ -34,7 +34,7 @@ class AdapterProperties:
         self.names = [n.upper() for n in names or []]
 
     def validate(self, values: PropertiesDict) -> PropertiesDict:
-        """ Values passed by API are always upper case. """
+        """Values passed by API are always upper case."""
         if not (illegal := [k for k in values if k not in self.names]):
             return values
         n = len(illegal)

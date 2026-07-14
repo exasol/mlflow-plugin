@@ -2,7 +2,6 @@ import importlib.resources
 
 import pyexasol
 from exasol.pytest_slc import udf_debug
-from exasol.pytest_slc.udf_debug.udf_output_logger import alter_session_sql
 
 from exasol.mlflow_plugin.rest_api.virtual_schema import (
     Adapter,

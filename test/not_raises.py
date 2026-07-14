@@ -9,4 +9,3 @@ def not_raises(exception):
         yield
     except exception:
         raise pytest.fail(f"Did raise {exception}")
-

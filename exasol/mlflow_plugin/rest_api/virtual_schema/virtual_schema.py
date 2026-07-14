@@ -18,9 +18,13 @@ class VirtualSchema:
     def _with_properties(self) -> str:
         if not self.properties:
             return ""
-        return " WITH" + "".join(f"\n    {k} = '{v}'" for k, v in self.properties.items())
+        return " WITH" + "".join(
+            f"\n    {k} = '{v}'" for k, v in self.properties.items()
+        )
 
-    def create(self, con: pyexasol.ExaConnection, replace: bool = False) -> pyexasol.ExaStatement:
+    def create(
+        self, con: pyexasol.ExaConnection, replace: bool = False
+    ) -> pyexasol.ExaStatement:
         self.adapter.create(con)
         if replace:
             self.drop(con)

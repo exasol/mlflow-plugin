@@ -5,4 +5,3 @@ from typing import (
 
 JsonObject: TypeAlias = dict[str, Any]
 PropertiesDict: TypeAlias = dict[str, str]
-
