@@ -1,28 +1,31 @@
 import importlib.resources
 
+import pytest
 from exasol.pytest_slc import udf_debug
-from exasol.pytest_slc.udf_debug.udf_output_logger import alter_session_sql
 
 from exasol.mlflow_plugin.rest_api.virtual_schema import (
     Adapter,
     VirtualSchema,
 )
 
-RESOURCES = importlib.resources.files("test.integration.virtual_schema")
+
+@pytest.fixture
+def vs_adapter(db_schema_name, pyexasol_connection):
+    adapter_impl = (
+        importlib.resources.files("test.integration.virtual_schema.resources")
+        / "adapter_impl.py"
+    ).read_text()
+    return Adapter(db_schema_name, "VS_ADAPTER", adapter_impl, language_alias="PYTHON3")
 
 
-def test_adapter(db_schema_name, pyexasol_connection) -> None:
-    con = pyexasol_connection
-    adapter_impl = (RESOURCES / "adapter_impl.py").read_text()
-    adapter = Adapter(
-        db_schema_name, "VS_ADAPTER", adapter_impl, language_alias="PYTHON3"
-    )
-    vs = VirtualSchema("MLFLOW_VS", adapter)
-    vs.drop(con)
-    pipe = udf_debug.LogPipe()
-    expected = ["Adapter call: createVirtualSchema", "Adapter call: dropVirtualSchema"]
-    with udf_debug.UdfOutputLogger(query=con.execute, print_func=pipe.input):
-        vs.create(con)
+@pytest.fixture
+def virtual_schema(vs_adapter, pyexasol_connection):
+    properties = {"CONNECTION_NAME": "MLFLOW", "MAX_RESULTS": "100"}
+    virtual_schema = VirtualSchema("MLFLOW_VS", vs_adapter, properties)
+    pyexasol_connection.execute("ALTER SESSION SET SCRIPT_OUTPUT_ADDRESS=''")
+    try:
+        yield virtual_schema
+    finally:
         # The adapter <A> is created in DB schema db_schema_name <S>.
         #
         # The VS schema needs to be dropped before fixture pyexasol_connection
@@ -32,7 +35,19 @@ def test_adapter(db_schema_name, pyexasol_connection) -> None:
         # The schema <S>_name contains the Adapter Script <A> for which
         # at least one Virtual Schema exists (MLFLOW_VS).  Please drop all
         # Virtual Schemas of this Adapter first.
-        vs.drop(con)
+        virtual_schema.drop(pyexasol_connection)
+
+
+def test_adapter(db_schema_name, pyexasol_connection, virtual_schema) -> None:
+    def query_func(sql: str) -> udf_debug.QueryResult:
+        stmt = pyexasol_connection.execute(sql)
+        return [] if stmt.rowcount() == 0 else stmt.fetchall()
+
+    pipe = udf_debug.LogPipe()
+    expected = [
+        "Adapter call: createVirtualSchema",
+        f"properties: {virtual_schema.properties}",
+    ]
+    with udf_debug.UdfOutputLogger(query=query_func, print_func=pipe.input):
+        virtual_schema.create(pyexasol_connection, replace=True)
         udf_debug.wait_for_messages(pipe.output, *expected)
-    # see https://github.com/exasol/pytest-slc/issues/41
-    con.execute(alter_session_sql(""))

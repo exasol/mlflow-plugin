@@ -1,4 +1,4 @@
-import contextlib
+from test.not_raises import not_raises
 from test.unit.rest_api.udf.mocking import mock_exa_object
 
 import pytest
@@ -12,14 +12,6 @@ from exasol.mlflow_plugin.rest_api.udf.verification import (
     verify_columns,
     verify_udf_parameters,
 )
-
-
-@contextlib.contextmanager
-def not_raises(exception):
-    try:
-        yield
-    except exception:
-        raise pytest.fail(f"Did raise {exception}")
 
 
 @pytest.mark.parametrize(
