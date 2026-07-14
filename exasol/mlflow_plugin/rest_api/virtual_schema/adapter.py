@@ -31,18 +31,3 @@ class Adapter:
     def create(self, con: pyexasol.ExaConnection):
         con.execute(f'CREATE SCHEMA IF NOT EXISTS "{self.schema}"')
         con.execute(self.sql)
-
-
-@dataclass
-class VirtualSchema:
-    name: str
-    adapter: Adapter
-
-    def drop(self, con: pyexasol.ExaConnection) -> pyexasol.ExaStatement:
-        return con.execute(f'DROP VIRTUAL SCHEMA IF EXISTS "{self.name}" CASCADE')
-
-    def create(self, con: pyexasol.ExaConnection) -> pyexasol.ExaStatement:
-        self.adapter.create(con)
-        return con.execute(
-            f'CREATE VIRTUAL SCHEMA "{self.name}"' f" USING {self.adapter.quoted}"
-        )

@@ -7,6 +7,7 @@
 * #84: Render `Column` as Json as required for Virtual Schema API
 * #90: Configured names of Virtual Schema tables
 * #91: Added basic functions for Virtual Schema management
+* #96: Added `AdapterProperties`
 
 ## Documentation
 
