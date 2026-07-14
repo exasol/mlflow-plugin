@@ -1,6 +1,5 @@
 import importlib.resources
 
-import pyexasol
 import pytest
 from exasol.pytest_slc import udf_debug
 
@@ -16,9 +15,7 @@ def vs_adapter(db_schema_name, pyexasol_connection):
         importlib.resources.files("test.integration.virtual_schema.resources")
         / "adapter_impl.py"
     ).read_text()
-    return Adapter(
-        db_schema_name, "VS_ADAPTER", adapter_impl, language_alias="PYTHON3"
-    )
+    return Adapter(db_schema_name, "VS_ADAPTER", adapter_impl, language_alias="PYTHON3")
 
 
 @pytest.fixture
