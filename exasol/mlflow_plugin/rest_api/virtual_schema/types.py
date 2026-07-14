@@ -4,4 +4,4 @@ from typing import (
 )
 
 JsonObject: TypeAlias = dict[str, Any]
-PropertiesDict: TypeAlias = dict[str, str]
+PropertiesDict: TypeAlias = dict[str, str | None]

@@ -1,5 +1,4 @@
 import importlib.resources
-from typing import Any
 
 import pyexasol
 from exasol.pytest_slc import udf_debug

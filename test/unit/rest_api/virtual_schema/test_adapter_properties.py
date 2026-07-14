@@ -88,6 +88,11 @@ def test_initial_illegal_value(adapter_properties) -> None:
             {"A": "2", "B": "2"},
             id="updated_a",
         ),
+        pytest.param(
+            _property_values({"A": "1", "B": "2"}, {"A": None}),
+            {"B": "2"},
+            id="unset_a",
+        ),
     ],
 )
 def test_update(adapter_properties, _request, expected) -> None:

@@ -49,4 +49,5 @@ class AdapterProperties:
 
     def update(self, request: JsonObject) -> JsonObject:
         updated = _get(request, {}, "properties")
-        return self._initial(request) | self.validate(updated)
+        pivot = self._initial(request) | self.validate(updated)
+        return {k: v for k, v in pivot.items() if v is not None}
