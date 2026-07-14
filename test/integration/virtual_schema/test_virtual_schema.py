@@ -1,4 +1,5 @@
 import importlib.resources
+from typing import Any
 
 import pyexasol
 from exasol.pytest_slc import udf_debug
@@ -28,6 +29,10 @@ def drop_virtual_schema(vs: VirtualSchema, con: pyexasol.ExaConnection):
 
 
 def test_adapter(db_schema_name, pyexasol_connection) -> None:
+    def query_func(sql: str) -> udf_debug.QueryResult:
+        stmt = pyexasol_connection.execute(sql)
+        return [] if stmt.rowcount() == 0 else stmt.fetchall()
+
     con = pyexasol_connection
     adapter_impl = (RESOURCES / "adapter_impl.py").read_text()
     adapter = Adapter(
@@ -42,7 +47,7 @@ def test_adapter(db_schema_name, pyexasol_connection) -> None:
         f"properties: {properties}",
         "Adapter call: dropVirtualSchema",
     ]
-    with udf_debug.UdfOutputLogger(query=con.execute, print_func=pipe.input):
+    with udf_debug.UdfOutputLogger(query=query_func, print_func=pipe.input):
         vs.create(con)
         drop_virtual_schema(vs, con)
         udf_debug.wait_for_messages(pipe.output, *expected)
