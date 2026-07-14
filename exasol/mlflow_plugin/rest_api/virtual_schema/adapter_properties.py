@@ -1,5 +1,6 @@
 from typing import Any
 
+from exasol.mlflow_plugin.rest_api.virtual_schema.errors import PropertiesError
 from exasol.mlflow_plugin.rest_api.virtual_schema.types import (
     JsonObject,
     PropertiesDict,
@@ -34,7 +35,7 @@ class AdapterProperties:
 
     def validate(self, values: PropertiesDict) -> PropertiesDict:
         """ Values passed by API are always upper case. """
-        if not (illegal := set(values) - set(self.names)):
+        if not (illegal := [k for k in values if k not in self.names]):
             return values
         n = len(illegal)
         properties = "property" if n == 1 else "properties"
