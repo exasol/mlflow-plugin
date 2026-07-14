@@ -44,9 +44,6 @@ def test_adapter(db_schema_name, pyexasol_connection) -> None:
         "Adapter call: dropVirtualSchema",
     ]
     with udf_debug.UdfOutputLogger(query=con.execute, print_func=pipe.input):
-    # with udf_debug.UdfOutputLogger(query=con.execute, print_func=lambda x: print(x)):
         vs.create(con)
         drop_virtual_schema(vs, con)
         udf_debug.wait_for_messages(pipe.output, *expected)
-    # see https://github.com/exasol/pytest-slc/issues/41
-    con.execute(alter_session_sql(""))
