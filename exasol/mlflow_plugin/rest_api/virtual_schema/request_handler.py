@@ -44,22 +44,22 @@ class RequestHandler:
     def pushdown(self, request: JsonObject) -> JsonObject: ...
 
     def build_response(self, request: JsonObject) -> JsonObject:
-        type = request["type"]
-        if type == "createVirtualSchema":
+        _type = request["type"]
+        if _type == "createVirtualSchema":
             props = self.properties.initial(request)
             return self.create(request, props)
-        if type == "setProperties":
+        if _type == "setProperties":
             props = self.properties.update(request)
             return self.set_properties(request, props)
-        if type == "refresh":
+        if _type == "refresh":
             return self.refresh(request)
-        if type == "dropVirtualSchema":
+        if _type == "dropVirtualSchema":
             return self.drop(request)
-        if type == "getCapabilities":
+        if _type == "getCapabilities":
             return self.get_capabilities(request)
-        if type == "pushdown":
+        if _type == "pushdown":
             return self.pushdown(request)
-        raise VirtualSchemaError(f"Unknown request type {type}")
+        raise VirtualSchemaError(f"Unknown request type {_type}")
 
     def handle(self, request_str: str) -> str:
         def to_str(jsn: JsonObject) -> str:
