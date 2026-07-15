@@ -11,10 +11,6 @@ from exasol.mlflow_plugin.rest_api.virtual_schema.types import (
 )
 
 
-def schema_metadata(tables: list[JsonObject], properties: PropertiesDict) -> JsonObject:
-    return {"schemaMetadata": {"tables": tables, "properties": properties}}
-
-
 class RequestHandler:
     """
     Handle requests to a Virtual Schema.
