@@ -7,6 +7,7 @@ from exasol.mlflow_plugin.rest_api.virtual_schema.errors import (
     PushdownError,
     VirtualSchemaError,
 )
+from exasol.mlflow_plugin.rest_api.virtual_schema.request_handler import RequestHandler
 from exasol.mlflow_plugin.rest_api.virtual_schema.types import (
     JsonObject,
     PropertiesDict,
@@ -20,6 +21,7 @@ __all__ = [
     "PropertiesDict",
     "PropertiesError",
     "PushdownError",
+    "RequestHandler",
     "VirtualSchema",
     "VirtualSchemaError",
 ]

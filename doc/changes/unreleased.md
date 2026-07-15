@@ -8,6 +8,7 @@
 * #90: Configured names of Virtual Schema tables
 * #91: Added basic functions for Virtual Schema management
 * #96: Added `AdapterProperties`
+* #99: Added RequestHandler
 
 ## Documentation
 

@@ -1,0 +1,78 @@
+import json
+from abc import abstractmethod
+from typing import (
+    Dict,
+    Protocol,
+)
+
+from exasol.mlflow_plugin.rest_api.virtual_schema.adapter_properties import (
+    AdapterProperties,
+)
+from exasol.mlflow_plugin.rest_api.virtual_schema.errors import VirtualSchemaError
+from exasol.mlflow_plugin.rest_api.virtual_schema.types import (
+    JsonObject,
+    PropertiesDict,
+)
+
+
+def schema_metadata(tables: list[JsonObject], properties: PropertiesDict) -> JsonObject:
+    return {"schemaMetadata": {"tables": tables, "properties": properties}}
+
+
+class RequestHandler:
+    """
+    Handle requests to a Virtual Schema.
+    """
+
+    def __init__(self, properties: AdapterProperties):
+        self.properties = properties
+
+    @abstractmethod
+    def create(self, request: JsonObject, properties: PropertiesDict) -> JsonObject:
+        ...
+
+    @abstractmethod
+    def refresh(self, request: JsonObject) -> JsonObject:
+        ...
+
+    @abstractmethod
+    def drop(self, request: JsonObject) -> JsonObject:
+        ...
+
+    @abstractmethod
+    def get_capabilities(self, request: JsonObject) -> JsonObject:
+        ...
+
+    @abstractmethod
+    def set_properties(self, request: JsonObject, properties: PropertiesDict) -> JsonObject:
+        ...
+
+    @abstractmethod
+    def pushdown(self, request: JsonObject) -> JsonObject:
+        ...
+
+    def build_response(self, request: JsonObject) -> JsonObject:
+        type = request["type"]
+        if type == "createVirtualSchema":
+            props = self.properties.initial(request)
+            return self.create(request, props)
+        if type == "setProperties":
+            props = self.properties.update(request)
+            return self.set_properties(request, props)
+        if type == "refresh":
+            return self.refresh(request)
+        if type == "dropVirtualSchema":
+            return self.drop(request)
+        if type == "getCapabilities":
+            return self.get_capabilities(request)
+        if type == "pushdown":
+            return self.pushdown(request)
+        raise VirtualSchemaError(f"Unknown request type {type}")
+
+    def handle(self, request_str: str) -> str:
+        def to_str(jsn: JsonObject) -> str:
+            return json.dumps(jsn, indent=2)
+
+        request = json.loads(request_str)
+        response = self.build_response(request)
+        return to_str(response)
