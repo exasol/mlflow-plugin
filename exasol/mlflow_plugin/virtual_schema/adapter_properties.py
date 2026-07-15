@@ -1,7 +1,7 @@
 from typing import Any
 
-from exasol.mlflow_plugin.rest_api.virtual_schema.errors import PropertiesError
-from exasol.mlflow_plugin.rest_api.virtual_schema.types import (
+from exasol.mlflow_plugin.virtual_schema.errors import PropertiesError
+from exasol.mlflow_plugin.virtual_schema.types import (
     JsonObject,
     PropertiesDict,
 )
