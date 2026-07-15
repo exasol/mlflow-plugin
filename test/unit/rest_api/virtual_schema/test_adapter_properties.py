@@ -1,11 +1,10 @@
 from test.not_raises import not_raises
+from test.unit.rest_api.virtual_schema.property_utils import property_values
 
 import pytest
 
 from exasol.mlflow_plugin.rest_api.virtual_schema import (
     AdapterProperties,
-    JsonObject,
-    PropertiesDict,
     PropertiesError,
 )
 
@@ -43,23 +42,14 @@ def adapter_properties() -> AdapterProperties:
     return AdapterProperties(["A", "B"])
 
 
-def _property_values(
-    initial: PropertiesDict, update: PropertiesDict | None = None
-) -> JsonObject:
-    return {
-        "schemaMetadataInfo": {"properties": initial},
-        "properties": update or {},
-    }
-
-
 @pytest.mark.parametrize(
     "_request, expected",
     [
         ({}, {}),
         ({"schemaMetadataInfo": {}}, {}),
-        (_property_values({}), {}),
-        (_property_values({"A": "1"}), {"A": "1"}),
-        (_property_values({"A": "1", "B": "2"}), {"A": "1", "B": "2"}),
+        (property_values({}), {}),
+        (property_values({"A": "1"}), {"A": "1"}),
+        (property_values({"A": "1", "B": "2"}), {"A": "1", "B": "2"}),
     ],
 )
 def test_initial_values(adapter_properties, _request, expected) -> None:
@@ -67,7 +57,7 @@ def test_initial_values(adapter_properties, _request, expected) -> None:
 
 
 def test_initial_illegal_value(adapter_properties) -> None:
-    request = _property_values({"ILLEGAL": "c"})
+    request = property_values({"ILLEGAL": "c"})
     with pytest.raises(PropertiesError):
         adapter_properties.initial(request)
 
@@ -75,21 +65,19 @@ def test_initial_illegal_value(adapter_properties) -> None:
 @pytest.mark.parametrize(
     "_request, expected",
     [
-        pytest.param(_property_values({}, {}), {}, id="empty"),
-        pytest.param(_property_values({"A": "1"}, {}), {"A": "1"}, id="unchanged"),
+        pytest.param(property_values({}, {}), {}, id="empty"),
+        pytest.param(property_values({"A": "1"}, {}), {"A": "1"}, id="unchanged"),
+        pytest.param(property_values({"A": "1"}, {"A": "2"}), {"A": "2"}, id="updated"),
         pytest.param(
-            _property_values({"A": "1"}, {"A": "2"}), {"A": "2"}, id="updated"
+            property_values({"A": "1"}, {"B": "2"}), {"A": "1", "B": "2"}, id="added_b"
         ),
         pytest.param(
-            _property_values({"A": "1"}, {"B": "2"}), {"A": "1", "B": "2"}, id="added_b"
-        ),
-        pytest.param(
-            _property_values({"A": "1", "B": "2"}, {"A": "2"}),
+            property_values({"A": "1", "B": "2"}, {"A": "2"}),
             {"A": "2", "B": "2"},
             id="updated_a",
         ),
         pytest.param(
-            _property_values({"A": "1", "B": "2"}, {"A": None}),
+            property_values({"A": "1", "B": "2"}, {"A": None}),
             {"B": "2"},
             id="unset_a",
         ),
@@ -100,6 +88,6 @@ def test_update(adapter_properties, _request, expected) -> None:
 
 
 def test_update_illegal_value(adapter_properties) -> None:
-    request = _property_values({}, {"ILLEGAL": "value"})
+    request = property_values({}, {"ILLEGAL": "value"})
     with pytest.raises(PropertiesError):
         adapter_properties.update(request)
