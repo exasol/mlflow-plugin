@@ -1,14 +1,9 @@
 import json
 from abc import abstractmethod
 
-from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
-    AdapterProperties,
-)
+from exasol.mlflow_plugin.virtual_schema.adapter_properties import AdapterProperties
 from exasol.mlflow_plugin.virtual_schema.errors import VirtualSchemaError
-from exasol.mlflow_plugin.virtual_schema.types import (
-    JsonObject,
-    PropertiesDict,
-)
+from exasol.mlflow_plugin.virtual_schema.types import JsonObject
 
 
 class RequestHandler:
@@ -21,7 +16,7 @@ class RequestHandler:
         self._verbose = verbose
 
     @abstractmethod
-    def create(self, request: JsonObject, properties: PropertiesDict) -> JsonObject: ...
+    def create(self, request: JsonObject) -> JsonObject: ...
 
     @abstractmethod
     def refresh(self, request: JsonObject) -> JsonObject: ...
@@ -33,9 +28,7 @@ class RequestHandler:
     def get_capabilities(self, request: JsonObject) -> JsonObject: ...
 
     @abstractmethod
-    def set_properties(
-        self, request: JsonObject, properties: PropertiesDict
-    ) -> JsonObject: ...
+    def set_properties(self, request: JsonObject) -> JsonObject: ...
 
     @abstractmethod
     def pushdown(self, request: JsonObject) -> JsonObject: ...
@@ -43,11 +36,11 @@ class RequestHandler:
     def build_response(self, request: JsonObject) -> JsonObject:
         _type = request["type"]
         if _type == "createVirtualSchema":
-            props = self.properties.initial(request)
-            return self.create(request, props)
+            self.properties.initial(request)
+            return self.create(request)
         if _type == "setProperties":
-            props = self.properties.update(request)
-            return self.set_properties(request, props)
+            self.properties.update(request)
+            return self.set_properties(request)
         if _type == "refresh":
             return self.refresh(request)
         if _type == "dropVirtualSchema":
