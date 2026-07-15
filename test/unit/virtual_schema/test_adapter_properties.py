@@ -1,9 +1,9 @@
 from test.not_raises import not_raises
-from test.unit.rest_api.virtual_schema.property_utils import property_values
+from test.unit.virtual_schema.property_utils import property_values
 
 import pytest
 
-from exasol.mlflow_plugin.rest_api.virtual_schema import (
+from exasol.mlflow_plugin.virtual_schema import (
     AdapterProperties,
     PropertiesError,
 )
