@@ -5,8 +5,6 @@ import pytest
 
 from exasol.mlflow_plugin.rest_api.virtual_schema import (
     AdapterProperties,
-    JsonObject,
-    PropertiesDict,
     PropertiesError,
 )
 
@@ -44,15 +42,6 @@ def adapter_properties() -> AdapterProperties:
     return AdapterProperties(["A", "B"])
 
 
-def property_values(
-    initial: PropertiesDict, update: PropertiesDict | None = None
-) -> JsonObject:
-    return {
-        "schemaMetadataInfo": {"properties": initial},
-        "properties": update or {},
-    }
-
-
 @pytest.mark.parametrize(
     "_request, expected",
     [
@@ -78,9 +67,7 @@ def test_initial_illegal_value(adapter_properties) -> None:
     [
         pytest.param(property_values({}, {}), {}, id="empty"),
         pytest.param(property_values({"A": "1"}, {}), {"A": "1"}, id="unchanged"),
-        pytest.param(
-            property_values({"A": "1"}, {"A": "2"}), {"A": "2"}, id="updated"
-        ),
+        pytest.param(property_values({"A": "1"}, {"A": "2"}), {"A": "2"}, id="updated"),
         pytest.param(
             property_values({"A": "1"}, {"B": "2"}), {"A": "1", "B": "2"}, id="added_b"
         ),

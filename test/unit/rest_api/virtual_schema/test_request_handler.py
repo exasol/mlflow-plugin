@@ -1,6 +1,6 @@
 import json
-from unittest.mock import Mock
 from test.unit.rest_api.virtual_schema.property_utils import property_values
+from unittest.mock import Mock
 
 import pytest
 
@@ -8,6 +8,7 @@ from exasol.mlflow_plugin.rest_api.virtual_schema import (
     AdapterProperties,
     RequestHandler,
 )
+
 
 @pytest.fixture
 def adapter_properties() -> AdapterProperties:
@@ -26,16 +27,19 @@ def mocked_handler(adapter_properties):
     return handler
 
 
-@pytest.mark.parametrize("req_type, callback", [
-    ("createVirtualSchema", "create"),
-    ("setProperties", "set_properties"),
-    ("createVirtualSchema", "create"),
-    ("setProperties", "set_properties"),
-    ("refresh", "refresh"),
-    ("dropVirtualSchema", "drop"),
-    ("getCapabilities", "get_capabilities"),
-    ("pushdown", "pushdown"),
-])
+@pytest.mark.parametrize(
+    "req_type, callback",
+    [
+        ("createVirtualSchema", "create"),
+        ("setProperties", "set_properties"),
+        ("createVirtualSchema", "create"),
+        ("setProperties", "set_properties"),
+        ("refresh", "refresh"),
+        ("dropVirtualSchema", "drop"),
+        ("getCapabilities", "get_capabilities"),
+        ("pushdown", "pushdown"),
+    ],
+)
 def test_callbacks(mocked_handler, req_type, callback) -> None:
     request = {"type": req_type}
     mocked_handler.handle(json.dumps(request))
@@ -43,7 +47,9 @@ def test_callbacks(mocked_handler, req_type, callback) -> None:
 
 
 def test_properties_create(mocked_handler) -> None:
-    request = {"type": "createVirtualSchema"} | property_values({"VOLATILE": "initial value"})
+    request = {"type": "createVirtualSchema"} | property_values(
+        {"VOLATILE": "initial value"}
+    )
     mocked_handler.handle(json.dumps(request))
     actual = mocked_handler.create.call_args.args[1]
     assert actual == {"VOLATILE": "initial value"}

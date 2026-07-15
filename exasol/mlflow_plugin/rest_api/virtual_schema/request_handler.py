@@ -1,9 +1,5 @@
 import json
 from abc import abstractmethod
-from typing import (
-    Dict,
-    Protocol,
-)
 
 from exasol.mlflow_plugin.rest_api.virtual_schema.adapter_properties import (
     AdapterProperties,
@@ -28,28 +24,24 @@ class RequestHandler:
         self.properties = properties
 
     @abstractmethod
-    def create(self, request: JsonObject, properties: PropertiesDict) -> JsonObject:
-        ...
+    def create(self, request: JsonObject, properties: PropertiesDict) -> JsonObject: ...
 
     @abstractmethod
-    def refresh(self, request: JsonObject) -> JsonObject:
-        ...
+    def refresh(self, request: JsonObject) -> JsonObject: ...
 
     @abstractmethod
-    def drop(self, request: JsonObject) -> JsonObject:
-        ...
+    def drop(self, request: JsonObject) -> JsonObject: ...
 
     @abstractmethod
-    def get_capabilities(self, request: JsonObject) -> JsonObject:
-        ...
+    def get_capabilities(self, request: JsonObject) -> JsonObject: ...
 
     @abstractmethod
-    def set_properties(self, request: JsonObject, properties: PropertiesDict) -> JsonObject:
-        ...
+    def set_properties(
+        self, request: JsonObject, properties: PropertiesDict
+    ) -> JsonObject: ...
 
     @abstractmethod
-    def pushdown(self, request: JsonObject) -> JsonObject:
-        ...
+    def pushdown(self, request: JsonObject) -> JsonObject: ...
 
     def build_response(self, request: JsonObject) -> JsonObject:
         type = request["type"]
