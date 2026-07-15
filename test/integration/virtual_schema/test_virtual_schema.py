@@ -3,7 +3,7 @@ import importlib.resources
 import pytest
 from exasol.pytest_slc import udf_debug
 
-from exasol.mlflow_plugin.rest_api.virtual_schema import (
+from exasol.mlflow_plugin.virtual_schema import (
     Adapter,
     VirtualSchema,
 )

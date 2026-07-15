@@ -3,7 +3,7 @@ from typing import Any
 
 import pyexasol
 
-from exasol.mlflow_plugin.rest_api.virtual_schema.adapter import Adapter
+from exasol.mlflow_plugin.virtual_schema.adapter import Adapter
 
 
 @dataclass
