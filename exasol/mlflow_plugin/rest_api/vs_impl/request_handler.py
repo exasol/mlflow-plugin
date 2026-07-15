@@ -29,16 +29,14 @@ class RequestHandler(vs.RequestHandler):
     def _copy(self, request: JsonObject, *keys):
         return {key: request[key] for key in keys if key in request}
 
-    def create(self, request: JsonObject, properties: PropertiesDict) -> JsonObject:
+    def create(self, request: JsonObject) -> JsonObject:
         return self._copy(request, "type") | SCHEMA_METADATA
 
-    def set_properties(
-        self, request: JsonObject, properties: PropertiesDict
-    ) -> JsonObject:
-        return self._copy(request, "type") | SCHEMA_METADATA
+    def set_properties(self, request: JsonObject) -> JsonObject:
+        return self._copy(request, "type")
 
     def refresh(self, request: JsonObject) -> JsonObject:
-        return self._copy(request, "type", "requestedTables")
+        return self._copy(request, "type")
 
     def drop(self, request: JsonObject) -> JsonObject:
         return self._copy(request, "type")

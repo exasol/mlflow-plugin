@@ -12,7 +12,7 @@ from exasol.mlflow_plugin.virtual_schema import (
 
 @pytest.fixture
 def adapter_properties() -> AdapterProperties:
-    return AdapterProperties(["UNCHANGED", "VOLATILE"])
+    return Mock()
 
 
 @pytest.fixture
@@ -46,20 +46,18 @@ def test_callbacks(mocked_handler, req_type, callback) -> None:
     assert getattr(mocked_handler, callback).called
 
 
-def test_properties_create(mocked_handler) -> None:
+def test_properties_create(mocked_handler, adapter_properties) -> None:
     request = {"type": "createVirtualSchema"} | property_values(
         {"VOLATILE": "initial value"}
     )
     mocked_handler.handle(json.dumps(request))
-    actual = mocked_handler.create.call_args.args[1]
-    assert actual == {"VOLATILE": "initial value"}
+    assert adapter_properties.initial.called
 
 
-def test_properties_update(mocked_handler) -> None:
+def test_properties_update(mocked_handler, adapter_properties) -> None:
     request = {"type": "setProperties"} | property_values(
         {"UNCHANGED": "kept", "VOLATILE": "initial value"},
         {"VOLATILE": "new value"},
     )
     mocked_handler.handle(json.dumps(request))
-    actual = mocked_handler.set_properties.call_args.args[1]
-    assert actual == {"UNCHANGED": "kept", "VOLATILE": "new value"}
+    assert adapter_properties.update.called

@@ -16,8 +16,9 @@ class RequestHandler:
     Handle requests to a Virtual Schema.
     """
 
-    def __init__(self, properties: AdapterProperties):
+    def __init__(self, properties: AdapterProperties, verbose: bool = False):
         self.properties = properties
+        self._verbose = verbose
 
     @abstractmethod
     def create(self, request: JsonObject, properties: PropertiesDict) -> JsonObject: ...
@@ -63,4 +64,11 @@ class RequestHandler:
 
         request = json.loads(request_str)
         response = self.build_response(request)
-        return to_str(response)
+        resp_str = to_str(response)
+        if self._verbose:
+            print(
+                f"\nrequest {request['type']}: {to_str(request)}\n"
+                f"response: {resp_str}\n",
+                flush=True
+            )        
+        return resp_str
