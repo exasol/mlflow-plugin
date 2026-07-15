@@ -69,6 +69,6 @@ class RequestHandler:
             print(
                 f"\nrequest {request['type']}: {to_str(request)}\n"
                 f"response: {resp_str}\n",
-                flush=True
-            )        
+                flush=True,
+            )
         return resp_str

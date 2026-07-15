@@ -26,12 +26,15 @@ def test_create(handler) -> None:
     assert len(actual["schemaMetadata"]["tables"]) == len(rest_api.ALL_ENDPOINTS)
 
 
-@pytest.mark.parametrize("method_name, expected", [
-    ("set_properties", {}),
-    ("refresh", {}),
-    ("drop", {}),
-    ("get_capabilities", {"capabilities": []}),
-])
+@pytest.mark.parametrize(
+    "method_name, expected",
+    [
+        ("set_properties", {}),
+        ("refresh", {}),
+        ("drop", {}),
+        ("get_capabilities", {"capabilities": []}),
+    ],
+)
 def test_other_methods(handler, method_name, expected) -> None:
     request = _request("setProperties")
     method = getattr(handler, method_name)
@@ -39,10 +42,13 @@ def test_other_methods(handler, method_name, expected) -> None:
     assert actual == request | expected
 
 
-@pytest.mark.parametrize("pushdown_details", [
-    {"type": "unsupported type"},
-    {"selectList": []},
-])
+@pytest.mark.parametrize(
+    "pushdown_details",
+    [
+        {"type": "unsupported type"},
+        {"selectList": []},
+    ],
+)
 def test_pushdown_error(pushdown_details, handler) -> None:
     request = _request("pushdown") | {"pushdownRequest": pushdown_details}
     with pytest.raises(PushdownError):

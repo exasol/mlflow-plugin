@@ -3,7 +3,6 @@ from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.virtual_schema import (
     AdapterProperties,
     JsonObject,
-    PropertiesDict,
     PushdownError,
 )
 
