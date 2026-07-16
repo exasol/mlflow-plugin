@@ -7,19 +7,20 @@ from exasol.mlflow_plugin.virtual_schema import (
 )
 
 
-def table_description(endpoint: rest_api.Endpoint) -> JsonObject:
-    columns = [c.json for c in endpoint.total_output_columns]
-    return {
-        "type": "table",
-        "name": endpoint.virtual_schema_table,
-        "columns": columns,
-    }
+def tables() -> list[JsonObject]:
+    def table_description(endpoint: rest_api.Endpoint) -> JsonObject:
+        columns = [c.json for c in endpoint.total_output_columns]
+        return {
+            "type": "table",
+            "name": endpoint.virtual_schema_table,
+            "columns": columns,
+        }
 
-
-TABLES = [
-    table_description(e) for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table
-]
-SCHEMA_METADATA = {"schemaMetadata": {"tables": TABLES}}
+    return [
+        table_description(e)
+        for e in rest_api.ALL_ENDPOINTS
+        if e.virtual_schema_table
+    ]
 
 
 class RequestHandler(vs.RequestHandler):
@@ -30,6 +31,7 @@ class RequestHandler(vs.RequestHandler):
         return {key: request[key] for key in keys if key in request}
 
     def create(self, request: JsonObject) -> JsonObject:
+        metadata = {"schemaMetadata": {"tables": tables()}}
         return self._copy(request, "type") | SCHEMA_METADATA
 
     def set_properties(self, request: JsonObject) -> JsonObject:
