@@ -1,5 +1,6 @@
 import pytest
 
+from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.virtual_schema import (
     AdapterProperties,
     JsonObject,
