@@ -11,13 +11,15 @@ def table_description(endpoint: rest_api.Endpoint) -> JsonObject:
     columns = [c.json for c in endpoint.total_output_columns]
     return {
         "type": "table",
-        "name": endpoint.var_name,
+        "name": endpoint.virtual_schema_table,
         "adapterNotes": "(n/a)",
         "columns": columns,
     }
 
 
-TABLES = [table_description(e) for e in rest_api.ALL_ENDPOINTS]
+TABLES = [
+    table_description(e) for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table
+]
 SCHEMA_METADATA = {"schemaMetadata": {"tables": TABLES}}
 
 
