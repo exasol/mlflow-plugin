@@ -17,9 +17,7 @@ def tables() -> list[JsonObject]:
         }
 
     return [
-        table_description(e)
-        for e in rest_api.ALL_ENDPOINTS
-        if e.virtual_schema_table
+        table_description(e) for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table
     ]
 
 

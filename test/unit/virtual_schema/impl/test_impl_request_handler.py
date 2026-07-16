@@ -44,11 +44,15 @@ def test_other_methods(handler, method_name, expected) -> None:
 
 SAMPLE_SELECT_LIST = [{"columnNr": 0, "name": "ID", "tableName": "A", "type": "column"}]
 
+
 @pytest.mark.parametrize(
     "pushdown_details, expected_error",
     [
         ({"type": "unsupported type"}, "Unsupported type"),
-        ({"type": "select", "selectList": SAMPLE_SELECT_LIST}, "Unsupported selectList"),
+        (
+            {"type": "select", "selectList": SAMPLE_SELECT_LIST},
+            "Unsupported selectList",
+        ),
     ],
 )
 def test_pushdown_error(pushdown_details, handler, expected_error) -> None:
