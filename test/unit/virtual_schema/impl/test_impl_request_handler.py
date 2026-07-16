@@ -51,8 +51,9 @@ def test_other_methods(handler, method_name, expected) -> None:
 )
 def test_pushdown_error(pushdown_details, handler) -> None:
     request = _request("pushdown") | {"pushdownRequest": pushdown_details}
-    with pytest.raises(PushdownError):
+    with pytest.raises(PushdownError) as ex:
         handler.pushdown(request)
+    print(f'{ex.value}')
 
 
 def test_pushdown_success(handler) -> None:

@@ -58,6 +58,7 @@ class RequestHandler:
         request = json.loads(request_str)
         response = self.build_response(request)
         resp_str = to_str(response)
+        if self._verbose:
             print(
                 f"\nrequest {request['type']}: {to_str(request)}\n"
                 f"response: {resp_str}\n",
