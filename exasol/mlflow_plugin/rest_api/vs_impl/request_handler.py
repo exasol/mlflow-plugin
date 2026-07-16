@@ -32,7 +32,7 @@ class RequestHandler(vs.RequestHandler):
 
     def create(self, request: JsonObject) -> JsonObject:
         metadata = {"schemaMetadata": {"tables": tables()}}
-        return self._copy(request, "type") | SCHEMA_METADATA
+        return self._copy(request, "type") | metadata
 
     def set_properties(self, request: JsonObject) -> JsonObject:
         return self._copy(request, "type")
