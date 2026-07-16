@@ -9,6 +9,7 @@
 * #91: Added basic functions for Virtual Schema management
 * #96: Added `AdapterProperties`
 * #99: Added RequestHandler
+* #103: Added Virtual Schema custom implementation for MLflow REST API
 
 ## Documentation
 
