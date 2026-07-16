@@ -1,7 +1,5 @@
 import pytest
 
-from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.virtual_schema import (
     AdapterProperties,
     JsonObject,
@@ -23,7 +21,7 @@ def test_create(handler) -> None:
     request = _request("createVirtualSchema")
     actual = handler.create(request)
     assert actual["type"] == request["type"]
-    assert len(actual["schemaMetadata"]["tables"]) == len(rest_api.ALL_ENDPOINTS)
+    assert len(actual["schemaMetadata"]["tables"]) == 8
 
 
 @pytest.mark.parametrize(
