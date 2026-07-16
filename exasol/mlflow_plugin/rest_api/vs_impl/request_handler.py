@@ -12,7 +12,6 @@ def table_description(endpoint: rest_api.Endpoint) -> JsonObject:
     return {
         "type": "table",
         "name": endpoint.virtual_schema_table,
-        "adapterNotes": "(n/a)",
         "columns": columns,
     }
 
