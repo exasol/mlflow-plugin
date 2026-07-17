@@ -1,5 +1,4 @@
 from collections.abc import Iterator
-from test.integration.virtual_schema.resources.adapter_impl import dget
 
 import exasol.mlflow_plugin.virtual_schema as vs
 from exasol.mlflow_plugin import rest_api
@@ -9,6 +8,7 @@ from exasol.mlflow_plugin.virtual_schema import (
     JsonObject,
     PropertiesDict,
     PushdownError,
+    dget,
 )
 
 
