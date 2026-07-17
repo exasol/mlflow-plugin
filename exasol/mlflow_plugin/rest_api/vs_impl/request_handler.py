@@ -29,9 +29,11 @@ def udf_call(schema: str, connection_name: str, table: str):
         e for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table == table
     )
     f"SELECT * from {endpoint.var_name}"
-    args = [f"'{connection_name}'"] + ["NULL" for col in endpoint.input_columns]
+    args = [f"'{connection_name}'"] + ["NULL" for _ in endpoint.input_columns]
     comma_sep = ", ".join(args)
-    return f'SELECT "{schema}"."{endpoint.var_name}"({comma_sep})'
+    # VS API does not support prepared statements
+    return f'SELECT "{schema}"."{endpoint.var_name}"({comma_sep})'  # nosec: B608
+
 
 
 class RequestHandler(vs.RequestHandler):
@@ -78,10 +80,10 @@ class RequestHandler(vs.RequestHandler):
             raise PushdownError(f"Unsupported pushdown type {repr(pushdown_type)}")
         if select_list := details.get("selectList"):
             raise PushdownError(f"Unsupported selectList {select_list}")
-        fromClause = details.get("from", {})
-        if (fromType := fromClause.get("type")) != "table":
-            raise PushdownError(f"Unsupported FROM type {fromType}")
+        from_clause = details.get("from", {})
+        if (from_type := from_clause.get("type")) != "table":
+            raise PushdownError(f"Unsupported FROM type {from_type}")
         connection_name = self._property_values(request).get("CONNECTION_NAME", "")
-        table = fromClause.get("name")
+        table = from_clause.get("name")
         sql = udf_call(self.udf_schema, connection_name, table)
         return self._copy(request, "type") | {"sql": sql}
