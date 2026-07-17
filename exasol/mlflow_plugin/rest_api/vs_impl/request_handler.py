@@ -1,11 +1,12 @@
+from collections.abc import Iterator
 from test.integration.virtual_schema.resources.adapter_impl import dget
-
 import exasol.mlflow_plugin.virtual_schema as vs
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.exa_meta import ExaMeta
 from exasol.mlflow_plugin.virtual_schema import (
     AdapterProperties,
     JsonObject,
+    PropertiesDict,
     PushdownError,
 )
 
@@ -24,13 +25,18 @@ def tables() -> list[JsonObject]:
     ]
 
 
-def udf_call(schema: str, connection_name: str, table: str):
+def udf_call(schema: str, table: str, properties: PropertiesDict):
     endpoint = next(
         e for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table == table
     )
-    f"SELECT * from {endpoint.var_name}"
-    args = [f"'{connection_name}'"] + ["NULL" for _ in endpoint.input_columns]
-    comma_sep = ", ".join(args)
+    def parameters() -> Iterator[str]:
+        connection_name = properties.get("CONNECTION_NAME") or "MLFLOW"
+        max_results = properties.get("MAX_RESULTS") or "NULL"
+        yield f"'{connection_name}'"
+        for col in endpoint.input_columns:
+            yield max_results if col.name == "max_results" else "NULL"
+
+    comma_sep = ", ".join(parameters())
     # VS API does not support prepared statements
     return f'SELECT "{schema}"."{endpoint.var_name}"({comma_sep})'  # nosec: B608
 
@@ -49,7 +55,7 @@ class RequestHandler(vs.RequestHandler):
         self.properties = AdapterProperties(["CONNECTION_NAME", "MAX_RESULTS"])
         self.udf_schema = exa_meta.script_schema
 
-    def _property_values(self, request: JsonObject) -> JsonObject:
+    def _property_values(self, request: JsonObject) -> PropertiesDict:
         return dget(request, "schemaMetadataInfo", "properties", default={})
 
     def _copy(self, request: JsonObject, *keys):
@@ -83,7 +89,6 @@ class RequestHandler(vs.RequestHandler):
         from_clause = details.get("from", {})
         if (from_type := from_clause.get("type")) != "table":
             raise PushdownError(f"Unsupported FROM type {from_type}")
-        connection_name = self._property_values(request).get("CONNECTION_NAME", "")
         table = from_clause.get("name")
-        sql = udf_call(self.udf_schema, connection_name, table)
+        sql = udf_call(self.udf_schema, table, self._property_values(request))
         return self._copy(request, "type") | {"sql": sql}
