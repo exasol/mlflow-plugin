@@ -49,6 +49,6 @@ def mock_exa_object(
 
     em_input = exa_meta_columns([CONNECTION_NAME_PARAM] + endpoint.input_columns)
     em_output = exa_meta_columns(endpoint.total_output_columns)
-    mock.meta = ExaMeta(em_input, em_output)
+    mock.meta = ExaMeta(em_input, em_output, script_schema="")
 
     return mock
