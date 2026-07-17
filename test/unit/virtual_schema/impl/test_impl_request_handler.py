@@ -81,7 +81,10 @@ def test_pushdown_error(pushdown_details, handler, expected_error) -> None:
 
 def test_pushdown_success(handler) -> None:
     pushdown_details = {
-        "pushdownRequest": {"type": "select", "from": {"type": "table"}}
+        "pushdownRequest": {
+            "type": "select",
+            "from": {"type": "table", "name": "EXPERIMENTS"}
+        }
     }
     request = _request("pushdown") | pushdown_details
     actual = handler.pushdown(request)

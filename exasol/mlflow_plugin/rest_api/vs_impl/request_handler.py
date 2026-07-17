@@ -16,7 +16,7 @@ def find_endpoint(table_name: str) -> rest_api.Endpoint:
     for e in rest_api.ALL_ENDPOINTS:
         if e.virtual_schema_table == table_name:
             return e
-        raise PushdownError(f'Unknown table "{table_name}". Couldn\'t find any endpoint.')
+    raise PushdownError(f'Unknown table "{table_name}". Couldn\'t find any endpoint.')
 
 
 def tables() -> list[JsonObject]:
