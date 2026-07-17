@@ -1,7 +1,6 @@
 import json
 from abc import abstractmethod
 
-from exasol.mlflow_plugin.virtual_schema.adapter_properties import AdapterProperties
 from exasol.mlflow_plugin.virtual_schema.errors import VirtualSchemaError
 from exasol.mlflow_plugin.virtual_schema.types import JsonObject
 

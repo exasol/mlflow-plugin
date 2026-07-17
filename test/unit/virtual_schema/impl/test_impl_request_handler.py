@@ -4,7 +4,6 @@ from exasol.mlflow_plugin.exa_meta import ExaMeta
 from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.rest_api.vs_impl.request_handler import udf_call
 from exasol.mlflow_plugin.virtual_schema import (
-    AdapterProperties,
     JsonObject,
     PushdownError,
 )
@@ -12,7 +11,9 @@ from exasol.mlflow_plugin.virtual_schema import (
 
 @pytest.fixture
 def handler() -> vs_impl.RequestHandler:
-    exa_meta = ExaMeta(input_columns=[], output_columns=[], script_schema="MLFLOW_REST_API")
+    exa_meta = ExaMeta(
+        input_columns=[], output_columns=[], script_schema="MLFLOW_REST_API"
+    )
     return vs_impl.RequestHandler(exa_meta)
 
 

@@ -25,7 +25,9 @@ def tables() -> list[JsonObject]:
 
 
 def udf_call(schema: str, connection_name: str, table: str):
-    endpoint = next(e for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table == table)
+    endpoint = next(
+        e for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table == table
+    )
     f"SELECT * from {endpoint.var_name}"
     args = [f"'{connection_name}'"] + ["NULL" for col in endpoint.input_columns]
     comma_sep = ", ".join(args)
@@ -79,7 +81,7 @@ class RequestHandler(vs.RequestHandler):
         fromClause = details.get("from", {})
         if (fromType := fromClause.get("type")) != "table":
             raise PushdownError(f"Unsupported FROM type {fromType}")
-        connection_name = self._property_values(request).get("CONNECTION_NAME")
+        connection_name = self._property_values(request).get("CONNECTION_NAME", "")
         table = fromClause.get("name")
         sql = udf_call(self.udf_schema, connection_name, table)
         return self._copy(request, "type") | {"sql": sql}
