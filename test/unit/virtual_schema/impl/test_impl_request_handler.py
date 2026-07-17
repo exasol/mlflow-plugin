@@ -12,8 +12,6 @@ from exasol.mlflow_plugin.virtual_schema import (
 
 @pytest.fixture
 def handler() -> vs_impl.RequestHandler:
-    # properties = AdapterProperties(["CONNECTION_NAME", "MAX_RESULTS"])
-    # return vs_impl.RequestHandler(properties, udf_schema="MLFLOW_REST_API")
     exa_meta = ExaMeta(input_columns=[], output_columns=[], script_schema="MLFLOW_REST_API")
     return vs_impl.RequestHandler(exa_meta)
 
