@@ -1,5 +1,6 @@
 from collections.abc import Iterator
 from test.integration.virtual_schema.resources.adapter_impl import dget
+
 import exasol.mlflow_plugin.virtual_schema as vs
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.exa_meta import ExaMeta
@@ -29,6 +30,7 @@ def udf_call(schema: str, table: str, properties: PropertiesDict):
     endpoint = next(
         e for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table == table
     )
+
     def parameters() -> Iterator[str]:
         connection_name = properties.get("CONNECTION_NAME") or "MLFLOW"
         max_results = properties.get("MAX_RESULTS") or "NULL"
@@ -39,7 +41,6 @@ def udf_call(schema: str, table: str, properties: PropertiesDict):
     comma_sep = ", ".join(parameters())
     # VS API does not support prepared statements
     return f'SELECT "{schema}"."{endpoint.var_name}"({comma_sep})'  # nosec: B608
-
 
 
 class RequestHandler(vs.RequestHandler):

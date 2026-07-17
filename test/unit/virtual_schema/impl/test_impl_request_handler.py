@@ -83,9 +83,14 @@ def test_pushdown_success(handler) -> None:
     assert "sql" in actual
 
 
-def test_udf_call():
-    actual = udf_call("schema", "connection", "EXPERIMENTS")
+@pytest.fixture
+def sample_properties():
+    return {"CONNECTION_NAME": "CCC", "MAX_RESULTS": "100"}
+
+
+def test_udf_call(sample_properties):
+    actual = udf_call("schema", "EXPERIMENTS", sample_properties)
     assert actual == (
         'SELECT "schema"."EXPERIMENTS_SEARCH"'  #
-        "('connection', NULL, NULL, NULL, NULL)"
+        "('CCC', NULL, NULL, NULL, 100)"
     )
