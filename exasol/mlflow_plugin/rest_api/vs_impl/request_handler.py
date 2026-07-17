@@ -4,9 +4,10 @@ import exasol.mlflow_plugin.virtual_schema as vs
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.exa_meta import ExaMeta
 from exasol.mlflow_plugin.virtual_schema import (
-    AdapterProperties,
     JsonObject,
     PropertiesDict,
+    Property,
+    PropertyValidator,
     PushdownError,
     dget,
 )
@@ -56,7 +57,9 @@ class RequestHandler(vs.RequestHandler):
         https://docs.exasol.com/db/latest/database_concepts/udf_scripts/python3.htm#Metadata
         """
         super().__init__()
-        self.properties = AdapterProperties(["CONNECTION_NAME", "MAX_RESULTS"])
+        self.properties = PropertyValidator(
+            [Property("CONNECTION_NAME", str), Property("MAX_RESULTS", int)]
+        )
         self.udf_schema = exa_meta.script_schema
 
     def _property_values(self, request: JsonObject) -> PropertiesDict:

@@ -1,6 +1,7 @@
 from exasol.mlflow_plugin.virtual_schema.adapter import Adapter
 from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
-    AdapterProperties,
+    PropertyValidator,
+    Property,
 )
 from exasol.mlflow_plugin.virtual_schema.dict_utils import dget
 from exasol.mlflow_plugin.virtual_schema.errors import (
@@ -17,7 +18,8 @@ from exasol.mlflow_plugin.virtual_schema.virtual_schema import VirtualSchema
 
 __all__ = [
     "Adapter",
-    "AdapterProperties",
+    "PropertyValidator",
+    "Property",
     "JsonObject",
     "PropertiesDict",
     "PropertiesError",
