@@ -21,3 +21,4 @@
 * #81: Update workflows to `exasol-toolbox` 10.0.0
 * #82: Moved constant `ALL_ENDPOINTS` to package `rest_api`
 * #86: Added pytest CLI option `--db-schema`
+* #106: Changed interface of `RequestHandler`

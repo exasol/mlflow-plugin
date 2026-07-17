@@ -11,7 +11,7 @@ class AdapterException(Exception):
     pass
 
 
-def _get(req: JsonObject, default: Any = None, *keys: str) -> Any:
+def dget(req: dict[str, Any], *keys: str, default: Any = None) -> Any:
     current: Any = req
     for k in keys:
         if not (current := current.get(k)):
@@ -26,7 +26,7 @@ def build_response(req: JsonObject):
     type = req["type"]
     print(f"Adapter call: {type}", flush=True)
     if type == "createVirtualSchema":
-        if properties := _get(req, {}, "schemaMetadataInfo", "properties"):
+        if properties := dget(req, "schemaMetadataInfo", "properties", default={}):
             print(f"properties: {properties}", flush=True)
         return copy("type") | {"schemaMetadata": {"tables": []}}
     if type == "dropVirtualSchema":

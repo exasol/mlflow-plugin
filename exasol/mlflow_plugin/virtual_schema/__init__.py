@@ -2,6 +2,7 @@ from exasol.mlflow_plugin.virtual_schema.adapter import Adapter
 from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
     AdapterProperties,
 )
+from exasol.mlflow_plugin.virtual_schema.dict_utils import dget
 from exasol.mlflow_plugin.virtual_schema.errors import (
     PropertiesError,
     PushdownError,
@@ -24,4 +25,5 @@ __all__ = [
     "RequestHandler",
     "VirtualSchema",
     "VirtualSchemaError",
+    "dget",
 ]
