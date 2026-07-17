@@ -46,12 +46,12 @@ def udf_call(schema: str, table: str, properties: PropertiesDict):
 class RequestHandler(vs.RequestHandler):
     def __init__(self, exa_meta: ExaMeta):
         """
-        Args:
+        Parameter exa_meta contains metatada about the UDF / Virtual
+        Schema, including the script_schema.
 
-            udf_schema: Name of the database schema containing the UDFs for
-                accessing the MLflow REST API
+        See
+        https://docs.exasol.com/db/latest/database_concepts/udf_scripts/python3.htm#Metadata
         """
-
         super().__init__()
         self.properties = AdapterProperties(["CONNECTION_NAME", "MAX_RESULTS"])
         self.udf_schema = exa_meta.script_schema
