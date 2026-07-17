@@ -1,12 +1,53 @@
 from test.not_raises import not_raises
-from test.unit.virtual_schema.property_utils import property_values
 
 import pytest
 
-from exasol.mlflow_plugin.virtual_schema import (
-    AdapterProperties,
+from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
     PropertiesError,
+    Property,
+    PropertyValidator,
 )
+
+
+@pytest.mark.parametrize(
+    "type_, str_value, typed_value",
+    [
+        (str, None, None),
+        (str, "", ""),
+        (str, "abc", "abc"),
+        (str, "123", "123"),
+        (int, None, None),
+        (int, "123", 123),
+        (bool, None, None),
+        (bool, "true", True),
+        (bool, "True", True),
+        (bool, "TRUE", True),
+        (bool, "false", False),
+        (bool, "FALSE", False),
+        (bool, "False", False),
+    ],
+)
+def test_property_validate_success(type_, str_value, typed_value):
+    property = Property("P", type=type_)
+    with not_raises(ValueError):
+        property.validate(str_value)
+    assert property.value(str_value) == typed_value
+
+
+@pytest.mark.parametrize(
+    "type_, value",
+    [
+        (int, "abc"),
+        (int, ""),
+        (bool, ""),
+        (bool, "123"),
+        (bool, "abc"),
+    ],
+)
+def test_property_validate_failure(type_, value):
+    property = Property("P", type=type_)
+    with pytest.raises(PropertiesError):
+        property.validate(value)
 
 
 @pytest.mark.parametrize(
@@ -14,80 +55,29 @@ from exasol.mlflow_plugin.virtual_schema import (
     [
         (None, {"A": "1"}, "1 unsupported property: A."),
         (None, {"A": "1", "B": "bb"}, "2 unsupported properties: A, B."),
-        (["a"], {"A": "1", "B": "bb"}, "1 unsupported property: B."),
+        ([Property("a", int)], {"A": "1", "B": "bb"}, "1 unsupported property: B."),
+        (
+            [Property("a", int)],
+            {"A": "not a number"},
+            'Illegal value "not a number" for Adapter Property "A"',
+        ),
     ],
 )
-def test_validate_failure(properties, values, message) -> None:
-    testee = AdapterProperties(properties)
+def test_validator_failure(properties, values, message) -> None:
+    validator = PropertyValidator(properties)
     with pytest.raises(PropertiesError, match=message):
-        testee.validate(values)
+        validator.validate(values)
 
 
 @pytest.mark.parametrize(
     "properties, values",
     [
-        (None, {}),
-        (["a"], {"A": "1"}),
-        (["a", "b"], {"A": "1"}),
+        ([], {}),
+        ([Property("a", int)], {"A": "1"}),
+        ([Property("a", int), Property("b", str)], {"A": "1"}),
     ],
 )
-def test_validate_success(properties, values) -> None:
-    testee = AdapterProperties(properties)
+def test_validator_success(properties, values) -> None:
+    validator = PropertyValidator(properties)
     with not_raises(PropertiesError):
-        testee.validate(values)
-
-
-@pytest.fixture
-def adapter_properties() -> AdapterProperties:
-    return AdapterProperties(["A", "B"])
-
-
-@pytest.mark.parametrize(
-    "_request, expected",
-    [
-        ({}, {}),
-        ({"schemaMetadataInfo": {}}, {}),
-        (property_values({}), {}),
-        (property_values({"A": "1"}), {"A": "1"}),
-        (property_values({"A": "1", "B": "2"}), {"A": "1", "B": "2"}),
-    ],
-)
-def test_initial_values(adapter_properties, _request, expected) -> None:
-    assert adapter_properties.initial(_request) == expected
-
-
-def test_initial_illegal_value(adapter_properties) -> None:
-    request = property_values({"ILLEGAL": "c"})
-    with pytest.raises(PropertiesError):
-        adapter_properties.initial(request)
-
-
-@pytest.mark.parametrize(
-    "_request, expected",
-    [
-        pytest.param(property_values({}, {}), {}, id="empty"),
-        pytest.param(property_values({"A": "1"}, {}), {"A": "1"}, id="unchanged"),
-        pytest.param(property_values({"A": "1"}, {"A": "2"}), {"A": "2"}, id="updated"),
-        pytest.param(
-            property_values({"A": "1"}, {"B": "2"}), {"A": "1", "B": "2"}, id="added_b"
-        ),
-        pytest.param(
-            property_values({"A": "1", "B": "2"}, {"A": "2"}),
-            {"A": "2", "B": "2"},
-            id="updated_a",
-        ),
-        pytest.param(
-            property_values({"A": "1", "B": "2"}, {"A": None}),
-            {"B": "2"},
-            id="unset_a",
-        ),
-    ],
-)
-def test_update(adapter_properties, _request, expected) -> None:
-    assert adapter_properties.update(_request) == expected
-
-
-def test_update_illegal_value(adapter_properties) -> None:
-    request = property_values({}, {"ILLEGAL": "value"})
-    with pytest.raises(PropertiesError):
-        adapter_properties.update(request)
+        validator.validate(values)
