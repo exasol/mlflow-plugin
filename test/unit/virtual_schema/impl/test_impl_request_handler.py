@@ -83,7 +83,7 @@ def test_pushdown_success(handler) -> None:
     pushdown_details = {
         "pushdownRequest": {
             "type": "select",
-            "from": {"type": "table", "name": "EXPERIMENTS"}
+            "from": {"type": "table", "name": "EXPERIMENTS"},
         }
     }
     request = _request("pushdown") | pushdown_details
