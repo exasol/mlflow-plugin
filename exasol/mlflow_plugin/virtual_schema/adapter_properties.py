@@ -59,11 +59,8 @@ class PropertyValidator:
         if illegal := [k for k in values if k not in self.properties]:
             raise error(illegal, "{n} unsupported {label}: {elements}.")
         if check_mandatory:
-            if missing := [
-                p.name
-                for p in self.properties.values()
-                if p.mandatory and not p.name in values
-            ]:
+            required = [p.name for p in self.properties.values() if p.mandatory]
+            if missing := [p for p in required if p not in values]:
                 raise error(
                     missing,
                     "{n} mandatory {label} missing: {elements}.",
