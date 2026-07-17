@@ -1,7 +1,6 @@
 import json
 from abc import abstractmethod
 
-from exasol.mlflow_plugin.virtual_schema.adapter_properties import AdapterProperties
 from exasol.mlflow_plugin.virtual_schema.errors import VirtualSchemaError
 from exasol.mlflow_plugin.virtual_schema.types import JsonObject
 
@@ -11,8 +10,7 @@ class RequestHandler:
     Handle requests to a Virtual Schema.
     """
 
-    def __init__(self, properties: AdapterProperties, verbose: bool = False):
-        self.properties = properties
+    def __init__(self, verbose: bool = False):
         self._verbose = verbose
 
     @abstractmethod
@@ -36,10 +34,8 @@ class RequestHandler:
     def build_response(self, request: JsonObject) -> JsonObject:
         _type = request["type"]
         if _type == "createVirtualSchema":
-            self.properties.initial(request)
             return self.create(request)
         if _type == "setProperties":
-            self.properties.update(request)
             return self.set_properties(request)
         if _type == "refresh":
             return self.refresh(request)
