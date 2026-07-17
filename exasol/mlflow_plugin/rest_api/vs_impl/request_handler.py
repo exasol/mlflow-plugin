@@ -49,7 +49,7 @@ def udf_call(schema: str, endpoint: rest_api.Endpoint, properties: PropertiesDic
 
 PROPERTIES = [
     Property("CONNECTION_NAME", str, mandatory=True),
-    Property("MAX_RESULTS", int)
+    Property("MAX_RESULTS", int),
 ]
 
 
