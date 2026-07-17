@@ -23,7 +23,9 @@ def _request(_type: str) -> JsonObject:
 
 
 def test_create(handler) -> None:
-    request = _request("createVirtualSchema")
+    request = _request("createVirtualSchema") | {
+        "schemaMetadataInfo": {"properties": {"CONNECTION_NAME": "CCC"}}
+    }
     actual = handler.create(request)
     assert actual["type"] == request["type"]
     assert len(actual["schemaMetadata"]["tables"]) == 8
