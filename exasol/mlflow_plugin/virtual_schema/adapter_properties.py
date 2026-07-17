@@ -42,13 +42,34 @@ class PropertyValidator:
     def __init__(self, properties: list[Property] | None = None):
         self.properties = {p.name: p for p in properties or []}
 
-    def validate(self, values: PropertiesDict) -> None:
+    def validate(self, values: PropertiesDict, check_mandatory: bool = False) -> None:
         """Values passed by API are always upper case."""
+
+        def error(
+            elements: list[str],
+            message: str,
+            singular: str = "property",
+            plural: str = "properties",
+        ) -> PropertiesError:
+            n = len(elements)
+            label = singular if n == 1 else plural
+            formatted = message.format(n=n, label=label, elements=", ".join(elements))
+            return PropertiesError(formatted)
+
         if illegal := [k for k in values if k not in self.properties]:
-            n = len(illegal)
-            properties = "property" if n == 1 else "properties"
-            raise PropertiesError(
-                f"{n} unsupported {properties}: {', '.join(illegal)}."
-            )
+            raise error(illegal, "{n} unsupported {label}: {elements}.")
+        if check_mandatory:
+            if missing := [
+                p.name
+                for p in self.properties.values()
+                if p.mandatory and not p.name in values
+            ]:
+                raise error(
+                    missing,
+                    "{n} mandatory {label} missing: {elements}.",
+                    "property is",
+                    "properties are",
+                )
+
         for k, v in values.items():
             self.properties[k].validate(v)

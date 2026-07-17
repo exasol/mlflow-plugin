@@ -47,6 +47,12 @@ def udf_call(schema: str, endpoint: rest_api.Endpoint, properties: PropertiesDic
     return f'SELECT "{schema}"."{endpoint.var_name}"({comma_sep})'  # nosec: B608
 
 
+PROPERTIES = [
+    Property("CONNECTION_NAME", str, mandatory=True),
+    Property("MAX_RESULTS", int)
+]
+
+
 class RequestHandler(vs.RequestHandler):
     def __init__(self, exa_meta: ExaMeta):
         """
@@ -57,9 +63,7 @@ class RequestHandler(vs.RequestHandler):
         https://docs.exasol.com/db/latest/database_concepts/udf_scripts/python3.htm#Metadata
         """
         super().__init__()
-        self.properties = PropertyValidator(
-            [Property("CONNECTION_NAME", str), Property("MAX_RESULTS", int)]
-        )
+        self.properties = PropertyValidator(PROPERTIES)
         self.udf_schema = exa_meta.script_schema
 
     def _property_values(self, request: JsonObject) -> PropertiesDict:
@@ -69,7 +73,7 @@ class RequestHandler(vs.RequestHandler):
         return {key: request[key] for key in keys if key in request}
 
     def create(self, request: JsonObject) -> JsonObject:
-        self.properties.validate(self._property_values(request))
+        self.properties.validate(self._property_values(request), check_mandatory=True)
         metadata = {"schemaMetadata": {"tables": tables()}}
         return self._copy(request, "type") | metadata
 
