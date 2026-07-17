@@ -1,5 +1,6 @@
 import pytest
 
+from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.exa_meta import ExaMeta
 from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.rest_api.vs_impl.request_handler import udf_call
@@ -65,6 +66,11 @@ SAMPLE_SELECT_LIST = [{"columnNr": 0, "name": "ID", "tableName": "A", "type": "c
             "Unsupported FROM type",
             id="unsupported_from_type",
         ),
+        pytest.param(
+            {"type": "select", "from": {"type": "table", "name": "UNKNOWN"}},
+            'Unknown table "UNKNOWN"',
+            id="unsupported_table",
+        ),
     ],
 )
 def test_pushdown_error(pushdown_details, handler, expected_error) -> None:
@@ -89,7 +95,7 @@ def sample_properties():
 
 
 def test_udf_call(sample_properties):
-    actual = udf_call("schema", "EXPERIMENTS", sample_properties)
+    actual = udf_call("schema", rest_api.EXPERIMENTS_SEARCH, sample_properties)
     assert actual == (
         'SELECT "schema"."EXPERIMENTS_SEARCH"'  #
         "('CCC', NULL, NULL, NULL, 100)"

@@ -12,6 +12,13 @@ from exasol.mlflow_plugin.virtual_schema import (
 )
 
 
+def find_endpoint(table_name: str) -> rest_api.Endpoint:
+    for e in rest_api.ALL_ENDPOINTS:
+        if e.virtual_schema_table == table_name:
+            return e
+        raise PushdownError(f'Unknown table "{table_name}". Couldn\'t find any endpoint.')
+
+
 def tables() -> list[JsonObject]:
     def table_description(endpoint: rest_api.Endpoint) -> JsonObject:
         columns = [c.json for c in endpoint.total_output_columns]
@@ -26,11 +33,7 @@ def tables() -> list[JsonObject]:
     ]
 
 
-def udf_call(schema: str, table: str, properties: PropertiesDict):
-    endpoint = next(
-        e for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table == table
-    )
-
+def udf_call(schema: str, endpoint: rest_api.Endpoint, properties: PropertiesDict):
     def parameters() -> Iterator[str]:
         connection_name = properties.get("CONNECTION_NAME") or "MLFLOW"
         max_results = properties.get("MAX_RESULTS") or "NULL"
@@ -91,5 +94,6 @@ class RequestHandler(vs.RequestHandler):
         if (from_type := from_clause.get("type")) != "table":
             raise PushdownError(f"Unsupported FROM type {from_type}")
         table = from_clause.get("name")
-        sql = udf_call(self.udf_schema, table, self._property_values(request))
+        endpoint = find_endpoint(table)
+        sql = udf_call(self.udf_schema, endpoint, self._property_values(request))
         return self._copy(request, "type") | {"sql": sql}
