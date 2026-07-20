@@ -10,6 +10,7 @@
 * #96: Added `AdapterProperties`
 * #99: Added RequestHandler
 * #103: Added Virtual Schema custom implementation for MLflow REST API
+* #101: Replaced `AdapterProperties` by `PropertyValidator`
 
 ## Documentation
 
