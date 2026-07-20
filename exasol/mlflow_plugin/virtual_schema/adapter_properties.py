@@ -56,11 +56,16 @@ class PropertyValidator:
             formatted = message.format(n=n, label=label, elements=", ".join(elements))
             return PropertiesError(formatted)
 
+
         if illegal := [k for k in values if k not in self.properties]:
             raise error(illegal, "{n} unsupported {label}: {elements}.")
         if check_mandatory:
             required = [p.name for p in self.properties.values() if p.mandatory]
-            if missing := [p for p in required if p not in values]:
+            # Note: empty property values passed to CREATE VIRTUAL SCHEMA will
+            # result in pyexasol.exceptions.ExaQueryError: Value of property
+            # MAX_RESULTS must not be null or empty.
+            non_empty = {k: v for k, v in values.items() if v}
+            if missing := [p for p in required if p not in non_empty]:
                 raise error(
                     missing,
                     "{n} mandatory {label} missing: {elements}.",

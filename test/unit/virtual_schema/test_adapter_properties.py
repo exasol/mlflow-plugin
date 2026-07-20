@@ -51,37 +51,47 @@ def test_property_validate_failure(type_, value):
 
 
 @pytest.mark.parametrize(
-    "properties, values, check_mandatory, message",
+    "properties, values, message",
     [
-        (None, {"A": "1"}, False, "1 unsupported property: A."),
-        (None, {"A": "1", "B": "bb"}, False, "2 unsupported properties: A, B."),
+        (None, {"A": "1"}, "1 unsupported property: A."),
+        (None, {"A": "1", "B": "bb"}, "2 unsupported properties: A, B."),
         (
             [Property("a", int)],
             {"A": "1", "B": "bb"},
-            False,
             "1 unsupported property: B.",
-        ),
-        (
-            [
-                Property("a", int, mandatory=True),
-                Property("b", int),
-            ],
-            {"B": "bb"},
-            True,
-            "1 mandatory property is missing: A.",
         ),
         (
             [Property("a", int)],
             {"A": "not a number"},
-            False,
             'Illegal value "not a number" for Adapter Property "A"',
         ),
     ],
 )
-def test_validator_failure(properties, values, check_mandatory, message) -> None:
+def test_validator_failure(properties, values, message) -> None:
     validator = PropertyValidator(properties)
     with pytest.raises(PropertiesError, match=message):
-        validator.validate(values, check_mandatory)
+        validator.validate(values)
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        pytest.param({"OTHER": "123"}, id="missing"),
+        pytest.param({"REQUIRED": ""}, id="empty_string"),
+        pytest.param({"REQUIRED": None}, id="null_value"),
+    ]
+)
+def test_mandatory_properties(values) -> None:
+    properties = [
+        Property("required", str, mandatory=True),
+        Property("other", int),
+    ]
+    validator = PropertyValidator(properties)
+    with pytest.raises(
+        PropertiesError,
+        match="1 mandatory property is missing: REQUIRED.",
+    ):
+        validator.validate(values, check_mandatory=True)
 
 
 @pytest.mark.parametrize(

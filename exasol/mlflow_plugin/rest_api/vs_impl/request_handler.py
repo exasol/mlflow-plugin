@@ -79,7 +79,8 @@ class RequestHandler(vs.RequestHandler):
 
     def set_properties(self, request: JsonObject) -> JsonObject:
         values = dget(request, "properties", default={})
-        self.properties.validate(values)
+        merged = self._property_values(request) | values
+        self.properties.validate(merged, check_mandatory=True)
         return self._copy(request, "type")
 
     def refresh(self, request: JsonObject) -> JsonObject:
