@@ -4,6 +4,7 @@ from exasol.mlflow_plugin.exa_meta import ExaMeta
 from exasol.mlflow_plugin.rest_api.vs_impl.rewrite_queries import (
     QueryRewriter,
     TableRewriter,
+    TableRewriterWithSubQuery,
     from_clause,
 )
 from exasol.mlflow_plugin.virtual_schema import (
