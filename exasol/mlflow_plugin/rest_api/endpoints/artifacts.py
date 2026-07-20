@@ -3,7 +3,6 @@ from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
 
 ARTIFACTS_LIST = Endpoint(
     var_name="ARTIFACTS_LIST",
-    virtual_schema_table="ARTIFACTS",
     method="get",
     url_suffix="artifacts",
     output_key="files",

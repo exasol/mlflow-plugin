@@ -23,4 +23,6 @@
 * #82: Moved constant `ALL_ENDPOINTS` to package `rest_api`
 * #86: Added pytest CLI option `--db-schema`
 * #106: Changed interface of `RequestHandler`
+* #109: Added integration tests for Virtual Schema implementation
 * #110: Added class `QueryRewriter`
+* #112: Added class `TableRewriter`
