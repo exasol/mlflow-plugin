@@ -22,7 +22,7 @@ VALIDATOR = PropertyValidator(
     ]
 )
 
-REWRITERS = [
+REWRITERS: list[QueryRewriter] = [
     TableRewriter(rest_api.ARTIFACTS_LIST, "ARTIFACTS"),
     TableRewriter(rest_api.EXPERIMENTS_SEARCH, "EXPERIMENTS"),
     TableRewriter(rest_api.GATEWAY_ENDPOINTS_LIST, "GATEWAY_ENDPOINTS"),
@@ -62,21 +62,11 @@ class RequestHandler(vs.RequestHandler):
 
     @property
     def _tables(self) -> list[JsonObject]:
-        def table_description(
-            table_name: str, endpoint: rest_api.Endpoint
-        ) -> JsonObject:
-            columns = [c.json for c in endpoint.total_output_columns]
-            return {
-                "type": "table",
-                "name": table_name,
-                "columns": columns,
-            }
+        def table(rewriter: TableRewriter) -> JsonObject:
+            columns = [c.json for c in rewriter.endpoint.total_output_columns]
+            return {"type": "table", "name": rewriter.table_name, "columns": columns}
 
-        return [
-            table_description(w.table_name, w.endpoint)
-            for w in self.rewriters
-            if isinstance(w, TableRewriter)
-        ]
+        return [table(w) for w in self.rewriters if isinstance(w, TableRewriter)]
 
     def create(self, request: JsonObject) -> JsonObject:
         self.properties.validate(self._property_values(request), check_mandatory=True)
