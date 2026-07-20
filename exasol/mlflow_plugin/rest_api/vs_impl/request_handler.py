@@ -62,13 +62,16 @@ class RequestHandler(vs.RequestHandler):
 
     @property
     def _tables(self) -> list[JsonObject]:
-        def table_description(table_name: str, endpoint: rest_api.Endpoint) -> JsonObject:
+        def table_description(
+            table_name: str, endpoint: rest_api.Endpoint
+        ) -> JsonObject:
             columns = [c.json for c in endpoint.total_output_columns]
             return {
                 "type": "table",
                 "name": table_name,
                 "columns": columns,
             }
+
         return [
             table_description(w.table_name, w.endpoint)
             for w in self.rewriters
