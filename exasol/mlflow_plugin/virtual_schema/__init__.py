@@ -1,4 +1,3 @@
-from exasol.mlflow_plugin.virtual_schema.adapter import Adapter
 from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
     Property,
     PropertyValidator,
@@ -9,15 +8,14 @@ from exasol.mlflow_plugin.virtual_schema.errors import (
     PushdownError,
     VirtualSchemaError,
 )
+from exasol.mlflow_plugin.virtual_schema.query_rewriter import QueryRewriter
 from exasol.mlflow_plugin.virtual_schema.request_handler import RequestHandler
 from exasol.mlflow_plugin.virtual_schema.types import (
     JsonObject,
     PropertiesDict,
 )
-from exasol.mlflow_plugin.virtual_schema.virtual_schema import VirtualSchema
 
 __all__ = [
-    "Adapter",
     "PropertyValidator",
     "Property",
     "JsonObject",
@@ -25,7 +23,7 @@ __all__ = [
     "PropertiesError",
     "PushdownError",
     "RequestHandler",
-    "VirtualSchema",
+    "QueryRewriter",
     "VirtualSchemaError",
     "dget",
 ]
