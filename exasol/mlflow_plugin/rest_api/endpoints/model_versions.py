@@ -27,7 +27,6 @@ MODEL_VERSION_INPUT_COLUMNS = [
 
 MODEL_VERSIONS_GET = Endpoint(
     var_name="MODEL_VERSIONS_GET",
-    virtual_schema_table=None,
     method="get",
     url_suffix="model-versions/get",
     output_key="model_version",
@@ -38,7 +37,6 @@ MODEL_VERSIONS_GET = Endpoint(
 
 MODEL_VERSIONS_GET_DOWNLOAD_URI = Endpoint(
     var_name="MODEL_VERSIONS_GET_DOWNLOAD_URI",
-    virtual_schema_table=None,
     method="get",
     url_suffix="model-versions/get-download-uri",
     output_key="",
@@ -49,7 +47,6 @@ MODEL_VERSIONS_GET_DOWNLOAD_URI = Endpoint(
 
 MODEL_VERSIONS_SEARCH = Endpoint(
     var_name="MODEL_VERSIONS_SEARCH",
-    virtual_schema_table="MODEL_VERSIONS",
     method="get",
     url_suffix="model-versions/search",
     output_key="model_versions",
@@ -60,7 +57,6 @@ MODEL_VERSIONS_SEARCH = Endpoint(
 
 REGISTERED_MODELS_GET_LATEST_VERSIONS = Endpoint(
     var_name="REGISTERED_MODELS_GET_LATEST_VERSIONS",
-    virtual_schema_table="REGISTERED_MODELS_LATEST_VERSIONS",
     method="post",
     url_suffix="registered-models/get-latest-versions",
     output_key="model_versions",

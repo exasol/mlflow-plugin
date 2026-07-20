@@ -4,7 +4,6 @@ from exasol.mlflow_plugin.rest_api.expanding import EXPAND_TAGS
 
 EXPERIMENTS_SEARCH = Endpoint(
     var_name="EXPERIMENTS_SEARCH",
-    virtual_schema_table="EXPERIMENTS",
     method="post",
     url_suffix="experiments/search",
     output_key="experiments",

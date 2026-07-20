@@ -24,3 +24,4 @@
 * #86: Added pytest CLI option `--db-schema`
 * #106: Changed interface of `RequestHandler`
 * #110: Added class `QueryRewriter`
+* #112: Added class `TableRewriter`

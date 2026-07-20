@@ -1,8 +1,11 @@
-from collections.abc import Iterator
-
 import exasol.mlflow_plugin.virtual_schema as vs
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.exa_meta import ExaMeta
+from exasol.mlflow_plugin.rest_api.vs_impl.rewrite_queries import (
+    TableRewriter,
+    TableRewriterWithSubQuery,
+    from_clause,
+)
 from exasol.mlflow_plugin.virtual_schema import (
     JsonObject,
     PropertiesDict,
@@ -12,39 +15,39 @@ from exasol.mlflow_plugin.virtual_schema import (
     dget,
 )
 
-
-def find_endpoint(table_name: str) -> rest_api.Endpoint:
-    for e in rest_api.ALL_ENDPOINTS:
-        if e.virtual_schema_table == table_name:
-            return e
-    raise PushdownError(f'Unknown table "{table_name}". Couldn\'t find any endpoint.')
+PROPERTIES = [
+    Property("CONNECTION_NAME", str, mandatory=True),
+    Property("MAX_RESULTS", int),
+]
 
 
-def tables() -> list[JsonObject]:
-    def table_description(endpoint: rest_api.Endpoint) -> JsonObject:
-        columns = [c.json for c in endpoint.total_output_columns]
-        return {
-            "type": "table",
-            "name": endpoint.virtual_schema_table,
-            "columns": columns,
-        }
+REWRITERS = [
+    TableRewriter(rest_api.ARTIFACTS_LIST, "ARTIFACTS"),
+    TableRewriter(rest_api.EXPERIMENTS_SEARCH, "EXPERIMENTS"),
+    TableRewriter(rest_api.GATEWAY_ENDPOINTS_LIST, "GATEWAY_ENDPOINTS"),
+    TableRewriter(
+        rest_api.GATEWAY_MODEL_DEFINITIONS_LIST,
+        "GATEWAY_MODEL_DEFINITIONS",
+    ),
+    TableRewriter(rest_api.MODEL_VERSIONS_SEARCH, "MODEL_VERSIONS"),
+    TableRewriter(rest_api.REGISTERED_MODELS_SEARCH, "REGISTERED_MODELS"),
+]
 
-    return [
-        table_description(e) for e in rest_api.ALL_ENDPOINTS if e.virtual_schema_table
-    ]
+
+def table_description(table_name: str, endpoint: rest_api.Endpoint) -> JsonObject:
+    columns = [c.json for c in endpoint.total_output_columns]
+    return {
+        "type": "table",
+        "name": table_name,
+        "columns": columns,
+    }
 
 
-def udf_call(schema: str, endpoint: rest_api.Endpoint, properties: PropertiesDict):
-    def parameters() -> Iterator[str]:
-        connection_name = properties.get("CONNECTION_NAME") or "MLFLOW"
-        max_results = properties.get("MAX_RESULTS") or "NULL"
-        yield f"'{connection_name}'"
-        for col in endpoint.input_columns:
-            yield max_results if col.name == "max_results" else "NULL"
-
-    comma_sep = ", ".join(parameters())
-    # VS API does not support prepared statements
-    return f'SELECT "{schema}"."{endpoint.var_name}"({comma_sep})'  # nosec: B608
+TABLES = [
+    table_description(w.table_name, w.endpoint)
+    for w in REWRITERS
+    if isinstance(w, TableRewriter)
+]
 
 
 PROPERTIES = [
@@ -74,7 +77,7 @@ class RequestHandler(vs.RequestHandler):
 
     def create(self, request: JsonObject) -> JsonObject:
         self.properties.validate(self._property_values(request), check_mandatory=True)
-        metadata = {"schemaMetadata": {"tables": tables()}}
+        metadata = {"schemaMetadata": {"tables": TABLES}}
         return self._copy(request, "type") | metadata
 
     def set_properties(self, request: JsonObject) -> JsonObject:
@@ -98,10 +101,11 @@ class RequestHandler(vs.RequestHandler):
             raise PushdownError(f"Unsupported pushdown type {repr(pushdown_type)}")
         if select_list := details.get("selectList"):
             raise PushdownError(f"Unsupported selectList {select_list}")
-        from_clause = details.get("from", {})
-        if (from_type := from_clause.get("type")) != "table":
-            raise PushdownError(f"Unsupported FROM type {from_type}")
-        table = from_clause.get("name")
-        endpoint = find_endpoint(table)
-        sql = udf_call(self.udf_schema, endpoint, self._property_values(request))
-        return self._copy(request, "type") | {"sql": sql}
+
+        for rewriter in REWRITERS:
+            if rewriter.can_handle(request):
+                properties = self._property_values(request)
+                sql = rewriter.rewrite(request, properties, self.udf_schema)
+                return self._copy(request, "type") | {"sql": sql}
+
+        raise PushdownError(f"Unsupported Pushdown from clause {from_clause(request)}")
