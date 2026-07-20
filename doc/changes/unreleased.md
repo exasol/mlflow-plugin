@@ -2,6 +2,8 @@
 
 ## Summary
 
+This release adds support for accessing the MLflow REST API via an Exasol Virtual Schema.
+
 ## Features
 
 * #84: Render `Column` as Json as required for Virtual Schema API
@@ -11,6 +13,7 @@
 * #99: Added RequestHandler
 * #103: Added Virtual Schema custom implementation for MLflow REST API
 * #101: Replaced `AdapterProperties` by `PropertyValidator`
+* #114: Added class `TableRewriterWithSubQuery`
 
 ## Documentation
 
