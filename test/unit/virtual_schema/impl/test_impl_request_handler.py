@@ -1,9 +1,7 @@
 import pytest
 
-from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.exa_meta import ExaMeta
 from exasol.mlflow_plugin.rest_api import vs_impl
-from exasol.mlflow_plugin.rest_api.vs_impl.request_handler import udf_call
 from exasol.mlflow_plugin.virtual_schema import (
     JsonObject,
     PropertiesDict,
@@ -13,10 +11,13 @@ from exasol.mlflow_plugin.virtual_schema import (
 
 
 @pytest.fixture
-def handler() -> vs_impl.RequestHandler:
-    exa_meta = ExaMeta(
-        input_columns=[], output_columns=[], script_schema="MLFLOW_REST_API"
-    )
+def utest_schema():
+    return "UTEST_MLFLOW"
+
+
+@pytest.fixture
+def handler(utest_schema) -> vs_impl.RequestHandler:
+    exa_meta = ExaMeta(input_columns=[], output_columns=[], script_schema=utest_schema)
     return vs_impl.RequestHandler(exa_meta)
 
 
@@ -30,7 +31,7 @@ def test_create_success(handler) -> None:
     }
     actual = handler.create(request)
     assert actual["type"] == request["type"]
-    assert len(actual["schemaMetadata"]["tables"]) == 8
+    assert len(actual["schemaMetadata"]["tables"]) == len(vs_impl.REWRITERS)
 
 
 MISSING_CONNECTION_NAME = "1 mandatory property is missing: CONNECTION_NAME."
@@ -125,12 +126,12 @@ SAMPLE_SELECT_LIST = [{"columnNr": 0, "name": "ID", "tableName": "A", "type": "c
         ),
         pytest.param(
             {"type": "select", "from": {"type": "join"}},
-            "Unsupported FROM type",
+            "Unsupported Pushdown from clause",
             id="unsupported_from_type",
         ),
         pytest.param(
             {"type": "select", "from": {"type": "table", "name": "UNKNOWN"}},
-            'Unknown table "UNKNOWN"',
+            "Unsupported Pushdown from clause",
             id="unsupported_table",
         ),
     ],
@@ -141,27 +142,22 @@ def test_pushdown_error(pushdown_details, handler, expected_error) -> None:
         handler.pushdown(request)
 
 
-def test_pushdown_success(handler) -> None:
+def pushdown_for_vs_table(table_name: str):
     pushdown_details = {
         "pushdownRequest": {
             "type": "select",
-            "from": {"type": "table", "name": "EXPERIMENTS"},
-        }
+            "from": {"type": "table", "name": table_name},
+        },
+        "schemaMetadataInfo": {"properties": {"MAX_RESULTS": "123"}},
     }
-    request = _request("pushdown") | pushdown_details
+    return _request("pushdown") | pushdown_details
+
+
+def test_pushdown_success(handler, utest_schema) -> None:
+    request = pushdown_for_vs_table("EXPERIMENTS")
     actual = handler.pushdown(request)
-    assert actual["type"] == request["type"]
-    assert "sql" in actual
-
-
-@pytest.fixture
-def sample_properties():
-    return {"CONNECTION_NAME": "CCC", "MAX_RESULTS": "100"}
-
-
-def test_udf_call(sample_properties):
-    actual = udf_call("schema", rest_api.EXPERIMENTS_SEARCH, sample_properties)
-    assert actual == (
-        'SELECT "schema"."EXPERIMENTS_SEARCH"'  #
-        "('CCC', NULL, NULL, NULL, 100)"
+    expected_sql = (
+        f'SELECT "{utest_schema}"."EXPERIMENTS_SEARCH"('
+        "'MLFLOW', NULL, NULL, NULL, 123)"
     )
+    assert actual == {"type": "pushdown", "sql": expected_sql}

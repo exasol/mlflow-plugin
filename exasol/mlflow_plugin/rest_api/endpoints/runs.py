@@ -30,7 +30,6 @@ EXPAND_DATA_TAGS = Expander(
 
 RUNS_SEARCH = Endpoint(
     var_name="RUNS_SEARCH",
-    virtual_schema_table="RUNS",
     method="post",
     url_suffix="runs/search",
     output_key="runs",

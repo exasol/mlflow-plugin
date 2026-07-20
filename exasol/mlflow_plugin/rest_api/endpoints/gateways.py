@@ -20,7 +20,6 @@ EXPAND_FALLBACK_CONFIG = Expander(
 
 GATEWAY_ENDPOINTS_LIST = Endpoint(
     var_name="GATEWAY_ENDPOINTS_LIST",
-    virtual_schema_table="GATEWAY_ENDPOINTS",
     method="get",
     url_suffix="gateway/endpoints/list",
     output_key="endpoints",
@@ -43,7 +42,6 @@ GATEWAY_ENDPOINTS_LIST = Endpoint(
 
 GATEWAY_MODEL_DEFINITIONS_LIST = Endpoint(
     var_name="GATEWAY_MODEL_DEFINITIONS_LIST",
-    virtual_schema_table="GATEWAY_MODEL_DEFINITIONS",
     method="get",
     url_suffix="gateway/model-definitions/list",
     output_key="model_definitions",
