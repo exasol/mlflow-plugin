@@ -32,6 +32,18 @@ REWRITERS: list[QueryRewriter] = [
     ),
     TableRewriter(rest_api.MODEL_VERSIONS_SEARCH, "MODEL_VERSIONS"),
     TableRewriter(rest_api.REGISTERED_MODELS_SEARCH, "REGISTERED_MODELS"),
+    TableRewriterWithSubQuery(
+        rest_api.REGISTERED_MODELS_GET_LATEST_VERSIONS,
+        "REGISTERED_MODELS_LATEST_VERSIONS",
+        input_params={"name": 'AUX."name"'},
+        aux_endpoint=rest_api.REGISTERED_MODELS_SEARCH,
+    ),
+    TableRewriterWithSubQuery(
+        rest_api.RUNS_SEARCH,
+        "RUNS",
+        input_params={"experiment_ids": 'AUX."experiment_id"'},
+        aux_endpoint=rest_api.EXPERIMENTS_SEARCH,
+    ),
 ]
 
 

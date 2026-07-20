@@ -22,3 +22,8 @@ def pytest_addoption(parser):
         type=str,
         help=("Can be set to override the default. The default is ITEST_MLFLOW."),
     )
+    parser.addoption(
+        "--keep-virtual-schema",
+        action="store_true",
+        help=("Keep the virtual schema after the tests have completed."),
+    )

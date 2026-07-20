@@ -1,3 +1,5 @@
+from inspect import cleandoc
+
 import pytest
 
 from exasol.mlflow_plugin.exa_meta import ExaMeta
@@ -161,3 +163,18 @@ def test_pushdown_success(handler, utest_schema) -> None:
         "'MLFLOW', NULL, NULL, NULL, 123)"
     )
     assert actual == {"type": "pushdown", "sql": expected_sql}
+
+
+def test_pushdown_to_table_rewriter_with_sub_query(handler, utest_schema) -> None:
+    request = pushdown_for_vs_table("RUNS")
+    actual = handler.pushdown(request)
+    expected = cleandoc(f"""
+        SELECT "{utest_schema}"."RUNS_SEARCH"(
+            'MLFLOW', AUX."experiment_id", NULL, NULL, NULL, 123
+        ) FROM (
+            SELECT "{utest_schema}"."EXPERIMENTS_SEARCH"(
+                'MLFLOW', NULL, NULL, NULL, 123
+            )
+        ) AUX
+    """)
+    assert actual["sql"] == expected
