@@ -79,7 +79,7 @@ def test_validator_failure(properties, values, message) -> None:
         pytest.param({"OTHER": "123"}, id="missing"),
         pytest.param({"REQUIRED": ""}, id="empty_string"),
         pytest.param({"REQUIRED": None}, id="null_value"),
-    ]
+    ],
 )
 def test_mandatory_properties(values) -> None:
     properties = [

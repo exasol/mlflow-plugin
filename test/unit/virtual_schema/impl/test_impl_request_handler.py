@@ -6,9 +6,9 @@ from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.rest_api.vs_impl.request_handler import udf_call
 from exasol.mlflow_plugin.virtual_schema import (
     JsonObject,
-    PushdownError,
     PropertiesDict,
     PropertiesError,
+    PushdownError,
 )
 
 
@@ -36,18 +36,21 @@ def test_create_success(handler) -> None:
 MISSING_CONNECTION_NAME = "1 mandatory property is missing: CONNECTION_NAME."
 
 
-@pytest.mark.parametrize("properties, expected_error", [
-    ({}, MISSING_CONNECTION_NAME),
-    ({"CONNECTION_NAME": None}, MISSING_CONNECTION_NAME),
-    ({"CONNECTION_NAME": ""}, MISSING_CONNECTION_NAME),
-    (
-        {
-            "CONNECTION_NAME": "AAA",
-            "MAX_RESULTS": "not-a-number",
-        },
-        'Illegal value "not-a-number" for Adapter Property "MAX_RESULTS".',
-    ),
-])
+@pytest.mark.parametrize(
+    "properties, expected_error",
+    [
+        ({}, MISSING_CONNECTION_NAME),
+        ({"CONNECTION_NAME": None}, MISSING_CONNECTION_NAME),
+        ({"CONNECTION_NAME": ""}, MISSING_CONNECTION_NAME),
+        (
+            {
+                "CONNECTION_NAME": "AAA",
+                "MAX_RESULTS": "not-a-number",
+            },
+            'Illegal value "not-a-number" for Adapter Property "MAX_RESULTS".',
+        ),
+    ],
+)
 def test_property_error_in_create(handler, properties, expected_error) -> None:
     request = _request("createVirtualSchema") | {
         "schemaMetadataInfo": {"properties": properties}
@@ -63,20 +66,26 @@ def _set_properties_request(properties: PropertiesDict) -> PropertiesDict:
     }
 
 
-@pytest.mark.parametrize("properties", [
-    pytest.param({}, id="empty"),
-    pytest.param({"CONNECTION_NAME": "altered"}, id="updated"),
-])
+@pytest.mark.parametrize(
+    "properties",
+    [
+        pytest.param({}, id="empty"),
+        pytest.param({"CONNECTION_NAME": "altered"}, id="updated"),
+    ],
+)
 def test_set_properties_success(handler, properties) -> None:
     request = _set_properties_request(properties)
     actual = handler.set_properties(request)
     assert actual["type"] == request["type"]
 
 
-@pytest.mark.parametrize("value", [
-    pytest.param("", id="empty_string"),
-    pytest.param(None, id="null_value"),
-])
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param("", id="empty_string"),
+        pytest.param(None, id="null_value"),
+    ],
+)
 def test_set_properties_failure(handler, value) -> None:
     request = _set_properties_request({"CONNECTION_NAME": value})
     with pytest.raises(PropertiesError, match="mandatory property is missing"):

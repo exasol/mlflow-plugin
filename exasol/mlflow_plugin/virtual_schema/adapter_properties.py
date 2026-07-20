@@ -56,7 +56,6 @@ class PropertyValidator:
             formatted = message.format(n=n, label=label, elements=", ".join(elements))
             return PropertiesError(formatted)
 
-
         if illegal := [k for k in values if k not in self.properties]:
             raise error(illegal, "{n} unsupported {label}: {elements}.")
         if check_mandatory:
