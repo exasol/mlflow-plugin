@@ -40,7 +40,7 @@ class RequestHandler(vs.RequestHandler):
         self,
         exa_meta: ExaMeta,
         properties: PropertyValidator = VALIDATOR,
-        rewriters: list[QueryRewriter] = REWRITERS,
+        rewriters: list[QueryRewriter] | None = None,
     ):
         """
         Parameter exa_meta contains metatada about the UDF / Virtual
@@ -52,7 +52,7 @@ class RequestHandler(vs.RequestHandler):
         super().__init__()
         self.udf_schema = exa_meta.script_schema
         self.properties = properties
-        self.rewriters = rewriters
+        self.rewriters = rewriters or REWRITERS
 
     def _property_values(self, request: JsonObject) -> PropertiesDict:
         return dget(request, "schemaMetadataInfo", "properties", default={})
