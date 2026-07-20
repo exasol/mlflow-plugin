@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from inspect import cleandoc
 
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.virtual_schema import (
@@ -64,4 +65,43 @@ class TableRewriter(QueryRewriter):
             udf_schema=udf_schema,
             udf_name=self.endpoint.var_name,
             params=", ".join(params),
+        )
+
+
+class TableRewriterWithSubQuery(TableRewriter):
+    def __init__(
+        self,
+        endpoint: rest_api.Endpoint,
+        table_name: str,
+        input_params: PropertiesDict,
+        aux_endpoint: rest_api.Endpoint,
+    ):
+        super().__init__(endpoint, table_name)
+        self.input_params = input_params
+        self.aux_endpoint = aux_endpoint
+
+    def rewrite(
+        self,
+        request: JsonObject,
+        properties: PropertiesDict,
+        udf_schema: str,
+    ) -> str:
+        params = input_parameters(self.endpoint, properties, self.input_params)
+        aux_params = input_parameters(self.aux_endpoint, properties, {})
+        # VS API does not support prepared statements
+        sql = cleandoc("""
+            SELECT "{udf_schema}"."{udf_name}"(
+                {params}
+            ) FROM (
+                SELECT "{udf_schema}"."{aux_udf}"(
+                    {aux_params}
+                )
+            ) AUX
+        """)  # nosec: B608
+        return sql.format(
+            udf_schema=udf_schema,
+            udf_name=self.endpoint.var_name,
+            params=", ".join(params),
+            aux_udf=self.aux_endpoint.var_name,
+            aux_params=", ".join(aux_params),
         )

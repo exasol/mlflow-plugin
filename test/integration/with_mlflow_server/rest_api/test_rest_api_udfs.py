@@ -1,5 +1,3 @@
-import pytest
-
 import exasol.mlflow_plugin.rest_api.udf.deployment as udf_deployment
 from exasol.mlflow_plugin import rest_api
 
@@ -10,12 +8,6 @@ def test_connection(mlflow_exa_connection, pyexasol_connection) -> None:
         f" CONNECTION_NAME='{mlflow_exa_connection}'"
     ).fetchall()
     assert len(result) == 1
-
-
-@pytest.fixture(scope="session")
-def rest_api_udfs(deployed_slc, db_schema_name, pyexasol_connection) -> None:
-    language_alias = deployed_slc
-    udf_deployment.deploy_all(language_alias, db_schema_name, pyexasol_connection)
 
 
 def test_experiments_search(
