@@ -14,6 +14,7 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #103: Added Virtual Schema custom implementation for MLflow REST API
 * #101: Replaced `AdapterProperties` by `PropertyValidator`
 * #114: Added class `TableRewriterWithSubQuery`
+* #97: Handled mandatory parameters for specific UDFs
 
 ## Documentation
 
