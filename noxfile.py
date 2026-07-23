@@ -18,6 +18,8 @@ from exasol.mlflow_plugin.virtual_schema.deployment import (
 nox.options.sessions = ["format:fix"]
 
 
+from pathlib import Path
+
 from noxconfig import PROJECT_CONFIG
 
 
@@ -79,7 +81,7 @@ def _update_vs_deployment(session: nox.Session):
     """
     Updated the generated parts in the documentation.
     """
-    path = "doc/user_guide/installation/sql"
+    path = Path("doc/user_guide/installation/sql")
     session.log(f"Updating SQL scripts in {path}")
     path = PROJECT_CONFIG.root_path / path
     mlflow_connection = MLflowConnection(
