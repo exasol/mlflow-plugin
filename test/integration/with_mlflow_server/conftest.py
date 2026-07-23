@@ -12,9 +12,7 @@ from datetime import (
     datetime,
     timedelta,
 )
-from inspect import cleandoc
 from subprocess import PIPE
-from test.integration.with_mlflow_server.mlflow_connection import MLflowConnection
 from typing import IO
 from urllib.parse import urlsplit
 
@@ -27,6 +25,11 @@ from exasol_integration_test_docker_environment.lib.models.data.environment_info
 )
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
+
+from exasol.mlflow_plugin.virtual_schema.deployment import (
+    ExasolConnectionObject,
+    MLflowConnection,
+)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -197,13 +200,9 @@ def mlflow_exa_connection(
     Create an Exasol Connection object containing credentials to access
     MLflow REST API.
     """
-    name = mlflow_exa_connection_name
-
-    sql = cleandoc(f"""
-        CREATE OR REPLACE CONNECTION "{mlflow_exa_connection_name}"
-            TO '{mlflow_connection.url}'
-            USER '{{"auth-type": "basic", "user": "{mlflow_connection.user}"}}'
-            IDENTIFIED BY '{{"password": "{mlflow_connection.password}"}}'
-    """)
-    pyexasol_connection.execute(sql)
-    return mlflow_exa_connection_name
+    con = ExasolConnectionObject(
+        name=mlflow_exa_connection_name,
+        mlflow_connection=mlflow_connection,
+    )
+    con.create(pyexasol_connection)
+    return con.name

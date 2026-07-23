@@ -256,3 +256,7 @@ def test_user_guide_example_2(user_guide_udf, mlflow_tracking_uri, logged_sample
     )
     result = udf.run(logged_sample_model).fetchone()
     assert result[0]
+
+
+def test_x1(mlflow_exa_connection) -> None:
+    pass

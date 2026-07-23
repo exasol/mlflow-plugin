@@ -1,9 +1,8 @@
-from test.integration.with_mlflow_server.mlflow_connection import MLflowConnection
-
 import requests
 
 from exasol.mlflow_plugin.rest_api.data import JsonObject
 from exasol.mlflow_plugin.rest_api.rest_api import RestApiError
+from exasol.mlflow_plugin.virtual_schema.deployment.connection import MLflowConnection
 
 
 class GatewayRestApi:

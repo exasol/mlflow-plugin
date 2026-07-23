@@ -18,8 +18,15 @@ class VirtualSchema:
     def _with_properties(self) -> str:
         if not self.properties:
             return ""
-        return " WITH" + "".join(
+        return "\n  WITH" + "".join(
             f"\n    {k} = '{v}'" for k, v in self.properties.items()
+        )
+
+    @property
+    def sql(self) -> str:
+        return (
+            f'CREATE VIRTUAL SCHEMA "{self.name}"\n'
+            f"  USING {self.adapter.quoted}{self._with_properties()}"
         )
 
     def create(
@@ -28,7 +35,4 @@ class VirtualSchema:
         self.adapter.create(con)
         if replace:
             self.drop(con)
-        return con.execute(
-            f'CREATE VIRTUAL SCHEMA "{self.name}"'
-            f" USING {self.adapter.quoted}{self._with_properties()}"
-        )
+        return con.execute(self.sql)

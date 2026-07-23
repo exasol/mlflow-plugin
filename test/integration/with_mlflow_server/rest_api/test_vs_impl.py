@@ -1,5 +1,4 @@
 from collections.abc import Iterator
-from inspect import cleandoc
 
 import pytest
 
@@ -12,18 +11,10 @@ from exasol.mlflow_plugin.virtual_schema.deployment import (
 
 @pytest.fixture(scope="module")
 def vs_adapter(db_schema_name, pyexasol_connection, language_alias):
-    adapter_impl = cleandoc("""
-    from exasol.mlflow_plugin.rest_api.vs_impl import RequestHandler
-
-    HANDLER = RequestHandler(exa.meta)
-
-    def adapter_call(request_str):
-        return HANDLER.handle(request_str)
-    """)
     return Adapter(
         db_schema_name,
         "VS_ADAPTER",
-        adapter_impl,
+        vs_impl.ADAPTER_IMPL,
         language_alias=language_alias,
     )
 

@@ -6,6 +6,13 @@ from exasol.toolbox.nox.tasks import *
 
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.slc import slc_build_context
+from exasol.mlflow_plugin.rest_api import vs_impl
+from exasol.mlflow_plugin.virtual_schema.deployment import (
+    Adapter,
+    ExasolConnectionObject,
+    MLflowConnection,
+    VirtualSchema,
+)
 
 # default actions to be run if nothing is explicitly specified with the -s option
 nox.options.sessions = ["format:fix"]
@@ -39,8 +46,7 @@ ANCHORS = {
 }
 
 
-@nox.session(name="docs:udfs", python=False)
-def docs_update_udfs(session: nox.Session):
+def _update_udfs(session: nox.Session):
     """
     Update documentation on MLflow's REST API UDFs.
     """
@@ -48,7 +54,9 @@ def docs_update_udfs(session: nox.Session):
     env = jinja2.Environment()
     tmpl_str = (path / "template_rest_endpoints.jinja").read_text()
     template = env.from_string(tmpl_str)
-    with (path / "rest_endpoints.rst").open("w") as f:
+    path = path / "rest_endpoints.rst"
+    session.log(f"Updating UDFs in {path.relative_to(PROJECT_CONFIG.root_path)}")
+    with path.open("w") as f:
         for ep in rest_api.ALL_ENDPOINTS:
             args = ", ".join(col.name for col in ep.input_columns)
             input_columns = [
@@ -65,3 +73,43 @@ def docs_update_udfs(session: nox.Session):
                 output_columns=output_columns,
             )
             print(result, file=f)
+
+
+def _update_vs_deployment(session: nox.Session):
+    """
+    Updated the generated parts in the documentation.
+    """
+    path = "doc/user_guide/installation/sql"
+    session.log(f"Updating SQL scripts in {path}")
+    path = PROJECT_CONFIG.root_path / path
+    mlflow_connection=MLflowConnection(
+        url="<MLFLOW_TRACKING_URI>",
+        user="<MLFLOW_USER_NAME>",
+        password="<MLFLOW_PASSWORD>",
+    )
+    con = ExasolConnectionObject(
+        name="<CONNECTION_NAME>",
+        mlflow_connection=mlflow_connection
+    )
+    (path / "connection.sql").write_text(con.sql)
+
+    adapter = Adapter(
+        "<ADAPTER_SCHEMA>",
+        "<ADAPTER_NAME>",
+        vs_impl.ADAPTER_IMPL,
+        language_alias="<LANGUAGE_ALIAS>",
+    )
+    (path / "adapter_script.sql").write_text(adapter.sql)
+
+    properties = {
+        "CONNECTION_NAME": con.name,
+        "MAX_RESULTS": "100",
+    }
+    vs = VirtualSchema("<VS_NAME>", adapter, properties)
+    (path / "virtual_schema.sql").write_text(vs.sql)
+
+
+@nox.session(name="docs:update", python=False)
+def docs_update(session: nox.Session):
+    _update_vs_deployment(session)
+    _update_udfs(session)

@@ -19,7 +19,8 @@ class Adapter:
     def sql(self) -> str:
         return cleandoc("""
         --/
-        CREATE OR REPLACE {language_alias} ADAPTER SCRIPT {fqn} AS
+        CREATE OR REPLACE {language_alias} ADAPTER SCRIPT
+          {fqn} AS
         {impl}
         /
         """).format(

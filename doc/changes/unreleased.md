@@ -19,6 +19,7 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 ## Documentation
 
 * #88: Added information about which UDF input parameters are mandatory
+* #117: Described Virtual Schema deployment in the user guide
 
 ## Refactoring
 
