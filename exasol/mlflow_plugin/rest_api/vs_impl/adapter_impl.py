@@ -1,6 +1,5 @@
 from inspect import cleandoc
 
-
 ADAPTER_IMPL = cleandoc("""
     from exasol.mlflow_plugin.rest_api.vs_impl import RequestHandler
 

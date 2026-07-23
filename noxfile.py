@@ -5,8 +5,8 @@ import nox
 from exasol.toolbox.nox.tasks import *
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.slc import slc_build_context
 from exasol.mlflow_plugin.rest_api import vs_impl
+from exasol.mlflow_plugin.slc import slc_build_context
 from exasol.mlflow_plugin.virtual_schema.deployment import (
     Adapter,
     ExasolConnectionObject,
@@ -82,14 +82,13 @@ def _update_vs_deployment(session: nox.Session):
     path = "doc/user_guide/installation/sql"
     session.log(f"Updating SQL scripts in {path}")
     path = PROJECT_CONFIG.root_path / path
-    mlflow_connection=MLflowConnection(
+    mlflow_connection = MLflowConnection(
         url="<MLFLOW_TRACKING_URI>",
         user="<MLFLOW_USER_NAME>",
         password="<MLFLOW_PASSWORD>",
     )
     con = ExasolConnectionObject(
-        name="<CONNECTION_NAME>",
-        mlflow_connection=mlflow_connection
+        name="<CONNECTION_NAME>", mlflow_connection=mlflow_connection
     )
     (path / "connection.sql").write_text(con.sql)
 

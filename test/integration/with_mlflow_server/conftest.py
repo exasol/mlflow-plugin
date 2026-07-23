@@ -25,7 +25,6 @@ from exasol_integration_test_docker_environment.lib.models.data.environment_info
 )
 
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
-
 from exasol.mlflow_plugin.virtual_schema.deployment import (
     ExasolConnectionObject,
     MLflowConnection,
