@@ -18,6 +18,15 @@ SLC. See also
   <mlflow_extras_overview_>`_ (aka. "Extras")
 * The entire `list of MLflow extras <mlflow_extra-ml-requirements_>`_
 
+Use either the ``ALTER SESSION`` or ``ALTER SYSTEM`` command to add alias
+``MLFLOW`` to Exasol parameter ``SCRIPT_LANGUAGES``:
+
+.. code-block:: sql
+
+    MLFLOW=localzmq+protobuf:///<bucketfs_name>/<bucket_name>/<path_in_bucket><container_name>
+    /?lang=python#buckets/
+    <bucketfs_name>/<bucket_name>/<path_in_bucket><container_name>/exaudf/exaudfclient
+
 For more information on SLCs, see the documentation at `docs.exasol.com
 <slcs_>`_, incl. deployment (upload to Exasol's Bucket File System) and
 activation.
