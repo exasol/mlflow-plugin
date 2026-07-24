@@ -12,7 +12,6 @@ SQL Statements
 File :download:`deployment.sql` contains the SQL statements to create the UDFs
 and the Adapter Script in the current database schema.
 
-
 Additional Setup
 ----------------
 
