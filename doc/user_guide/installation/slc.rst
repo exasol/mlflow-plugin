@@ -25,8 +25,8 @@ For general information on SLCs, incl.  deployment (upload to Exasol's Bucket
 File System) and activation, see the documentation at `docs.exasol.com
 <slcs_>`_.
 
-When activating the Exasol's MLflow SLC, the language is ``python`` and we
-recommend using the language alias ``EXA_MLFLOW``.
+When activating the Exasol's MLflow SLC, the language is ``python`` and the
+language alias must be ``EXA_MLFLOW``.
 
 .. code-block:: sql
 
