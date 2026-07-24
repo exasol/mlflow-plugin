@@ -13,13 +13,15 @@ class Adapter:
 
     @property
     def quoted(self) -> str:
-        return f'"{self.schema}"."{self.name}"'
+        prefix = f'"{self.schema}".' if self.schema else ""
+        return f'{prefix}"{self.name}"'
 
     @property
     def sql(self) -> str:
         return cleandoc("""
         --/
-        CREATE OR REPLACE {language_alias} ADAPTER SCRIPT {fqn} AS
+        CREATE OR REPLACE {language_alias} ADAPTER SCRIPT
+          {fqn} AS
         {impl}
         /
         """).format(

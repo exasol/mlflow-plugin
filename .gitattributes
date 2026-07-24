@@ -1,21 +1,22 @@
 # Core Data and Locks
-/poetry.lock                                      linguist-generated=true
-/doc/changes/changelog.md                         linguist-generated=true
+/poetry.lock                                      linguist-generated
+/doc/changes/changelog.md                         linguist-generated
 
 # Generated parts of the documentation
-/doc/user_guide/access_mlflow/rest_endpoints.rst  linguist-generated=true
+/doc/user_guide/access_mlflow/rest_endpoints.rst  linguist-generated
 
 # PTB GitHub Workflows (CI/CD & Publishing)
-/.github/workflows/build-and-publish.yml     linguist-generated=true
-/.github/workflows/cd.yml                    linguist-generated=true
-/.github/workflows/check-release-tag.yml     linguist-generated=true
-/.github/workflows/checks.yml                linguist-generated=true
-/.github/workflows/ci.yml                    linguist-generated=true
-/.github/workflows/dependency-update.yml     linguist-generated=true
-/.github/workflows/fast-tests.yml            linguist-generated=true
-/.github/workflows/gh-pages.yml              linguist-generated=true
-/.github/workflows/matrix.yml                linguist-generated=true
-/.github/workflows/merge-gate.yml            linguist-generated=true
-/.github/workflows/periodic-validation.yml   linguist-generated=true
-/.github/workflows/pr-merge.yml              linguist-generated=true
-/.github/workflows/report.yml                linguist-generated=true
+/.github/workflows/build-and-publish.yml     linguist-generated
+/.github/workflows/cd.yml                    linguist-generated
+/.github/workflows/check-release-tag.yml     linguist-generated
+/.github/workflows/checks.yml                linguist-generated
+/.github/workflows/ci.yml                    linguist-generated
+/.github/workflows/dependency-update.yml     linguist-generated
+/.github/workflows/fast-tests.yml            linguist-generated
+/.github/workflows/gh-pages.yml              linguist-generated
+/.github/workflows/matrix.yml                linguist-generated
+/.github/workflows/merge-gate.yml            linguist-generated
+/.github/workflows/periodic-validation.yml   linguist-generated
+/.github/workflows/pr-merge.yml              linguist-generated
+/.github/workflows/report.yml                linguist-generated
+/doc/user_guide/installation/deployment.sql  linguist-generated
