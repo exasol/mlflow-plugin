@@ -49,9 +49,9 @@ Virtual Schema Declaration
      USING "<ADAPTER_SCHEMA>"."MLFLOW_VIRTUAL_SCHEMA_ADAPTER"
      WITH
        CONNECTION_NAME = '<CONNECTION_NAME>'
-       MAX_RESULTS = '100'
+       MAX_RESULTS = '1000'
 
-The Virtual Schema supports the following parameters:
+The Virtual Schema requires the following parameters to be specified:
 
 .. list-table::
    :header-rows: 1
