@@ -73,16 +73,18 @@ def _update_udf_docs(session: nox.Session):
     )
 
 
+LANGUAGE_ALIAS = "EXA_MLFLOW"
+
 def _update_deployment_sql(session: nox.Session):
     path = Path("doc/user_guide/installation/deployment.sql")
     session.log(f"Updating SQL script {path}")
     path = PROJECT_CONFIG.root_path / path
-    all_udfs = [Deployable("MLFLOW", "", e) for e in rest_api.ALL_ENDPOINTS]
+    all_udfs = [Deployable(LANGUAGE_ALIAS, "", e) for e in rest_api.ALL_ENDPOINTS]
     adapter = Adapter(
         schema="",
         name="MLFLOW_VIRTUAL_SCHEMA_ADAPTER",
         impl=vs_impl.ADAPTER_IMPL,
-        language_alias="MLFLOW",
+        language_alias=LANGUAGE_ALIAS,
     )
     with path.open("w") as f:
         print(

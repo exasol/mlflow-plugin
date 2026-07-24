@@ -26,19 +26,11 @@ File System) and activation, see the documentation at `docs.exasol.com
 <slcs_>`_.
 
 When activating the Exasol's MLflow SLC, the language is ``python`` and we
-recommend using the language alias ``MLFLOW``.
-
-The ``ALTER SESSION`` or ``ALTER SYSTEM`` statement requires the value of
-``SCRIPT_LANGUAGES`` to be specified as a string on one line. However, for
-improved readability, the following example is split on multiple lines.
+recommend using the language alias ``EXA_MLFLOW``.
 
 .. code-block:: sql
 
-    MLFLOW=localzmq+protobuf:///
-    <bucketfs_name>/<bucket_name>/<path_in_bucket>/<container_name>
-    /?lang=python#buckets/
-    <bucketfs_name>/<bucket_name>/<path_in_bucket>/<container_name>
-    /exaudf/exaudfclient
+    EXA_MLFLOW=localzmq+protobuf:///<bucketfs_name>/<bucket_name>/<path_in_bucket>/<container_name>/?lang=python#buckets/<bucketfs_name>/<bucket_name>/<path_in_bucket>/<container_name>/exaudf/exaudfclient
 
 .. _mlflow_dependencies_general: https://mlflow.org/docs/latest/ml/model/dependencies/
 .. _mlflow_extras_overview:
