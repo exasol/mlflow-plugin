@@ -13,7 +13,8 @@ class Adapter:
 
     @property
     def quoted(self) -> str:
-        return f'"{self.schema}"."{self.name}"'
+        prefix = f'"{self.schema}".' if self.schema else ""
+        return f'{prefix}"{self.name}"'
 
     @property
     def sql(self) -> str:

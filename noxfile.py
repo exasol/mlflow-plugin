@@ -6,6 +6,7 @@ from exasol.toolbox.nox.tasks import *
 
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api import vs_impl
+from exasol.mlflow_plugin.rest_api.udf.deployment import Deployable
 from exasol.mlflow_plugin.slc import slc_build_context
 from exasol.mlflow_plugin.virtual_schema.deployment import (
     Adapter,
@@ -49,9 +50,6 @@ ANCHORS = {
 
 
 def _update_udfs(session: nox.Session):
-    """
-    Update documentation on MLflow's REST API UDFs.
-    """
     path = PROJECT_CONFIG.root_path / "doc/user_guide/access_mlflow"
     env = jinja2.Environment()
     tmpl_str = (path / "template_rest_endpoints.jinja").read_text()
@@ -78,9 +76,6 @@ def _update_udfs(session: nox.Session):
 
 
 def _update_vs_deployment(session: nox.Session):
-    """
-    Updated the generated parts in the documentation.
-    """
     path = Path("doc/user_guide/installation/sql")
     session.log(f"Updating SQL scripts in {path}")
     path = PROJECT_CONFIG.root_path / path
@@ -110,7 +105,29 @@ def _update_vs_deployment(session: nox.Session):
     (path / "virtual_schema.sql").write_text(vs.sql)
 
 
+def _update_udf_deployment(session: nox.Session):
+    path = Path("doc/user_guide/installation/deployment.sql")
+    session.log(f"Updating SQL script {path}")
+    path = PROJECT_CONFIG.root_path / path
+    all_udfs = [Deployable("MLFLOW", "", e) for e in rest_api.ALL_ENDPOINTS]
+    adapter = Adapter(
+        schema="",
+        name="MLFLOW_VIRTUAL_SCHEMA_ADAPTER",
+        impl=vs_impl.ADAPTER_IMPL,
+        language_alias="MLFLOW",
+    )
+    with path.open("w") as f:
+        for udf in all_udfs:
+            print(udf.sql, "\n", file=f)
+        print(adapter.sql, file=f)
+
+
 @nox.session(name="docs:update", python=False)
 def docs_update(session: nox.Session):
+    """
+    Updated the generated parts in the documentation.
+    """
+    _update_udf_deployment(session)
+    return
     _update_vs_deployment(session)
     _update_udfs(session)

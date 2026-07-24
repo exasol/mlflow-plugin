@@ -29,7 +29,8 @@ class Deployable:
 
     @property
     def quoted_name(self) -> str:
-        return f'"{self.db_schema}"."{self.udf_name}"'
+        prefix = f'"{self.db_schema}".' if self.db_schema else ""
+        return f'{prefix}"{self.udf_name}"'
 
     @property
     def sql(self) -> str:

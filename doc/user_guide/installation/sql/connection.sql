@@ -1,4 +1,0 @@
-CREATE OR REPLACE CONNECTION "<CONNECTION_NAME>"
-    TO '<MLFLOW_TRACKING_URI>'
-    USER '{"auth-type": "basic", "user": "<MLFLOW_USER_NAME>"}'
-    IDENTIFIED BY '{"password": "<MLFLOW_PASSWORD>"}'
