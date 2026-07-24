@@ -8,12 +8,7 @@ from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.rest_api.udf.deployment import Deployable
 from exasol.mlflow_plugin.slc import slc_build_context
-from exasol.mlflow_plugin.virtual_schema.deployment import (
-    Adapter,
-    ExasolConnectionObject,
-    MLflowConnection,
-    VirtualSchema,
-)
+from exasol.mlflow_plugin.virtual_schema.deployment import Adapter
 
 # default actions to be run if nothing is explicitly specified with the -s option
 nox.options.sessions = ["format:fix"]
