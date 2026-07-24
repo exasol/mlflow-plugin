@@ -49,7 +49,7 @@ ANCHORS = {
 }
 
 
-def _update_udfs(session: nox.Session):
+def _update_udf_docs(session: nox.Session):
     path = PROJECT_CONFIG.root_path / "doc/user_guide/access_mlflow"
     env = jinja2.Environment()
     tmpl_str = (path / "template_rest_endpoints.jinja").read_text()
@@ -75,37 +75,7 @@ def _update_udfs(session: nox.Session):
             print(result, file=f)
 
 
-def _update_vs_deployment(session: nox.Session):
-    path = Path("doc/user_guide/installation/sql")
-    session.log(f"Updating SQL scripts in {path}")
-    path = PROJECT_CONFIG.root_path / path
-    mlflow_connection = MLflowConnection(
-        url="<MLFLOW_TRACKING_URI>",
-        user="<MLFLOW_USER_NAME>",
-        password="<MLFLOW_PASSWORD>",
-    )
-    con = ExasolConnectionObject(
-        name="<CONNECTION_NAME>", mlflow_connection=mlflow_connection
-    )
-    (path / "connection.sql").write_text(con.sql)
-
-    adapter = Adapter(
-        "<ADAPTER_SCHEMA>",
-        "<ADAPTER_NAME>",
-        vs_impl.ADAPTER_IMPL,
-        language_alias="<LANGUAGE_ALIAS>",
-    )
-    (path / "adapter_script.sql").write_text(adapter.sql)
-
-    properties = {
-        "CONNECTION_NAME": con.name,
-        "MAX_RESULTS": "100",
-    }
-    vs = VirtualSchema("<VS_NAME>", adapter, properties)
-    (path / "virtual_schema.sql").write_text(vs.sql)
-
-
-def _update_udf_deployment(session: nox.Session):
+def _update_deployment_sql(session: nox.Session):
     path = Path("doc/user_guide/installation/deployment.sql")
     session.log(f"Updating SQL script {path}")
     path = PROJECT_CONFIG.root_path / path
@@ -127,7 +97,5 @@ def docs_update(session: nox.Session):
     """
     Updated the generated parts in the documentation.
     """
-    _update_udf_deployment(session)
-    return
-    _update_vs_deployment(session)
-    _update_udfs(session)
+    _update_deployment_sql(session)
+    _update_udf_docs(session)
