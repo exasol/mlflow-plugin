@@ -1,5 +1,5 @@
-import exasol.mlflow_plugin.rest_api.udf.deployment as udf_deployment
 from exasol.mlflow_plugin import rest_api
+from exasol.mlflow_plugin.deploy.udfs import Deployable
 
 
 def test_connection(mlflow_exa_connection, pyexasol_connection) -> None:
@@ -14,7 +14,7 @@ def test_experiments_search(
     deployed_slc, mlflow_exa_connection, db_schema_name, pyexasol_connection
 ) -> None:
     language_alias = deployed_slc
-    udf = udf_deployment.Deployable(
+    udf = Deployable(
         language_alias,
         db_schema_name,
         rest_api.EXPERIMENTS_SEARCH,

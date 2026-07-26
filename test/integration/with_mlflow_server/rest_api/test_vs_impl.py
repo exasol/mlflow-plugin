@@ -2,11 +2,11 @@ from collections.abc import Iterator
 
 import pytest
 
-from exasol.mlflow_plugin.rest_api import vs_impl
-from exasol.mlflow_plugin.virtual_schema.deployment import (
+from exasol.mlflow_plugin.deploy.virtual_schema import (
     Adapter,
     VirtualSchema,
 )
+from exasol.mlflow_plugin.rest_api import vs_impl
 
 
 @pytest.fixture(scope="module")
