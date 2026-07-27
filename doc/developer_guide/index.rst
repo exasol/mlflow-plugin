@@ -10,3 +10,4 @@
    mlflow_server_processes
    slc_building
    integration_tests
+   generated_files
