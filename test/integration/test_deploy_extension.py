@@ -23,7 +23,7 @@ def open_db_schema(pyexasol_connection):
         current = con.execute("SELECT CURRENT_SCHEMA").fetchone()[0]
         ephemeral = _ephemeral(con, db_schema)
         try:
-            con.execute(f'OPEN SCHEMA "{db_schema}"')
+            con.execute(f'CREATE SCHEMA IF NOT EXISTS "{db_schema}"')
             yield db_schema
             if ephemeral:
                 con.execute(f'DROP SCHEMA IF EXISTS "{db_schema}" CASCADE')
