@@ -5,8 +5,8 @@ import nox
 from exasol.toolbox.nox.tasks import *
 
 from exasol.mlflow_plugin import rest_api
+from exasol.mlflow_plugin.deploy import adapter_impl
 from exasol.mlflow_plugin.deploy.udfs import Deployable
-from exasol.mlflow_plugin.rest_api import vs_impl
 from exasol.mlflow_plugin.slc import slc_build_context
 
 # default actions to be run if nothing is explicitly specified with the -s option
@@ -95,7 +95,7 @@ def code_generate(session: nox.Session):
     session.log(f"Updating SQL script {path}")
     path = PROJECT_CONFIG.root_path / path
     all_udfs = [Deployable(LANGUAGE_ALIAS, "", e) for e in rest_api.ALL_ENDPOINTS]
-    adapter = vs_impl.create_adapter(schema="", language_alias=LANGUAGE_ALIAS)
+    adapter = adapter_impl.create_adapter(schema="", language_alias=LANGUAGE_ALIAS)
     header = _generated_file_header("code:generate", eol_comment="--")
     with path.open("w") as f:
         print(header, file=f)
