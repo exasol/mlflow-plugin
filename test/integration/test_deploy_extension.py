@@ -34,7 +34,7 @@ def open_db_schema(pyexasol_connection):
     return context
 
 
-def test_deploy_extension(pyexasol_connection, open_db_schema) -> None:
+def test_deploy_extension(deployed_slc, pyexasol_connection, open_db_schema) -> None:
     sql = (
         importlib.resources.files("exasol.mlflow_plugin.deploy") / "extension.sql"
     ).read_text()
