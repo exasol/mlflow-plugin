@@ -16,6 +16,10 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #114: Added class `TableRewriterWithSubQuery`
 * #97: Handled mandatory parameters for specific UDFs
 
+## Bugfixes
+
+* #128: Fixed generated UDF documentation
+
 ## Documentation
 
 * #88: Added information about which UDF input parameters are mandatory
@@ -31,4 +35,4 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #109: Added integration tests for Virtual Schema implementation
 * #110: Added class `QueryRewriter`
 * #112: Added class `TableRewriter`
-* #126: Moved deployment scripts into one single place, i.e. directory `exasol/mlflow/deploy`
+* #126: Moved deployment scripts into one single place, i.e. directory `exasol/mlflow_plugin/deploy`
