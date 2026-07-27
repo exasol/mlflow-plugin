@@ -7,11 +7,11 @@ from unittest.mock import (
 import pytest
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api.data import Column
-from exasol.mlflow_plugin.rest_api.udf.deployment import (
+from exasol.mlflow_plugin.deploy.udfs import (
     Deployable,
     deploy_all,
 )
+from exasol.mlflow_plugin.rest_api.data import Column
 
 
 @pytest.fixture

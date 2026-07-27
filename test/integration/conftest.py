@@ -9,8 +9,8 @@ from urllib.parse import (
 
 import pytest
 
-import exasol.mlflow_plugin.rest_api.udf.deployment as udf_deployment
 from exasol.mlflow_plugin.artifacts.bucketfs_connector import Connector
+from exasol.mlflow_plugin.deploy import udfs
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
 from exasol.mlflow_plugin.slc import slc_build_context
 
@@ -74,7 +74,7 @@ def build_slc(use_onprem, use_saas, request) -> bool:
 @pytest.fixture(scope="session")
 def language_alias(request):
     """See developer guide for details."""
-    return request.config.getoption("--language-alias") or "MLFLOW"
+    return request.config.getoption("--language-alias") or "EXA_MLFLOW"
 
 
 @pytest.fixture(scope="session")
@@ -89,4 +89,4 @@ def slc_builder(build_slc):
 @pytest.fixture(scope="session")
 def rest_api_udfs(deployed_slc, db_schema_name, pyexasol_connection) -> None:
     language_alias = deployed_slc
-    udf_deployment.deploy_all(language_alias, db_schema_name, pyexasol_connection)
+    udfs.deploy_all(language_alias, db_schema_name, pyexasol_connection)

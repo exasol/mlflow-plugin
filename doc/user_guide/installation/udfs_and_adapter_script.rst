@@ -9,8 +9,10 @@ special UDF variant called an *Adapter Script*.
 SQL Statements
 --------------
 
-File :download:`deployment.sql` contains the SQL statements to create the UDFs
-and the Adapter Script in the current database schema.
+File :download:`deploy/extension.sql
+<../../../exasol/mlflow_plugin/deploy/extension.sql>` contains the SQL
+statements to create the UDFs and the Adapter Script in the current database
+schema.
 
 Additional Setup
 ----------------
