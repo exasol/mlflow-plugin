@@ -6,7 +6,7 @@ import pyexasol
 import pytest
 
 from exasol.mlflow_plugin import rest_api
-from exasol.mlflow_plugin.rest_api import vs_impl
+from exasol.mlflow_plugin.deploy import adapter_impl
 
 
 def _ephemeral(conn: pyexasol.ExaConnection, db_schema: str) -> bool:
@@ -47,5 +47,5 @@ def test_deploy_extension(pyexasol_connection, open_db_schema) -> None:
         actual = {row[0] for row in pyexasol_connection.execute(select)}
 
     expected = {e.var_name for e in rest_api.ALL_ENDPOINTS}
-    expected.add(vs_impl.ADAPTER_NAME)
+    expected.add(adapter_impl.ADAPTER_NAME)
     assert expected == actual
