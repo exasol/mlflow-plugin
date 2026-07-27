@@ -7,7 +7,6 @@ from pyexasol import (
 
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import Column
-from exasol.mlflow_plugin.rest_api.endpoints.endpoint import Endpoint
 
 
 class Deployable:
@@ -19,7 +18,7 @@ class Deployable:
         self,
         language_alias: str,
         db_schema: str,
-        endpoint: Endpoint,
+        endpoint: rest_api.Endpoint,
         udf_name: str = "",
     ):
         self.language_alias = language_alias

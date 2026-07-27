@@ -2,21 +2,16 @@ from collections.abc import Iterator
 
 import pytest
 
-from exasol.mlflow_plugin.rest_api import vs_impl
-from exasol.mlflow_plugin.virtual_schema.deployment import (
-    Adapter,
+from exasol.mlflow_plugin.deploy import (
     VirtualSchema,
+    create_adapter,
 )
+from exasol.mlflow_plugin.rest_api import vs_impl
 
 
 @pytest.fixture(scope="module")
 def vs_adapter(db_schema_name, pyexasol_connection, language_alias):
-    return Adapter(
-        db_schema_name,
-        "VS_ADAPTER",
-        vs_impl.ADAPTER_IMPL,
-        language_alias=language_alias,
-    )
+    return create_adapter(db_schema_name, language_alias)
 
 
 @pytest.fixture(scope="module")

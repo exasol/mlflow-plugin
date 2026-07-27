@@ -19,4 +19,4 @@
 /.github/workflows/periodic-validation.yml   linguist-generated
 /.github/workflows/pr-merge.yml              linguist-generated
 /.github/workflows/report.yml                linguist-generated
-/doc/user_guide/installation/deployment.sql  linguist-generated
+/exasol/mlflow_plugin/deploy/extension.sql   linguist-generated
