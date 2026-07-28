@@ -36,3 +36,4 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #110: Added class `QueryRewriter`
 * #112: Added class `TableRewriter`
 * #126: Moved deployment scripts into one single place, i.e. directory `exasol/mlflow_plugin/deploy`
+* #121: Added integration test for deployment script
