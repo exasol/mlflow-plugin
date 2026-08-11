@@ -38,3 +38,4 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #126: Moved deployment scripts into one single place, i.e. directory `exasol/mlflow_plugin/deploy`
 * #121: Added integration test for deployment script
 * #122: Added CI check to verify generated parts of the documentation are up-to-date
+* #133: Updated to `exasol-toolbox` 10.4.0
