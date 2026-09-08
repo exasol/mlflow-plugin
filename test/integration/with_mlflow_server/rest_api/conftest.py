@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from test.integration.with_mlflow_server.rest_api.gateway_rest_api import GatewayRestApi
+from typing import Optional
 
 import mlflow
 import pytest
@@ -14,6 +15,7 @@ class SampleData:
     registered_model_name: str = "sample_registered_model"
     gateway_model_definition_name: str = "sample_gateway_model_definition"
     gateway_endpoint_name: str = "sample_gateway_endpoint"
+    model_aliases: Optional[list] = None
 
 
 @pytest.fixture(scope="module")
@@ -70,6 +72,11 @@ def sample_data(as_admin, request, mlflow_connection) -> SampleData:
         name="Cordoba",
         registered_model_name=registered_model_name,
     )
+    # Add aliases to the registered model
+    client = mlflow.MlflowClient()
+    aliases = ["champion", "production"]
+    for alias in aliases:
+        client.set_registered_model_alias(registered_model_name, alias, "1")
     # create gateway sample data
     gateway_model_definition_name = "sample_gateway_model_definition"
     gateway_endpoint_name = "sample_gateway_endpoint"
@@ -85,4 +92,5 @@ def sample_data(as_admin, request, mlflow_connection) -> SampleData:
         registered_model_name,
         gateway_model_definition_name,
         gateway_endpoint_name,
+        model_aliases=aliases,
     )

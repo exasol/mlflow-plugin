@@ -106,6 +106,8 @@ class Column:
     def process(self, value: Any) -> Any:
         if value and self.data_type == datetime:
             return timestamp_to_datetime(value)
+        if value and self.comma_sep:
+            return ",".join(value)
         return value
 
     def __repr__(self) -> str:

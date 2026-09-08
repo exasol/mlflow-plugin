@@ -16,7 +16,7 @@ MODEL_VERSION_COLUMNS = [
     Column.varchar("status"),
     Column.varchar("status_message"),
     Column.varchar("run_link"),
-    Column.varchar("aliases"),
+    Column.varchar("aliases", comma_sep=True),
     Column.varchar("model_id"),
 ]
 
