@@ -45,7 +45,7 @@ dev = [
 ]
 
 [tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8"
+poetry-plugin-export = ">=1.8,<1.10"
 
 [project.urls]
 repository = "https://github.com/exasol/mlflow-plugin"

@@ -27,29 +27,23 @@ def test_varchar() -> None:
     assert column.sql == '"VVV" VARCHAR(2000000)'
 
 
-def test_process_comma_sep_joins_list() -> None:
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        pytest.param(["v1", "v2", "v3"], "v1,v2,v3", id="multiple_values"),
+        pytest.param(["only"], "only", id="single_value"),
+        pytest.param([], [], id="empty_input"),
+        pytest.param(None, None, id="input_none"),
+    ],
+)
+def test_process_comma_sep(value, expected) -> None:
     column = Column.varchar("aliases", comma_sep=True)
-    assert column.process(["v1", "v2", "v3"]) == "v1,v2,v3"
-
-
-def test_process_comma_sep_single_value() -> None:
-    column = Column.varchar("aliases", comma_sep=True)
-    assert column.process(["only"]) == "only"
-
-
-def test_process_comma_sep_empty_returns_empty() -> None:
-    column = Column.varchar("aliases", comma_sep=True)
-    assert column.process([]) == []
+    assert column.process(value) == expected
 
 
 def test_process_no_comma_sep_returns_value_unchanged() -> None:
     column = Column.varchar("aliases", comma_sep=False)
     assert column.process(["v1", "v2"]) == ["v1", "v2"]
-
-
-def test_process_comma_sep_none_returns_none() -> None:
-    column = Column.varchar("aliases", comma_sep=True)
-    assert column.process(None) is None
 
 
 def test_decimal() -> None:
