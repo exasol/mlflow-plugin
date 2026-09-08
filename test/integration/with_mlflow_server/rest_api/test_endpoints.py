@@ -67,3 +67,12 @@ def test_list_gateway_endpoints(sample_data, mlflow_connection) -> None:
     stream = data_stream(mlflow_connection, endpoint)
     rows = stream.retrieve({})
     assert sample_data.gateway_endpoint_name in (r[1] for r in rows)
+
+
+def test_model_version_aliases_comma_separated(mlflow_connection, sample_data) -> None:
+    stream = data_stream(mlflow_connection, rest_api.MODEL_VERSIONS_GET)
+    params = {"name": sample_data.registered_model_name, "version": "1"}
+    rows = list(stream.retrieve(params))
+    aliases_values = [r[12] for r in rows if r[12] is not None]
+    assert len(aliases_values) > 0
+    assert all("," in v for v in aliases_values)
