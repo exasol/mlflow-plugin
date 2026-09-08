@@ -1,11 +1,11 @@
 import os
 from dataclasses import dataclass
+from test.integration.with_mlflow_server.rest_api.gateway_rest_api import GatewayRestApi
+from typing import Optional
 
 import mlflow
 import pytest
 from sklearn.linear_model import LogisticRegression
-
-from test.integration.with_mlflow_server.rest_api.gateway_rest_api import GatewayRestApi
 
 
 @dataclass
@@ -15,7 +15,7 @@ class SampleData:
     registered_model_name: str = "sample_registered_model"
     gateway_model_definition_name: str = "sample_gateway_model_definition"
     gateway_endpoint_name: str = "sample_gateway_endpoint"
-    model_aliases: list = None
+    model_aliases: Optional[list] = None
 
 
 @pytest.fixture(scope="module")
