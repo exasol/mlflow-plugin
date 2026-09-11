@@ -18,7 +18,7 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 
 ## Bugfixes
 
-* #95: Fixed array values returned by REST API are now comma-separated
+* #140: Fixed array values returned by REST API are now comma-separated
 * #128: Fixed generated UDF documentation
 
 ## Documentation
