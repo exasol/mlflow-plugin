@@ -7,7 +7,7 @@ jobs:
 
   tests:
     name: Integration Tests
-    runs-on: "ubuntu-24.04"
+    runs-on: "ubuntu-26.04"
     permissions:
       contents: read
 
@@ -26,9 +26,9 @@ jobs:
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v10
+        uses: exasol/python-toolbox/.github/actions/python-environment@v12
         with:
-          python-version: "3.10"
+          python-version: "3.11"
           poetry-version: "2.3.0"
 
       - name: Run Tests and Collect Coverage
