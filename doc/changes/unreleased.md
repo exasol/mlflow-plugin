@@ -27,7 +27,7 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #88: Added information about which UDF input parameters are mandatory
 * #117: Described Virtual Schema deployment in the user guide
 
-## Refactoring
+## Refactorings
 
 * #77: Updated workflows to `exasol-toolbox` 8.2.0
 * #81: Update workflows to `exasol-toolbox` 10.0.0
@@ -41,3 +41,4 @@ This release adds support for accessing the MLflow REST API via an Exasol Virtua
 * #121: Added integration test for deployment script
 * #122: Added CI check to verify generated parts of the documentation are up-to-date
 * #133: Updated to `exasol-toolbox` 10.4.0
+* #152: Removed support for Python 3.10, re-added support for Python 3.14, and updated to exasol-toolbox version 12.0.0
