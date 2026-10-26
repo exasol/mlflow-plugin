@@ -35,7 +35,7 @@ packages = [
 
 [dependency-groups]
 dev = [
-    "exasol-toolbox>=10.4.0,<11",
+    "exasol-toolbox>=12.0.0,<13",
     "pytest-exasol-backend>=1.2.4, <2.0.0",
     "exasol-python-extension-common>= 0.12.1",
     "pytest-exasol-slc>= 0.4.3",
