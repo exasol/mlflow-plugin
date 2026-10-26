@@ -4,8 +4,20 @@ on:
   workflow_call:
 
 jobs:
+  get-matrix:
+    name: Get Minimum Python Version
+    uses: $/.github/workflows/matrix.yml
+    with:
+      matrix_keys_json: '["minimum_python_version"]'
+    permissions:
+      contents: read
+
   generated-files:
     name: Generated Files
+    needs: get-matrix
+    strategy:
+      matrix:
+        python_version: ${{ fromJSON(needs.get-matrix.outputs.matrix).minimum_python_version }}
     runs-on: "ubuntu-26.04"
     permissions:
       contents: read
@@ -20,7 +32,7 @@ jobs:
         id: set-up-python-and-poetry-environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v12
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python_version }}
           poetry-version: "2.3.0"
 
       - name: Check Outdated
