@@ -2,7 +2,9 @@
 
 ## Summary
 
-This release adds support for accessing the MLflow REST API via an Exasol Virtual Schema. It also fixes a bug where array values returned by the REST API were not correctly converted to comma-separated strings.
+This release drops support for Python 3.10.
+
+The release adds support for accessing the MLflow REST API via an Exasol Virtual Schema. It also fixes a bug where array values returned by the REST API were not correctly converted to comma-separated strings.
 
 ## Features
 
