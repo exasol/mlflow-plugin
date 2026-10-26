@@ -1,5 +1,3 @@
-from test.not_raises import not_raises
-
 import pytest
 
 from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
@@ -7,6 +5,7 @@ from exasol.mlflow_plugin.virtual_schema.adapter_properties import (
     Property,
     PropertyValidator,
 )
+from test.not_raises import not_raises
 
 
 @pytest.mark.parametrize(

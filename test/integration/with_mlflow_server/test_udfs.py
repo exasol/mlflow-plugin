@@ -2,15 +2,15 @@ import logging
 import textwrap
 from collections.abc import Callable
 from inspect import cleandoc
-from test.integration.with_mlflow_server.udfs import (
-    EnvSpec,
-    Udf,
-)
 
 import pyexasol
 import pytest
 
 from exasol.mlflow_plugin.env_vars import ENV_BUCKETFS_PASSWORD
+from test.integration.with_mlflow_server.udfs import (
+    EnvSpec,
+    Udf,
+)
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")

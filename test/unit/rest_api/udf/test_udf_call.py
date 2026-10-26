@@ -1,4 +1,3 @@
-from test.unit.rest_api.udf.mocking import mock_exa_object
 from typing import Any
 from unittest.mock import (
     Mock,
@@ -10,6 +9,7 @@ import pytest
 import exasol.mlflow_plugin.rest_api.udf.call as udf_call
 from exasol.mlflow_plugin import rest_api
 from exasol.mlflow_plugin.rest_api.data import JsonObject
+from test.unit.rest_api.udf.mocking import mock_exa_object
 
 
 def mock_udf_ctx(args: dict[str, Any]) -> Mock:
