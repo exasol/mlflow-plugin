@@ -25,7 +25,7 @@ Plugin for MLflow supporting artifact repository Exasol BucketFS
 🔌️ Prerequisites
 -----------------
 
-- `Python <https://www.python.org/>`__ >= 3.10
+- `Python <https://www.python.org/>`__ >= 3.11
 
 💾 Installation
 ---------------
