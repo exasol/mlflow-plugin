@@ -9,6 +9,5 @@ PROJECT_CONFIG = BaseConfig(
     root_path=Path(__file__).parent,
     # pytest-exasol-backend requires Python <3.14
     python_versions=("3.11", "3.13"),
-    minimum_python_version="3.11",
     exasol_versions=("2025.1.8",),
 )
